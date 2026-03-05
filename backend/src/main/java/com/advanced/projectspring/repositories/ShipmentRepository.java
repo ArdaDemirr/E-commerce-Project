@@ -10,7 +10,9 @@ import com.advanced.projectspring.models.Shipment;
 
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
+    // individual user tracks their shipment. Each order has one shipment
     Optional<Shipment> findByOrderId(Long orderId);
 
+    // corporate sees all shipments by status (pending/in_transit/delivered)
     List<Shipment> findByStatus(String status);
 }
