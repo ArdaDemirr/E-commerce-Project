@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6366F1;
+  border-radius: 3px;
+}
+
+// Glass Card
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
+  }
+}
+
+// Gradient Button
+.btn-primary {
+  @apply px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-secondary {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #A5B4FC;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.25);
+  }
+}
+
+// Gradient Text
+.gradient-text {
+  background: linear-gradient(135deg, #6366F1, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+// Status Badges
+.badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold;
+
+  &.pending {
+    background: rgba(245, 158, 11, 0.2);
+    color: #FCD34D;
+  }
+
+  &.shipped {
+    background: rgba(6, 182, 212, 0.2);
+    color: #67E8F9;
+  }
+
+  &.completed {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6EE7B7;
+  }
+
+  &.cancelled {
+    background: rgba(239, 68, 68, 0.2);
+    color: #FCA5A5;
+  }
+}
+
+// Page transition
+.page-enter {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// KPI Card
+.kpi-card {
+  @apply glass-card p-6 cursor-default;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+// Sidebar item
+.sidebar-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer;
+  color: #94A3B8;
+
+  &:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: #A5B4FC;
+  }
+
+  &.active {
+    background: rgba(99, 102, 241, 0.2);
+    color: #6366F1;
+    border-left: 3px solid #6366F1;
+  }
+}

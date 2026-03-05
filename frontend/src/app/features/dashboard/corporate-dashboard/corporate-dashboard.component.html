@@ -1,0 +1,82 @@
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-white">
+                Hoş geldin, <span class="gradient-text">{{ user?.firstName }}</span> 👋
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">Mağazanda bugün neler oluyor</p>
+        </div>
+        <div class="flex gap-3">
+            <button class="btn-secondary flex items-center gap-2 text-sm">
+                <lucide-icon name="download" [size]="16"></lucide-icon> Rapor İndir
+            </button>
+            <button class="btn-primary flex items-center gap-2 text-sm">
+                <lucide-icon name="plus" [size]="16"></lucide-icon> Ürün Ekle
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <app-kpi-card *ngFor="let kpi of kpis; let i = index" [label]="kpi.label" [value]="kpi.value"
+            [change]="kpi.change" [icon]="kpi.icon" [iconColor]="kpi.iconColor" [iconBg]="kpi.iconBg"
+            [delay]="(i * 0.1) + 's'">
+        </app-kpi-card>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        <!-- Revenue Chart (2/3 width) -->
+        <div class="xl:col-span-2 glass-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-semibold text-white">Gelir Trendi</h3>
+                <div class="flex gap-2">
+                    <button *ngFor="let p of ['7G', '30G', '90G', '1Y']" (click)="setRevenuePeriod(p)"
+                        class="px-3 py-1 rounded-lg text-xs font-medium transition-all"
+                        [class.bg-primary]="revenuePeriod === p" [class.text-white]="revenuePeriod === p"
+                        [class.text-slate-400]="revenuePeriod !== p" [class.hover:text-white]="revenuePeriod !== p">
+                        {{ p }}
+                    </button>
+                </div>
+            </div>
+            <canvas baseChart [data]="revenueChartData" [options]="revenueChartOptions" [type]="'line'"
+                style="max-height: 280px;">
+            </canvas>
+        </div>
+
+        <!-- Categories Pie (1/3 width) -->
+        <div class="glass-card p-6">
+            <h3 class="font-semibold text-white mb-6">Kategoriler</h3>
+            <canvas baseChart [data]="categoryChartData" [options]="categoryChartOptions" [type]="'doughnut'"
+                style="max-height: 200px;">
+            </canvas>
+            <div class="mt-4 space-y-2">
+                <div *ngFor="let cat of categories" class="flex items-center justify-between text-sm">
+                    <span class="flex items-center gap-2 text-slate-400">
+                        <span class="w-2.5 h-2.5 rounded-full" [style.background]="cat.color"></span>
+                        {{ cat.name }}
+                    </span>
+                    <span class="text-slate-300 font-medium">{{ cat.percentage }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="glass-card p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="font-semibold text-white">Son Siparişler</h3>
+            <a routerLink="/orders" class="text-primary text-sm hover:text-violet-400 transition-colors">
+                Tümünü Gör →
+            </a>
+        </div>
+        <!-- <app-data-table -->
+        <!--   [columns]="orderColumns" -->
+        <!--   [data]="recentOrders" -->
+        <!--   [loading]="loadingOrders"> -->
+        <!-- </app-data-table> -->
+        <div class="text-slate-400 text-sm">Tablo bileşeni daha sonra eklenecek.</div>
+    </div>
+</div>

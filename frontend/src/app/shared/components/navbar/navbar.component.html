@@ -1,0 +1,60 @@
+<header class="h-16 flex items-center justify-between px-6 border-b border-slate-700/50"
+    style="background: rgba(15,23,42,0.8); backdrop-filter: blur(12px);">
+
+    <!-- Left: Hamburger + Breadcrumb -->
+    <div class="flex items-center gap-4">
+        <button (click)="toggleSidebar.emit()"
+            class="p-2 rounded-lg hover:bg-slate-700/50 transition-colors text-slate-400 hover:text-white">
+            <lucide-icon name="menu" [size]="20"></lucide-icon>
+        </button>
+        <span class="text-slate-500 text-sm">{{ currentPageTitle }}</span>
+    </div>
+
+    <!-- Right: Search + Notifications + User -->
+    <div class="flex items-center gap-3">
+
+        <!-- Search -->
+        <div class="relative hidden md:block">
+            <input type="text" placeholder="Ara..." class="w-64 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2 pl-10
+                    text-sm text-slate-300 placeholder-slate-500
+                    focus:outline-none focus:border-primary/60 focus:bg-slate-800 transition-all">
+            <lucide-icon name="search" [size]="16" class="absolute left-3 top-2.5 text-slate-500"></lucide-icon>
+        </div>
+
+        <!-- Notifications -->
+        <button class="relative p-2 rounded-xl hover:bg-slate-700/50 transition-colors text-slate-400 hover:text-white">
+            <lucide-icon name="bell" [size]="20"></lucide-icon>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+        </button>
+
+        <!-- User Menu -->
+        <div class="relative" (click)="toggleUserMenu()">
+            <div
+                class="flex items-center gap-3 cursor-pointer px-3 py-2 rounded-xl hover:bg-slate-700/50 transition-colors">
+                <div class="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm text-white"
+                    style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+                    {{ userInitials }}
+                </div>
+                <div class="hidden md:block">
+                    <p class="text-sm font-medium text-slate-200">{{ currentUser?.firstName }}</p>
+                    <p class="text-xs text-slate-500">{{ currentUser?.role }}</p>
+                </div>
+                <lucide-icon name="chevron-down" [size]="16" class="text-slate-500"></lucide-icon>
+            </div>
+
+            <!-- Dropdown -->
+            <div *ngIf="showUserMenu"
+                class="absolute right-0 top-12 w-48 glass-card py-2 z-50 animate__animated animate__fadeIn animate__faster">
+                <a
+                    class="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 cursor-pointer">
+                    <lucide-icon name="user" [size]="16"></lucide-icon> Profil
+                </a>
+                <hr class="border-slate-700 my-1">
+                <a (click)="logout()"
+                    class="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+                    <lucide-icon name="log-out" [size]="16"></lucide-icon> Çıkış Yap
+                </a>
+            </div>
+        </div>
+    </div>
+</header>

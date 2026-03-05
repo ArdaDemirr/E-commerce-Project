@@ -1,0 +1,26 @@
+<div class="flex h-screen bg-background overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar
+    [isCollapsed]="sidebarCollapsed"
+    (toggleSidebar)="toggleSidebar()">
+  </app-sidebar>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300"
+       [class.ml-64]="!sidebarCollapsed"
+       [class.ml-16]="sidebarCollapsed">
+
+    <!-- Navbar -->
+    <app-navbar
+      (toggleSidebar)="toggleSidebar()"
+      [sidebarCollapsed]="sidebarCollapsed">
+    </app-navbar>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-y-auto p-6 bg-background">
+      <div class="animate__animated animate__fadeIn">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>
