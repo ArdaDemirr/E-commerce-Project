@@ -5,6 +5,7 @@ public class RegisterRequest {
     private String email;
     private String password;
     private String name;
+    private String surname;
     private String role;
     private String gender;
 
@@ -14,6 +15,10 @@ public class RegisterRequest {
     // Getters
     public String getName() {
         return name;
+    }
+
+    public String getSurname() {
+        return surname;
     }
 
     public String getEmail() {
@@ -35,6 +40,10 @@ public class RegisterRequest {
     // Setters
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public void setEmail(String email) {

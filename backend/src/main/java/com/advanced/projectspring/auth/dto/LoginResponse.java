@@ -20,16 +20,19 @@ public class LoginResponse {
     // the user's display name
     // Angular shows this in the header "Welcome, John"
 
+    private String surname;
+
     private Long userId;
     // the user's database ID
     // Angular might need this for future requests
     // like GET /api/users/5/profile
 
     // Constructor — AuthService uses this to build the response
-    public LoginResponse(String token, String role, String name, Long userId) {
+    public LoginResponse(String token, String role, String name, String surname, Long userId) {
         this.token = token;
         this.role = role;
         this.name = name;
+        this.surname = surname;
         this.userId = userId;
     }
 
@@ -44,6 +47,10 @@ public class LoginResponse {
 
     public String getName() {
         return name;
+    }
+
+    public String getSurname() {
+        return surname;
     }
 
     public Long getUserId() {

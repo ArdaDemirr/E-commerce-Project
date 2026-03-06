@@ -21,6 +21,8 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    private String surname;
+
     private String gender;
 
     @Column(nullable = false)
@@ -51,6 +53,10 @@ public class User {
         return name;
     }
 
+    public String getSurname() {
+        return surname;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -79,6 +85,10 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public void setGender(String gender) {
