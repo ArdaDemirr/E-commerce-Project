@@ -9,8 +9,8 @@
             style="background: radial-gradient(circle, #8B5CF6, transparent);"></div>
     </div>
 
-    <!-- Card -->
-    <div class="w-full max-w-md glass-card p-8 animate__animated animate__slideInUp">
+    <!-- Card — genişletildi max-w-lg -->
+    <div class="w-full max-w-lg glass-card p-8 animate__animated animate__slideInUp">
 
         <!-- Logo -->
         <div class="text-center mb-6">
@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            <!-- First + Last Name -->
+            <!-- Ad + Soyad -->
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-2">Ad</label>
@@ -67,12 +67,12 @@
                 </div>
             </div>
 
-            <!-- Email, Password, Gender Layout -->
+            <!-- Cinsiyet -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-300 mb-2">Cinsiyet</label>
                 <div class="relative">
                     <select formControlName="gender" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11
-                        text-slate-200 placeholder-slate-500 appearance-none
+                        text-slate-200 appearance-none
                         focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all">
                         <option value="" disabled selected>Seçiniz</option>
                         <option value="Male">Erkek</option>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <!-- Email -->
+            <!-- E-posta -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-300 mb-2">E-posta</label>
                 <div class="relative">
@@ -95,8 +95,8 @@
                 </div>
             </div>
 
-            <!-- Password -->
-            <div class="mb-6">
+            <!-- Şifre -->
+            <div class="mb-4">
                 <label class="block text-sm font-medium text-slate-300 mb-2">Şifre</label>
                 <div class="relative">
                     <input formControlName="password" [type]="showPassword ? 'text' : 'password'"
@@ -109,6 +109,34 @@
                         <lucide-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="18"></lucide-icon>
                     </button>
                 </div>
+            </div>
+
+            <!-- Şifre Tekrar -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Şifre Tekrar</label>
+                <div class="relative">
+                    <input formControlName="confirmPassword" [type]="showConfirmPassword ? 'text' : 'password'"
+                        placeholder="Şifrenizi tekrar girin" class="w-full bg-slate-800/80 border rounded-xl px-4 py-3 pl-11 pr-11
+                        text-slate-200 placeholder-slate-500
+                        focus:outline-none focus:ring-1 transition-all" [class.border-red-500]="confirmPasswordError"
+                        [class.focus:border-red-500]="confirmPasswordError"
+                        [class.focus:ring-red-500]="confirmPasswordError"
+                        [class.border-slate-700]="!confirmPasswordError"
+                        [class.focus:border-primary]="!confirmPasswordError"
+                        [class.focus:ring-primary]="!confirmPasswordError">
+                    <lucide-icon name="shield-check" [size]="18" class="absolute left-3.5 top-3.5 transition-colors"
+                        [class.text-red-500]="confirmPasswordError"
+                        [class.text-slate-500]="!confirmPasswordError"></lucide-icon>
+                    <button type="button" (click)="showConfirmPassword = !showConfirmPassword"
+                        class="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 transition-colors">
+                        <lucide-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'" [size]="18"></lucide-icon>
+                    </button>
+                </div>
+                <!-- Eşleşmeme uyarısı -->
+                <p *ngIf="confirmPasswordError" class="mt-1.5 text-xs text-red-400 flex items-center gap-1">
+                    <lucide-icon name="alert-circle" [size]="12"></lucide-icon>
+                    Şifreler eşleşmiyor
+                </p>
             </div>
 
             <!-- Error Alert -->
@@ -134,4 +162,5 @@
             </a>
         </p>
     </div>
+
 </div>
