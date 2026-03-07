@@ -7,12 +7,12 @@ import { TokenService } from './token.service';
 import { AuthResponse, LoginRequest, RegisterRequest, User, UserRole } from '../models/user.model';
 
 const MOCK_USERS: Record<string, { password: string; user: User }> = {
-    'admin@test.com': { password: '12345678', user: { id: 1, email: 'admin@test.com', firstName: 'Admin', lastName: 'User', role: 'ADMIN' as UserRole, isActive: true, createdAt: new Date().toISOString() } },
-    'store@test.com': { password: '12345678', user: { id: 2, email: 'store@test.com', firstName: 'Corporate', lastName: 'User', role: 'CORPORATE' as UserRole, isActive: true, createdAt: new Date().toISOString() } },
-    'user@test.com': { password: '12345678', user: { id: 3, email: 'user@test.com', firstName: 'Individual', lastName: 'User', role: 'INDIVIDUAL' as UserRole, isActive: true, createdAt: new Date().toISOString() } },
+    'admin@test.com': { password: '12345678', user: { id: 1, email: 'admin@test.com', name: 'Admin', surname: 'User', role: 'ADMIN' as UserRole, active: true } },
+    'store@test.com': { password: '12345678', user: { id: 2, email: 'store@test.com', name: 'Corporate', surname: 'User', role: 'CORPORATE' as UserRole, active: true } },
+    'user@test.com': { password: '12345678', user: { id: 3, email: 'user@test.com', name: 'Individual', surname: 'User', role: 'INDIVIDUAL' as UserRole, active: true } },
 };
 
-const USE_MOCK = true; // ← Backend hazır olunca false yap
+const USE_MOCK = false; // Mock devre dışı, backend kullanılacak
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -34,13 +34,15 @@ export class AuthService {
             const match = MOCK_USERS[req.email];
             if (match && match.password === req.password) {
                 const mockRes: AuthResponse = {
-                    accessToken: `mock-access-${match.user.role}`,
-                    refreshToken: `mock-refresh-${match.user.role}`,
-                    user: match.user
+                    token: `mock-access-${match.user.role}`,
+                    role: match.user.role,
+                    name: match.user.name,
+                    surname: match.user.surname,
+                    userId: match.user.id
                 };
-                this.tokenService.setTokens(mockRes.accessToken, mockRes.refreshToken);
-                this.tokenService.setUser(mockRes.user);
-                this.currentUserSubject.next(mockRes.user);
+                this.tokenService.setTokens(mockRes.token, '');
+                this.tokenService.setUser(match.user);
+                this.currentUserSubject.next(match.user);
                 return of(mockRes);
             }
             return throwError(() => new Error('Geçersiz e-posta veya şifre'));
@@ -48,9 +50,10 @@ export class AuthService {
 
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, req).pipe(
             tap((res: AuthResponse) => {
-                this.tokenService.setTokens(res.accessToken, res.refreshToken);
-                this.tokenService.setUser(res.user);
-                this.currentUserSubject.next(res.user);
+                const user: User = { id: res.userId, email: req.email, name: res.name, surname: res.surname, role: res.role as UserRole, active: true };
+                this.tokenService.setTokens(res.token, '');
+                this.tokenService.setUser(user);
+                this.currentUserSubject.next(user);
             })
         );
     }
@@ -58,29 +61,32 @@ export class AuthService {
     register(req: RegisterRequest): Observable<AuthResponse> {
         if (USE_MOCK) {
             const mockRes: AuthResponse = {
-                accessToken: 'mock-access-INDIVIDUAL',
-                refreshToken: 'mock-refresh-INDIVIDUAL',
-                user: {
-                    id: 99,
-                    email: req.email,
-                    firstName: req.firstName,
-                    lastName: req.lastName,
-                    role: req.role,
-                    isActive: true,
-                    createdAt: new Date().toISOString()
-                }
+                token: 'mock-access-INDIVIDUAL',
+                role: req.role,
+                name: req.name,
+                surname: req.surname,
+                userId: 99
             };
-            this.tokenService.setTokens(mockRes.accessToken, mockRes.refreshToken);
-            this.tokenService.setUser(mockRes.user);
-            this.currentUserSubject.next(mockRes.user);
+            const mockUser: User = {
+                id: 99,
+                email: req.email,
+                name: req.name,
+                surname: req.surname,
+                role: req.role,
+                active: true
+            };
+            this.tokenService.setTokens(mockRes.token, '');
+            this.tokenService.setUser(mockUser);
+            this.currentUserSubject.next(mockUser);
             return of(mockRes);
         }
 
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, req).pipe(
             tap((res: AuthResponse) => {
-                this.tokenService.setTokens(res.accessToken, res.refreshToken);
-                this.tokenService.setUser(res.user);
-                this.currentUserSubject.next(res.user);
+                const user: User = { id: res.userId, email: req.email, name: res.name, surname: res.surname, role: res.role as UserRole, active: true };
+                this.tokenService.setTokens(res.token, '');
+                this.tokenService.setUser(user);
+                this.currentUserSubject.next(user);
             })
         );
     }
@@ -97,10 +103,14 @@ export class AuthService {
     refreshToken(): Observable<AuthResponse> {
         if (USE_MOCK) {
             const user = this.tokenService.getUser();
+            if (!user) return throwError(() => new Error('Kullanıcı bulunamadı'));
+
             const mockRes: AuthResponse = {
-                accessToken: `mock-access-${user?.role || 'INDIVIDUAL'}`,
-                refreshToken: `mock-refresh-${user?.role || 'INDIVIDUAL'}`,
-                user
+                token: `mock-access-${user.role}`,
+                role: user.role,
+                name: user.name,
+                surname: user.surname,
+                userId: user.id
             };
             return of(mockRes);
         }
@@ -109,7 +119,7 @@ export class AuthService {
             refreshToken: this.tokenService.getRefreshToken()
         }).pipe(
             tap((res: AuthResponse) => {
-                this.tokenService.setTokens(res.accessToken, res.refreshToken);
+                this.tokenService.setTokens(res.token, '');
             })
         );
     }

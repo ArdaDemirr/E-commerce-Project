@@ -30,7 +30,7 @@ export class NavbarComponent implements OnInit {
 
   get userInitials(): string {
     if (!this.currentUser) return 'DP';
-    return `${this.currentUser.firstName?.charAt(0) || ''}${this.currentUser.lastName?.charAt(0) || ''}`.toUpperCase();
+    return `${this.currentUser.name?.charAt(0) || ''}${this.currentUser.surname?.charAt(0) || ''}`.toUpperCase();
   }
 
   toggleUserMenu(): void {

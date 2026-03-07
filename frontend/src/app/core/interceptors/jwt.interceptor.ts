@@ -33,8 +33,8 @@ export class JwtInterceptor implements HttpInterceptor {
             return this.authService.refreshToken().pipe(
                 switchMap(res => {
                     this.isRefreshing = false;
-                    this.refreshTokenSubject.next(res.accessToken);
-                    return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${res.accessToken}` } }));
+                    this.refreshTokenSubject.next(res.token);
+                    return next.handle(req.clone({ setHeaders: { Authorization: `Bearer ${res.token}` } }));
                 }),
                 catchError(err => {
                     this.isRefreshing = false;

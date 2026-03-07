@@ -55,15 +55,32 @@
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-2">Ad</label>
-                    <input formControlName="firstName" type="text" placeholder="Adınız" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3
+                    <input formControlName="name" type="text" placeholder="Adınız" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3
                         text-slate-200 placeholder-slate-500
                         focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-2">Soyad</label>
-                    <input formControlName="lastName" type="text" placeholder="Soyadınız" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3
+                    <input formControlName="surname" type="text" placeholder="Soyadınız" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3
                         text-slate-200 placeholder-slate-500
                         focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all">
+                </div>
+            </div>
+
+            <!-- Email, Password, Gender Layout -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Cinsiyet</label>
+                <div class="relative">
+                    <select formControlName="gender" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11
+                        text-slate-200 placeholder-slate-500 appearance-none
+                        focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all">
+                        <option value="" disabled selected>Seçiniz</option>
+                        <option value="Male">Erkek</option>
+                        <option value="Female">Kadın</option>
+                        <option value="Other">Diğer</option>
+                    </select>
+                    <lucide-icon name="users" [size]="18"
+                        class="absolute left-3.5 top-3.5 text-slate-500"></lucide-icon>
                 </div>
             </div>
 

@@ -3,17 +3,18 @@ export type UserRole = 'ADMIN' | 'CORPORATE' | 'INDIVIDUAL';
 export interface User {
     id: number;
     email: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    surname: string;
     role: UserRole;
-    isActive: boolean;
-    createdAt: string;
+    active: boolean;
 }
 
 export interface AuthResponse {
-    accessToken: string;
-    refreshToken: string;
-    user: User;
+    token: string;
+    role: string;
+    name: string;
+    surname: string;
+    userId: number;
 }
 
 export interface LoginRequest {
@@ -24,7 +25,8 @@ export interface LoginRequest {
 export interface RegisterRequest {
     email: string;
     password: string;
-    firstName: string;
-    lastName: string;
+    name: string;
+    surname: string;
     role: UserRole;
+    gender?: string;
 }

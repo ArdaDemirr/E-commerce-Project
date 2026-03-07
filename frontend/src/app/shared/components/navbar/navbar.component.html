@@ -36,7 +36,7 @@
                     {{ userInitials }}
                 </div>
                 <div class="hidden md:block">
-                    <p class="text-sm font-medium text-slate-200">{{ currentUser?.firstName }}</p>
+                    <p class="text-sm font-medium text-slate-200">{{ currentUser?.name }}</p>
                     <p class="text-xs text-slate-500">{{ currentUser?.role }}</p>
                 </div>
                 <lucide-icon name="chevron-down" [size]="16" class="text-slate-500"></lucide-icon>
@@ -44,16 +44,16 @@
 
             <!-- Dropdown -->
             <div *ngIf="showUserMenu"
-                class="absolute right-0 top-12 w-48 glass-card py-2 z-50 animate__animated animate__fadeIn animate__faster">
+                class="absolute right-0 top-14 w-48 glass-card py-2 shadow-2xl z-[100] animate__animated animate__fadeIn animate__faster pointer-events-auto">
                 <a
                     class="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-700/50 cursor-pointer">
                     <lucide-icon name="user" [size]="16"></lucide-icon> Profil
                 </a>
                 <hr class="border-slate-700 my-1">
-                <a (click)="logout()"
-                    class="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 cursor-pointer">
+                <button (click)="logout()"
+                    class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors text-left font-medium">
                     <lucide-icon name="log-out" [size]="16"></lucide-icon> Çıkış Yap
-                </a>
+                </button>
             </div>
         </div>
     </div>
