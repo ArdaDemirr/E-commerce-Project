@@ -63,7 +63,7 @@ public class AuthService {
         user.setName(request.getName());
         user.setSurname(request.getSurname());
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole());
+        user.setRole(request.getRole().toUpperCase());
         user.setGender(request.getGender());
         user.setActive(true);
         String hashedPassword = passwordEncoder.encode(request.getPassword());
