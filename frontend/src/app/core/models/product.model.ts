@@ -1,16 +1,24 @@
+export interface Category {
+    id: number;
+    name: string;
+    parent?: Category;
+}
+
 export interface Product {
     id: number;
-    storeId: number;
-    categoryId: number;
     sku: string;
     name: string;
-    description: string;
+    description?: string;
     unitPrice: number;
-    stockQty: number;
+    stock: number;
+    // Nested Spring Data REST response fields
+    category?: Category;
+    store?: { id: number; name: string };
+    // Derived display fields
     categoryName?: string;
     storeName?: string;
+    stockQty?: number; // alias for backward compat
     avgRating?: number;
-    createdAt: string;
 }
 
 export interface ProductFilter {

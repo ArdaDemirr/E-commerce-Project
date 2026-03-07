@@ -58,7 +58,7 @@ export class AuthService {
         );
     }
 
-    register(req: RegisterRequest): Observable<AuthResponse> {
+    register(req: RegisterRequest): Observable<any> {
         if (USE_MOCK) {
             const mockRes: AuthResponse = {
                 token: 'mock-access-INDIVIDUAL',
@@ -81,12 +81,11 @@ export class AuthService {
             return of(mockRes);
         }
 
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, req).pipe(
-            tap((res: AuthResponse) => {
-                const user: User = { id: res.userId, email: req.email, name: res.name, surname: res.surname, role: res.role as UserRole, active: true };
-                this.tokenService.setTokens(res.token, '');
-                this.tokenService.setUser(user);
-                this.currentUserSubject.next(user);
+        // Backend returns plain text "User registered successfully." — use responseType:'text'
+        return this.http.post(`${this.apiUrl}/auth/register`, req, { responseType: 'text' }).pipe(
+            tap(() => {
+                // Registration succeeds → redirect to login to authenticate
+                this.router.navigate(['/auth/login']);
             })
         );
     }
