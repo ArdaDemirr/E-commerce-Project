@@ -1,6 +1,9 @@
 # Environment secrets
 .env
 *.env
+application.properties
+src/main/resources/application.properties
+*.class
 
 HELP.md
 target/

@@ -23,4 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // corporate filters their own products by category
     List<Product> findByStoreIdAndCategoryId(Long storeId, Long categoryId); // return a list of products in a specific
                                                                              // store and category
+
+    List<Product> findByStoreOwnerId(Long ownerId);
 }

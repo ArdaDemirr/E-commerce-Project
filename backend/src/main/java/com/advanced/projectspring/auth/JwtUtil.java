@@ -66,7 +66,7 @@ public class JwtUtil {
 
     // --------------------Generate JWT token---------------------
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, String role, Long userId) {
         // Called after successful login or register
         // Returns the JWT string like "eyJhbGci..."
 
@@ -86,6 +86,9 @@ public class JwtUtil {
                 .setSubject(email)
                 // subject = who this token belongs to
                 // we use email as the unique identifier
+
+                .claim("role", role)
+                .claim("userId", userId)
 
                 .setIssuedAt(new Date())
                 // record when the token was created
@@ -154,4 +157,10 @@ public class JwtUtil {
         // .getBody() returns the Claims object
         // which contains subject, role, issuedAt, expiration
     }
+
+    public Long extractUserId(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("userId", Long.class);
+    }
+
 }
