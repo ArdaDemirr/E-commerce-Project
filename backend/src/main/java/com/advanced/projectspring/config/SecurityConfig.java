@@ -41,6 +41,9 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/api-docs").permitAll()
 
+                        .requestMatchers("/api/products/**").authenticated()
+                        .requestMatchers("/api/categories/**").authenticated()
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/corporate/**").hasRole("CORPORATE")
                         .requestMatchers("/api/shop/**").hasRole("INDIVIDUAL")
