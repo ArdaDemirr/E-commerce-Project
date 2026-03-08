@@ -172,7 +172,10 @@ public class ChatService {
 
         // Call Gemini API
         try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="
+            // String url =
+            // "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="
+            // + geminiApiKey;
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
                     + geminiApiKey;
 
             // Build request body
@@ -206,7 +209,8 @@ public class ChatService {
             return new ChatResponse(reply, false);
 
         } catch (Exception e) {
-            return new ChatResponse("Sorry, I am having trouble connecting. Please try again.", false);
+            e.printStackTrace();
+            return new ChatResponse("Error: " + e.getMessage(), false);
         }
     }
 }
