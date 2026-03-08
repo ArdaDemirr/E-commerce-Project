@@ -8,16 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "categories")
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // mark as primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // auto create/increment
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true) // not null and unique
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Category parent;
+    // self-referencing many-to-one relationship
+    @ManyToOne // Many subcategories can belong to One parent category
+    @JoinColumn(name = "parent_id") // the column name in the database - links them
+    private Category parent; // parent is actually another category? yes
 
     // Constructors
     public Category() {

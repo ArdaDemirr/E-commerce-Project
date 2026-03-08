@@ -13,18 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
-// allows requests from Angular dev server
-// without this browser blocks the request (CORS policy)
-// we'll add a proper CorsConfig later for production
+@RestController // listen for HTTP requests from the frontend and send back JSON data.
+@RequestMapping("/api/auth") // path prefix for all endpoints in this controller
+@CrossOrigin(origins = "http://localhost:4200") // for security reasons, allows requests from Angular dev server
+// LATER add a proper CorsConfig for production
 public class AuthController {
-    @Autowired
-    private AuthService authService;
-    // Spring injects AuthService automatically
 
-    @PostMapping("/register")
+    @Autowired // inject AuthService
+    private AuthService authService;
+    // will use for checking values in database and sending response to frontend
+
+    @PostMapping("/register") // register endpoint
     // handles POST /api/auth/register
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         // @RequestBody → Spring reads JSON from request body

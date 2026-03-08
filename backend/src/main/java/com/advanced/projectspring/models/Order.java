@@ -11,13 +11,15 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // a order can be belong to single user but an user can have many orders
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false) // use user_id as foreign key
+    private User user; // use joincolumn to link them
 
+    // a order can be belong to single store but an store can have many orders
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
-    private Store store;
+    @JoinColumn(name = "store_id", nullable = false) // use store_id as foreign key
+    private Store store; // use joincolumn to link them
 
     @Column(nullable = false)
     private String status;

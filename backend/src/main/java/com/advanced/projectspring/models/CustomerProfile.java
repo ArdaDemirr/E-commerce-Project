@@ -1,3 +1,9 @@
+/*
+ * Vertical Partitioning - splitting the user table into multiple tables
+ * CustomerProfile table - contains additional information about the user
+ * think like extension of the user table
+ */
+
 package com.advanced.projectspring.models;
 
 import jakarta.persistence.*;
@@ -10,6 +16,7 @@ public class CustomerProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // one-to-one relationship with User - link the user directly
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

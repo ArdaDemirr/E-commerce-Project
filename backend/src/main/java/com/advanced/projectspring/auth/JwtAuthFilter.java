@@ -4,6 +4,8 @@
  * 1. Validate JWT token
  * 2. Extract email and role from JWT token
  * 3. Set authenticated user in SecurityContext
+ * 
+ * intercepts an HTTP request before it ever reaches your Controllers
  */
 
 package com.advanced.projectspring.auth;
@@ -50,7 +52,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUtil jwtUtil; // will check if token is valid
 
     // This method runs on EVERY incoming request
     // request = what came in
@@ -58,18 +60,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // filterChain = the next filter in line
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
+            HttpServletRequest request, // incoming request
+            HttpServletResponse response, // outgoing response
             FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization"); // get token from header-Authorization is the token name
 
-        if (authHeader == null || !authHeader.startsWith("Bearer")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer")) { // if no token or not starting with Bearer
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
+        String token = authHeader.substring(7); // remove "Bearer" from token
 
         if (!jwtUtil.validateToken(token)) {
             // Token is invalid (wrong signature, expired, malformed)
@@ -84,10 +86,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 email,
-                // principal = who is this user (we use email)
+                // principal = who is this user
 
                 null,
-                // credentials = password (null because we already verified via token)
+                // credentials = password (null because already verified via token)
 
                 List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
         // authorities = what roles this user has

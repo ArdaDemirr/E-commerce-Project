@@ -21,11 +21,11 @@ public class ChatService {
 
     @Autowired
     private ProductRepository productRepository;
-    // we inject real product data into the prompt
+    // inject real product data into the prompt
     // Gemini only sees what we give it
 
-    private final WebClient webClient = WebClient.create();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final WebClient webClient = WebClient.create(); // Spring's tool for making external HTTP requests
+    private final ObjectMapper objectMapper = new ObjectMapper(); // A tool to easily read the complex JSON
 
     // Block injection attempts BEFORE calling Gemini
     private static final List<String> BLOCKED_PATTERNS = List.of(
@@ -94,6 +94,7 @@ public class ChatService {
         return false;
     }
 
+    // extract user info to feed into prompt
     private String buildProductContext(String userRole, Long userId) {
         List<Product> products;
 

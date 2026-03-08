@@ -19,9 +19,10 @@ public class Store {
     @Column(nullable = false)
     private String status;
 
+    // a store can be belong to single user but an user can have many stores
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
+    @JoinColumn(name = "owner_id", nullable = false) // use owner_id as foreign key
+    private User owner; // use joincolumn to link them
 
     // Constructors
     public Store() {

@@ -8,20 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// exposes the endpoint for chat-AI
+
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api/chat") // endpoint
 @CrossOrigin(origins = "http://localhost:4200")
 public class ChatController {
-    @Autowired
-    private ChatService chatService;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private ChatService chatService; // inejct service
+
+    @Autowired
+    private JwtUtil jwtUtil; // inject Util - to validate/open token
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(
-            @RequestBody ChatRequest request,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestBody ChatRequest request, // sends a JSON object containing the user's message
+            @RequestHeader("Authorization") String authHeader) { // incoming token to inspect
 
         // Extract token
         String token = authHeader.substring(7);
@@ -30,7 +33,6 @@ public class ChatController {
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
         Long userId = jwtUtil.extractUserId(token);
-        // we use these to build role-based context
 
         ChatResponse response = chatService.processMessage(request, email, role, userId);
         return ResponseEntity.ok(response);

@@ -37,10 +37,10 @@ import java.util.Optional;
 public class AuthService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository userRepository; // connect to database
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUtil jwtUtil; // connect to jwtUtil to create tokens
 
     // private final BCryptPasswordEncoder passwordEncoder = new
     // BCryptPasswordEncoder();

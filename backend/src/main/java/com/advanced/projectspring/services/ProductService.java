@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductRepository productRepository; // connect to database
 
     // Converts Product entity → ProductResponseDTO
+    // we use dto to only return thing needed toı be return, not sensitive data
+    // and also less data to return, more speed
     private ProductResponseDTO toDTO(Product p) {
         CategorySummaryDTO category = new CategorySummaryDTO(
                 p.getCategory().getId(),
@@ -41,6 +43,10 @@ public class ProductService {
         return productRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
         // returns all 200 products from database
     }
+    // 1. Get all raw products
+    // 2. Start a loop/stream
+    // 3. Pass EVERY product through the toDTO method
+    // 4. Pack them back into a List
 
     public Optional<ProductResponseDTO> getProductById(Long id) {
         return productRepository.findById(id).map(this::toDTO);

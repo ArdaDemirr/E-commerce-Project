@@ -47,8 +47,7 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
     // Reads jwt.secret from application.properties
-    // which reads it from .env
-    // so the actual secret key never appears in the code
+    // so the actual secret key never appears in the code, gitignored
 
     @Value("${jwt.expiration}")
     private Long expiration;
