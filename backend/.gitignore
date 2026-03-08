@@ -3,6 +3,7 @@
 *.env
 application.properties
 src/main/resources/application.properties
+backend/src/main/resources/application.properties
 *.class
 
 HELP.md
