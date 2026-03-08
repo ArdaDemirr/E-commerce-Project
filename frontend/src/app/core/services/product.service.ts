@@ -6,7 +6,7 @@ import { Product, Category } from '../models/product.model';
 
 // ─── MOCK DATA (mirrors actual DB) ────────────────────────────────────────────
 // When the backend exposes /api/products and /api/categories, set USE_MOCK=false
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const MOCK_CATEGORIES: Category[] = [
     { id: 1, name: 'Beauty & Grooming' },

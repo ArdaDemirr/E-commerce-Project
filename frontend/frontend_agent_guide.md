@@ -1666,27 +1666,7 @@ export class ApiService {
 }
 ```
 
-**Örnek servislerin backend endpoint eşleşmeleri:**
-```
-ProductService.getAll()           → GET  /api/products
-ProductService.getById(id)        → GET  /api/products/:id
-ProductService.create(dto)        → POST /api/products         (CORPORATE)
-ProductService.update(id, dto)    → PUT  /api/products/:id     (CORPORATE)
-ProductService.delete(id)         → DELETE /api/products/:id   (CORPORATE)
 
-OrderService.create(dto)          → POST /api/orders           (INDIVIDUAL)
-OrderService.getMyOrders()        → GET  /api/orders
-OrderService.updateStatus(id,s)   → PUT  /api/orders/:id/status
-
-AnalyticsService.getSales()       → GET  /api/analytics/sales
-AnalyticsService.getTopProducts() → GET  /api/analytics/products/top
-
-AdminService.getUsers()           → GET  /api/admin/users
-AdminService.toggleUser(id)       → PUT  /api/admin/users/:id
-AdminService.deleteUser(id)       → DELETE /api/admin/users/:id
-```
-
----
 
 ## 📱 FAZ 12 — Responsive & Mobile
 

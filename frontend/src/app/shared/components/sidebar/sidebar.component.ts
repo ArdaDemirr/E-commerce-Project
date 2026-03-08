@@ -40,7 +40,8 @@ export class SidebarComponent implements OnInit {
 
     this.mainMenuItems = [
       { path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
-      { path: '/products', label: 'Ürünler', icon: 'package' }
+      { path: '/products', label: 'Ürünler', icon: 'package' },
+      { path: '/chat', label: 'Asistan (AI)', icon: 'bot' }
     ];
 
     if (role === 'INDIVIDUAL') {
