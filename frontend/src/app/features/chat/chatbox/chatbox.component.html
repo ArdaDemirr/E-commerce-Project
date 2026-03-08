@@ -2,7 +2,7 @@
   <div class="bg-indigo-600 px-6 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-3">
       <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-indigo-600">
-        <i-lucide name="bot"></i-lucide>
+        <lucide-icon name="bot"></lucide-icon>
       </div>
       <div>
         <h2 class="text-white text-lg font-semibold">DataPulse AI Assistant</h2>
@@ -12,26 +12,31 @@
   </div>
 
   <div class="flex-1 overflow-y-auto p-6 bg-gray-50 flex flex-col space-y-4" #scrollMe>
-    <div *ngFor="let msg of messages" 
-         class="flex w-full" 
-         [ngClass]="{'justify-end': msg.sender === 'user', 'justify-start': msg.sender === 'bot'}">
-      
+    <div *ngFor="let msg of messages" class="flex w-full" [ngClass]="{
+        'justify-end': msg.sender === 'user',
+        'justify-start': msg.sender === 'bot',
+      }">
       <!-- Bot Message -->
       <div *ngIf="msg.sender === 'bot'" class="flex items-start space-x-2 max-w-[80%]">
         <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-          <i-lucide name="bot" size="18"></i-lucide>
+          <lucide-icon name="bot" size="18"></lucide-icon>
         </div>
         <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm text-gray-800 text-sm whitespace-pre-wrap">
           {{ msg.text }}
-          <span class="text-xs text-gray-400 block mt-1 text-right">{{ msg.timestamp | date:'shortTime' }}</span>
+          <span class="text-xs text-gray-400 block mt-1 text-right">{{
+            msg.timestamp | date: "shortTime"
+            }}</span>
         </div>
       </div>
 
       <!-- User Message -->
-      <div *ngIf="msg.sender === 'user'" class="flex items-start space-x-2 max-w-[80%] flex-row-reverse space-x-reverse">
+      <div *ngIf="msg.sender === 'user'"
+        class="flex items-start space-x-2 max-w-[80%] flex-row-reverse space-x-reverse">
         <div class="bg-indigo-600 px-4 py-3 rounded-2xl rounded-tr-sm shadow-sm text-white text-sm whitespace-pre-wrap">
           {{ msg.text }}
-          <span class="text-xs text-indigo-200 block mt-1 text-right">{{ msg.timestamp | date:'shortTime' }}</span>
+          <span class="text-xs text-indigo-200 block mt-1 text-right">{{
+            msg.timestamp | date: "shortTime"
+            }}</span>
         </div>
       </div>
     </div>
@@ -39,7 +44,7 @@
     <!-- Processing Indicator -->
     <div *ngIf="isProcessing" class="flex items-start space-x-2 w-full max-w-[80%]">
       <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-        <i-lucide name="bot" size="18"></i-lucide>
+        <lucide-icon name="bot" size="18"></lucide-icon>
       </div>
       <div class="bg-white px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex space-x-1 items-center">
         <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
@@ -51,20 +56,15 @@
 
   <div class="bg-white p-4 border-t border-gray-100" *ngIf="!isBlocked">
     <div class="flex items-center space-x-3 bg-gray-50 p-2 rounded-full border border-gray-200">
-      <input type="text" 
-             [(ngModel)]="newMessage" 
-             (keyup.enter)="sendMessage()" 
-             placeholder="Type your message..." 
-             class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none"
-             [disabled]="isProcessing">
-      <button (click)="sendMessage()" 
-              [disabled]="!newMessage.trim() || isProcessing"
-              class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-        <i-lucide name="send" size="18" class="ml-1"></i-lucide>
+      <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Type your message..."
+        class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none" [disabled]="isProcessing" />
+      <button (click)="sendMessage()" [disabled]="!newMessage.trim() || isProcessing"
+        class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+        <lucide-icon name="send" size="18" class="ml-1"></lucide-icon>
       </button>
     </div>
   </div>
-  
+
   <div *ngIf="isBlocked" class="bg-red-50 p-4 border-t border-red-100 text-center text-red-600 text-sm">
     You have been blocked from sending messages due to inappropriate content.
   </div>
