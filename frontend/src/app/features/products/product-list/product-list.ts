@@ -8,7 +8,7 @@ import { Product, Category } from '../../../core/models/product.model';
   standalone: false,
   selector: 'app-product-list',
   templateUrl: './product-list.html',
-  styleUrl: './product-list.scss'
+  styleUrl: './product-list.scss',
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   products: Product[] = [];
@@ -20,13 +20,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
   sortBy = 'newest';
   selectedCategoryId: number | null = null;
   currentPage = 0;
-  pageSize = 12;
+  pageSize = 50;
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();
 
-  get totalProducts(): number { return this.filteredProducts.length; }
-  get isLastPage(): boolean { return (this.currentPage + 1) * this.pageSize >= this.totalProducts; }
+  get totalProducts(): number {
+    return this.filteredProducts.length;
+  }
+  get isLastPage(): boolean {
+    return (this.currentPage + 1) * this.pageSize >= this.totalProducts;
+  }
   get pagedProducts(): Product[] {
     const start = this.currentPage * this.pageSize;
     return this.filteredProducts.slice(start, start + this.pageSize);
@@ -35,20 +39,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
   constructor(
     private productService: ProductService,
     private router: Router,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     // Debounced search
-    this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.currentPage = 0;
-      this.applyFilters();
-      this.cdr.detectChanges();
-    });
+    this.searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.currentPage = 0;
+        this.applyFilters();
+        this.cdr.detectChanges();
+      });
 
     this.loadCategories();
     this.loadProducts();
@@ -60,9 +62,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   loadCategories(): void {
-    this.productService.getCategories()
+    this.productService
+      .getCategories()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(cats => {
+      .subscribe((cats) => {
         this.categories = cats;
         this.cdr.detectChanges();
       });
@@ -70,7 +73,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   loadProducts(): void {
     this.loading = true;
-    this.productService.getProducts()
+    this.productService
+      .getProducts()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (products) => {
@@ -84,7 +88,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
           this.filteredProducts = [];
           this.loading = false;
           this.cdr.detectChanges();
-        }
+        },
       });
   }
 
@@ -93,24 +97,30 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
     // Category filter
     if (this.selectedCategoryId !== null) {
-      result = result.filter(p => p.category?.id === this.selectedCategoryId);
+      result = result.filter((p) => p.category?.id === this.selectedCategoryId);
     }
 
     // Search query filter
     const q = this.searchQuery.trim().toLowerCase();
     if (q) {
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        (p.sku?.toLowerCase().includes(q)) ||
-        (p.categoryName?.toLowerCase().includes(q))
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.sku?.toLowerCase().includes(q) ||
+          p.categoryName?.toLowerCase().includes(q),
       );
     }
 
     // Sort
     switch (this.sortBy) {
-      case 'price_asc': result.sort((a, b) => a.unitPrice - b.unitPrice); break;
-      case 'price_desc': result.sort((a, b) => b.unitPrice - a.unitPrice); break;
-      default: break;
+      case 'price_asc':
+        result.sort((a, b) => a.unitPrice - b.unitPrice);
+        break;
+      case 'price_desc':
+        result.sort((a, b) => b.unitPrice - a.unitPrice);
+        break;
+      default:
+        break;
     }
 
     this.filteredProducts = result;
@@ -143,11 +153,17 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   prevPage(): void {
-    if (this.currentPage > 0) { this.currentPage--; this.cdr.detectChanges(); }
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.cdr.detectChanges();
+    }
   }
 
   nextPage(): void {
-    if (!this.isLastPage) { this.currentPage++; this.cdr.detectChanges(); }
+    if (!this.isLastPage) {
+      this.currentPage++;
+      this.cdr.detectChanges();
+    }
   }
 
   getStockDisplay(p: Product): number {

@@ -1,1 +1,189 @@
-<p>product-detail works!</p>
+<div class="space-y-6">
+  <!-- Top Navigation -->
+  <div class="flex items-center">
+    <button
+      (click)="goBack()"
+      class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+    >
+      <lucide-icon name="arrow-left" [size]="20"></lucide-icon>
+      <span class="text-sm font-medium">Ürünlere Dön</span>
+    </button>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div
+      class="glass-card h-96 animate-pulse rounded-2xl bg-slate-700/50"
+    ></div>
+    <div class="space-y-4">
+      <div class="h-8 bg-slate-700/50 rounded-lg w-3/4 animate-pulse"></div>
+      <div class="h-4 bg-slate-700/50 rounded w-1/4 animate-pulse"></div>
+      <div
+        class="h-10 bg-slate-700/50 rounded-lg w-1/3 animate-pulse mt-8"
+      ></div>
+      <div
+        class="h-32 bg-slate-700/50 rounded-xl w-full animate-pulse mt-8"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div
+    *ngIf="!loading && error"
+    class="glass-card p-12 text-center max-w-xl mx-auto"
+  >
+    <lucide-icon
+      name="package"
+      [size]="64"
+      class="text-slate-600 mx-auto mb-4"
+    ></lucide-icon>
+    <h2 class="text-2xl font-bold text-white mb-2">Ürün Bulunamadı</h2>
+    <p class="text-slate-400 mb-6">
+      Aradığınız ürün mevcut değil veya yayından kaldırılmış olabilir.
+    </p>
+    <button
+      (click)="goBack()"
+      class="btn-primary px-6 py-2.5 rounded-xl font-medium"
+    >
+      Ürünlere Dön
+    </button>
+  </div>
+
+  <!-- Product View -->
+  <div
+    *ngIf="!loading && product && !error"
+    class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 animate__animated animate__fadeIn"
+  >
+    <!-- Left: Image Box -->
+    <div class="col-span-1">
+      <div
+        class="glass-card p-8 h-96 lg:h-[30rem] flex flex-col items-center justify-center relative overflow-hidden group"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50"
+        ></div>
+
+        <lucide-icon
+          name="package"
+          [size]="120"
+          class="text-slate-600 transition-transform duration-500 group-hover:scale-110 relative z-10"
+        ></lucide-icon>
+
+        <!-- Badges -->
+        <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
+          <span
+            class="px-3 py-1 rounded-lg text-sm font-medium bg-slate-900/80 text-slate-300 backdrop-blur-md border border-slate-700/50 shadow-lg"
+          >
+            {{ product.categoryName || 'Genel' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Product Details -->
+    <div class="col-span-1 flex flex-col">
+      <!-- Header Info -->
+      <div class="mb-6">
+        <h1
+          class="text-3xl md:text-4xl font-bold text-white mb-2 leading-tight"
+        >
+          {{ product.name }}
+        </h1>
+        <div class="flex items-center gap-4 text-sm text-slate-400">
+          <span class="font-mono">SKU: {{ product.sku }}</span>
+          <span>&bull;</span>
+          <span class="flex items-center gap-1 text-amber-400">
+            <lucide-icon name="check" [size]="14"></lucide-icon>
+            Orijinal Ürün
+          </span>
+        </div>
+      </div>
+
+      <!-- Price & Stock -->
+      <div
+        class="glass-card p-6 mb-8 border border-slate-700/50 bg-slate-800/30"
+      >
+        <div class="flex items-end justify-between mb-4">
+          <div>
+            <p class="text-sm text-slate-500 mb-1">Satış Fiyatı</p>
+            <div class="text-4xl font-bold text-white tracking-tight">
+              ₺{{ product.unitPrice | number:'1.2-2' }}
+            </div>
+          </div>
+
+          <!-- Stock Status -->
+          <div class="text-right">
+            <div
+              *ngIf="getStockDisplay(product) > 10"
+              class="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20"
+            >
+              <lucide-icon name="check" [size]="16"></lucide-icon>
+              <span class="text-sm font-medium">Stokta Var</span>
+            </div>
+            <div
+              *ngIf="getStockDisplay(product) > 0 && getStockDisplay(product) <= 10"
+              class="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-lg border border-amber-400/20"
+            >
+              <lucide-icon name="shield" [size]="16"></lucide-icon>
+              <span class="text-sm font-medium"
+                >Son {{ getStockDisplay(product) }} Ürün</span
+              >
+            </div>
+            <div
+              *ngIf="getStockDisplay(product) === 0"
+              class="flex items-center gap-2 text-red-400 bg-red-400/10 px-3 py-1.5 rounded-lg border border-red-400/20"
+            >
+              <span class="text-sm font-medium">Stok Tükendi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button
+          (click)="addToCart(product)"
+          [disabled]="getStockDisplay(product) === 0"
+          class="w-full py-4 rounded-xl flex items-center justify-center gap-3 font-semibold text-lg transition-all duration-300"
+          [ngClass]="getStockDisplay(product) > 0 
+                            ? 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1' 
+                            : 'bg-slate-700 text-slate-500 cursor-not-allowed'"
+        >
+          <lucide-icon name="shopping-cart" [size]="20"></lucide-icon>
+          Sepete Ekle
+        </button>
+      </div>
+
+      <!-- Features / Description -->
+      <div class="space-y-6 flex-1 text-slate-300">
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-3">Ürün Açıklaması</h3>
+          <p class="text-slate-400 leading-relaxed text-sm md:text-base">
+            {{ product.description || 'Bu ürün için detaylı bir açıklama
+            bulunmamaktadır.' }}
+          </p>
+        </div>
+
+        <!-- Dummy Features -->
+        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-700/50">
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-slate-800 text-primary">
+              <lucide-icon name="truck" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-white">Hızlı Kargo</h4>
+              <p class="text-xs text-slate-400 mt-0.5">24 saatte kargoda</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-slate-800 text-green-400">
+              <lucide-icon name="shield" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-white">Güvenli Ödeme</h4>
+              <p class="text-xs text-slate-400 mt-0.5">256-bit SSL koruması</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
