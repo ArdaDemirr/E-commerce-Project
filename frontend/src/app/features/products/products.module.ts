@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
+import { LucideAngularModule, Grid, List } from 'lucide-angular';
 
 import { ProductsRoutingModule } from './products-routing.module';
 import { ProductListComponent } from './product-list/product-list';
@@ -16,7 +16,7 @@ import { SharedModule } from '../../shared/shared.module';
     FormsModule,
     ProductsRoutingModule,
     SharedModule,
-    LucideAngularModule
+    LucideAngularModule.pick({ Grid, List })
   ]
 })
 export class ProductsModule { }

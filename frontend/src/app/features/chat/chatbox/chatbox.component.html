@@ -54,18 +54,15 @@
     </div>
   </div>
 
-  <div class="bg-white p-4 border-t border-gray-100" *ngIf="!isBlocked">
-    <div class="flex items-center space-x-3 bg-gray-50 p-2 rounded-full border border-gray-200">
-      <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Type your message..."
+  <div class="bg-white p-4 border-t border-gray-100">
+    <form (ngSubmit)="sendMessage()"
+      class="flex items-center space-x-3 bg-gray-50 p-2 rounded-full border border-gray-200">
+      <input type="text" [(ngModel)]="newMessage" name="message" placeholder="Type your message..."
         class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 outline-none" [disabled]="isProcessing" />
-      <button (click)="sendMessage()" [disabled]="!newMessage.trim() || isProcessing"
+      <button type="submit" [disabled]="!newMessage.trim() || isProcessing"
         class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
         <lucide-icon name="send" size="18" class="ml-1"></lucide-icon>
       </button>
-    </div>
-  </div>
-
-  <div *ngIf="isBlocked" class="bg-red-50 p-4 border-t border-red-100 text-center text-red-600 text-sm">
-    You have been blocked from sending messages due to inappropriate content.
+    </form>
   </div>
 </div>

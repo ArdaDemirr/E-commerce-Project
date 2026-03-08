@@ -57,7 +57,10 @@ export class ProductService {
                 if (res?.content) return this.mapProducts(res.content);
                 return [];
             }),
-            catchError(() => of(MOCK_PRODUCTS))
+            catchError((err) => {
+                console.error('Failed to fetch products from DB:', err);
+                return of(MOCK_PRODUCTS);
+            })
         );
     }
 
@@ -70,7 +73,10 @@ export class ProductService {
                 if (res?._embedded?.categories) return res._embedded.categories as Category[];
                 return [];
             }),
-            catchError(() => of(MOCK_CATEGORIES))
+            catchError((err) => {
+                console.error('Failed to fetch categories:', err);
+                return of(MOCK_CATEGORIES);
+            })
         );
     }
 
@@ -79,7 +85,10 @@ export class ProductService {
 
         return this.http.get<Product>(`${this.base}/products/${id}`).pipe(
             map(p => this.mapProduct(p)),
-            catchError(() => of(null))
+            catchError((err) => {
+                console.error('Failed to fetch product:', err);
+                return of(null);
+            })
         );
     }
 
@@ -93,7 +102,10 @@ export class ProductService {
 
         return this.http.get<any>(`${this.base}/products/search?name=${encodeURIComponent(query)}`).pipe(
             map(res => Array.isArray(res) ? this.mapProducts(res) : []),
-            catchError(() => of([]))
+            catchError((err) => {
+                console.error('Failed to search products:', err);
+                return of([]);
+            })
         );
     }
 

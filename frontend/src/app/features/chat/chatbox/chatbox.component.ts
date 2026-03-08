@@ -1,4 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ViewChild,
+    ElementRef,
+    AfterViewChecked,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { ChatService, ChatResponse } from '../../../core/services/chat.service';
 import { Title } from '@angular/platform-browser';
 
@@ -12,7 +19,7 @@ interface Message {
     standalone: false,
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
-    styleUrls: ['./chatbox.component.scss']
+    styleUrls: ['./chatbox.component.scss'],
 })
 export class ChatboxComponent implements OnInit, AfterViewChecked {
     messages: Message[] = [];
@@ -24,7 +31,8 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
 
     constructor(
         private chatService: ChatService,
-        private titleService: Title
+        private titleService: Title,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     ngOnInit(): void {
@@ -32,7 +40,7 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
         this.messages.push({
             text: 'Hello! How can I help you today?',
             sender: 'bot',
-            timestamp: new Date()
+            timestamp: new Date(),
         });
     }
 
@@ -42,7 +50,8 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
 
     scrollToBottom(): void {
         try {
-            this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+            this.myScrollContainer.nativeElement.scrollTop =
+                this.myScrollContainer.nativeElement.scrollHeight;
         } catch (err) { }
     }
 
@@ -53,7 +62,7 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
         this.messages.push({
             text: userMessageText,
             sender: 'user',
-            timestamp: new Date()
+            timestamp: new Date(),
         });
 
         this.newMessage = '';
@@ -63,24 +72,24 @@ export class ChatboxComponent implements OnInit, AfterViewChecked {
         this.chatService.ask(userMessageText).subscribe({
             next: (res: ChatResponse) => {
                 this.messages.push({
-                    text: res.reply,
+                    text: res.reply || 'No reply received from server.',
                     sender: 'bot',
-                    timestamp: new Date()
+                    timestamp: new Date(),
                 });
-                if (res.blocked) {
-                    this.isBlocked = true;
-                }
+                if (res.blocked) this.isBlocked = true;
                 this.isProcessing = false;
+                this.cdr.detectChanges();
             },
             error: (err) => {
                 console.error('Chat error', err);
                 this.messages.push({
                     text: 'Sorry, I encountered an error and cannot respond at the moment.',
                     sender: 'bot',
-                    timestamp: new Date()
+                    timestamp: new Date(),
                 });
                 this.isProcessing = false;
-            }
+                this.cdr.detectChanges();
+            },
         });
     }
 }
