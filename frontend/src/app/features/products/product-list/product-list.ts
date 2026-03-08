@@ -20,7 +20,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   sortBy = 'newest';
   selectedCategoryId: number | null = null;
   currentPage = 0;
-  pageSize = 12;
+  pageSize = 50;
 
   private destroy$ = new Subject<void>();
   private searchSubject = new Subject<string>();

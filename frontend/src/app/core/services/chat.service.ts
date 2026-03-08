@@ -26,11 +26,8 @@ export class ChatService {
 
     ask(message: string): Observable<ChatResponse> {
         const token = this.tokenService.getAccessToken();
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        return this.http.post<ChatResponse>(
-            `${this.apiUrl}/ask`,
-            { message },
-            { headers }
-        );
+        const headers = token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : null;
+        const options = headers ? { headers } : {};
+        return this.http.post<ChatResponse>(`${this.apiUrl}/ask`, { message }, options);
     }
 }
