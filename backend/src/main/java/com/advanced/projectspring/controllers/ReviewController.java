@@ -1,0 +1,47 @@
+package com.advanced.projectspring.controllers;
+
+import com.advanced.projectspring.auth.JwtUtil;
+import com.advanced.projectspring.dto.individual.ReviewRequestDTO;
+import com.advanced.projectspring.dto.individual.ProductReviewDTO;
+import com.advanced.projectspring.dto.individual.MyReviewDTO;
+import com.advanced.projectspring.models.Review;
+import com.advanced.projectspring.services.ReviewService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/reviews")
+@CrossOrigin(origins = "http://localhost:4200")
+public class ReviewController {
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping
+    public ResponseEntity<Review> addReview(
+            @RequestBody ReviewRequestDTO request,
+            @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        return ResponseEntity.ok(reviewService.addReview(email, request));
+    }
+
+    // Endpoint for Yorumlarım tab
+    @GetMapping("/my-reviews")
+    public ResponseEntity<List<MyReviewDTO>> getMyReviews(
+            @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        return ResponseEntity.ok(reviewService.getUserReviews(email));
+    }
+
+    // Endpoint for Product Details page
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<ProductReviewDTO>> getProductReviews(@PathVariable Long productId) {
+        return ResponseEntity.ok(reviewService.getProductReviews(productId));
+    }
+}

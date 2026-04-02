@@ -50,24 +50,32 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
 
-                        // Add these lines for Swagger
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/api-docs").permitAll()
 
-                        .requestMatchers("/api/products/**").authenticated()
-                        .requestMatchers("/api/categories/**").authenticated()
+                        // Allowing anyone to SEE products, categories, and reviews
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/reviews/product/**").permitAll()
 
-                        .requestMatchers("/api/chat/**").authenticated()
+                        // Allowing anyone to use the chatbot
+                        .requestMatchers("/api/chat/**").permitAll()
 
+                        // 2. ROLE-SPECIFIC ROUTES
+                        // These MUST come before the general .authenticated() rule
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/corporate/**").hasRole("CORPORATE")
-                        .requestMatchers("/api/shop/**").hasRole("INDIVIDUAL")
-                        .requestMatchers("/api/orders/**").hasRole("INDIVIDUAL")
-                        .requestMatchers("/api/reviews/**").hasAnyRole("INDIVIDUAL", "CORPORATE")
+
+                        // 3. SECURE ROUTES (Needs Token)
+                        // These stay secure because you need a User ID to link the data
+                        .requestMatchers("/api/orders/**").authenticated() // Buying needs a user
+                        .requestMatchers("/api/reviews/my-reviews").authenticated() // Seeing YOUR reviews needs a user
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/reviews").authenticated() // Writing
+
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
