@@ -159,7 +159,10 @@ public class JwtUtil {
 
     public Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
-        return claims.get("userId", Long.class);
+        Number userIdNumber = (Number) claims.get("userId");
+        if (userIdNumber != null) {
+            return userIdNumber.longValue();
+        }
+        return null;
     }
-
 }
