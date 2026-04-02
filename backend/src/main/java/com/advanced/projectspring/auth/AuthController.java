@@ -31,22 +31,14 @@ public class AuthController {
         // { "name": "John", "email": "john@email.com", ... }
         // → RegisterRequest with fields filled
 
-        try {
-            LoginResponse response = authService.register(request);
-            // call AuthService.register()
-            // returns LoginResponse with token + role + name + userId
+        LoginResponse response = authService.register(request);
+        // call AuthService.register()
+        // returns LoginResponse with token + role + name + userId
 
-            return ResponseEntity.ok(response);
-            // 200 OK + LoginResponse as JSON body
-            // Angular receives:
-            // { "token": "eyJhbGci...", "role": "individual", "name": "John", "userId": 5 }
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            // 400 Bad Request + error message
-            // catches "Email already registered" from AuthService
-            // Angular receives: "Email already registered"
-        }
+        return ResponseEntity.ok(response);
+        // 200 OK + LoginResponse as JSON body
+        // Angular receives:
+        // { "token": "eyJhbGci...", "role": "individual", "name": "John", "userId": 5 }
     }
 
     @PostMapping("/login")
@@ -56,18 +48,11 @@ public class AuthController {
         // { "email": "admin@platform.com", "password": "admin123" }
         // → LoginRequest with email and password filled
 
-        try {
-            LoginResponse response = authService.login(request);
-            // call AuthService.login()
-            // returns LoginResponse with token + role + name + userId
+        LoginResponse response = authService.login(request);
+        // call AuthService.login()
+        // returns LoginResponse with token + role + name + userId
 
-            return ResponseEntity.ok(response);
-            // 200 OK + LoginResponse as JSON
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            // 400 Bad Request + error message
-            // catches "User not found", "Invalid password", "Account suspended"
-        }
+        return ResponseEntity.ok(response);
+        // 200 OK + LoginResponse as JSON
     }
 }

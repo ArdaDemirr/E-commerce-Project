@@ -56,7 +56,7 @@ public class AuthService {
         // Check if email already exists
         Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new IllegalStateException("Email already registered");
         }
 
         User user = new User();
@@ -82,16 +82,16 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         // Find user by email
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found"));
 
         // Verify password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
+            throw new IllegalArgumentException("Invalid password");
         }
 
         // Check if user is active
         if (!user.isActive()) {
-            throw new RuntimeException("Account suspended");
+            throw new org.springframework.security.access.AccessDeniedException("Account suspended");
         }
 
         // Generate token and return
