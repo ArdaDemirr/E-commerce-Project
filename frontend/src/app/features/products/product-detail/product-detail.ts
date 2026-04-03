@@ -4,6 +4,9 @@ import { Location } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
+import { ReviewService } from '../../../core/services/review.service';
+import { ProductReviewDTO } from '../../../core/models/review.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-product-detail',
@@ -16,6 +19,14 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   loading = true;
   error = false;
 
+  // Reviews
+  reviews: ProductReviewDTO[] = [];
+  reviewsLoading = false;
+  newRating = 5;
+  newComment = '';
+  submittingReview = false;
+  hoverRating = 0;
+
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -23,6 +34,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private productService: ProductService,
+    private reviewService: ReviewService,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -32,6 +45,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       const id = parseInt(idParam, 10);
       if (!isNaN(id)) {
         this.loadProduct(id);
+        this.loadReviews(id);
       } else {
         this.error = true;
         this.loading = false;
@@ -71,16 +85,91 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       });
   }
 
+  loadReviews(productId: number): void {
+    this.reviewsLoading = true;
+    this.reviewService.getProductReviews(productId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.reviews = data;
+          this.reviewsLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.reviewsLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  submitReview(): void {
+    if (!this.product || !this.newComment.trim()) return;
+    this.submittingReview = true;
+
+    this.reviewService.addReview({
+      productId: this.product.id,
+      rating: this.newRating,
+      comment: this.newComment.trim()
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.toastr.success('Yorumunuz başarıyla eklendi!', 'Teşekkürler 🎉');
+        this.newComment = '';
+        this.newRating = 5;
+        this.submittingReview = false;
+        this.loadReviews(this.product!.id);
+      },
+      error: () => {
+        this.toastr.error('Yorum eklenemedi. Lütfen tekrar deneyin.', 'Hata');
+        this.submittingReview = false;
+      }
+    });
+  }
+
+  getStars(count: number): number[] {
+    return Array.from({ length: 5 }, (_, i) => i + 1);
+  }
+
+  setRating(val: number): void { this.newRating = val; }
+  setHover(val: number): void  { this.hoverRating = val; }
+  clearHover(): void           { this.hoverRating = 0; }
+
+  activeStarClass(star: number): string {
+    const active = this.hoverRating > 0 ? this.hoverRating : this.newRating;
+    return star <= active ? 'text-amber-400' : 'text-slate-600';
+  }
+
+  getSentimentClass(sentiment: string): string {
+    switch (sentiment) {
+      case 'positive': return 'bg-green-500/10 text-green-400';
+      case 'neutral':  return 'bg-amber-500/10 text-amber-400';
+      case 'negative': return 'bg-red-500/10 text-red-400';
+      default:         return '';
+    }
+  }
+
+  getSentimentLabel(sentiment: string): string {
+    switch (sentiment) {
+      case 'positive': return 'Olumlu';
+      case 'neutral':  return 'Nötr';
+      case 'negative': return 'Olumsuz';
+      default:         return sentiment;
+    }
+  }
+
   goBack(): void {
     this.location.back();
   }
 
   addToCart(product: Product): void {
     console.log('Add to cart:', product.name);
-    // TODO: implement actual cart addition later
   }
 
   getStockDisplay(p: Product): number {
     return p.stock ?? p.stockQty ?? 0;
+  }
+
+  get avgRating(): number {
+    if (!this.reviews.length) return 0;
+    return this.reviews.reduce((s, r) => s + r.rating, 0) / this.reviews.length;
   }
 }

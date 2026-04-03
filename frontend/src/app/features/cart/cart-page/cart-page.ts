@@ -22,8 +22,8 @@ export class CartPageComponent implements OnInit {
   ngOnInit(): void {
     // Load cart items — replace with NgRx store
     this.cartItems = [
-      { id: 1, name: 'Laptop Pro X', unitPrice: 1299.99, qty: 1 },
-      { id: 2, name: 'Wireless Mouse', unitPrice: 49.99, qty: 2 }
+      { id: 1, name: 'Laptop Pro X', unitPrice: 1299.99, qty: 1, storeId: 1 },
+      { id: 2, name: 'Wireless Mouse', unitPrice: 49.99, qty: 2, storeId: 1 }
     ];
   }
 
@@ -41,13 +41,24 @@ export class CartPageComponent implements OnInit {
   checkout(): void {
     if (!this.cartItems.length) return;
     this.isProcessing = true;
+
+    // Derive storeId from first item (all items should be from same store)
+    const storeId: number = this.cartItems[0]?.storeId ?? 1;
+
     const payload = {
+      storeId,
+      paymentMethod: this.paymentMethod,
       items: this.cartItems.map(i => ({ productId: i.id, quantity: i.qty })),
-      paymentMethod: this.paymentMethod
     };
+
     this.api.post('/orders', payload).subscribe({
-      next: () => { this.cartItems = []; this.router.navigate(['/orders']); },
+      next: () => {
+        this.cartItems = [];
+        this.isProcessing = false;
+        this.router.navigate(['/orders']);
+      },
       error: () => { this.isProcessing = false; }
     });
   }
 }
+

@@ -10,6 +10,12 @@ import {
   Check,
   Truck,
   Shield,
+  Star,
+  MessageSquare,
+  Edit3,
+  Send,
+  ThumbsUp,
+  Package,
 } from 'lucide-angular';
 
 import { ProductsRoutingModule } from './products-routing.module';
@@ -32,6 +38,12 @@ import { SharedModule } from '../../shared/shared.module';
       Check,
       Truck,
       Shield,
+      Star,
+      MessageSquare,
+      Edit3,
+      Send,
+      ThumbsUp,
+      Package,
     }),
   ],
 })
