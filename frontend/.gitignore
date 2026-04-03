@@ -1,5 +1,11 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+#Environment secrets
+application.properties
+src/main/resources/application.properties
+backend/src/main/resources/application.properties
+
+
 # Compiled output
 /dist
 /tmp
