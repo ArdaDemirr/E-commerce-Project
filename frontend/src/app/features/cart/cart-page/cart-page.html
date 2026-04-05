@@ -1,80 +1,85 @@
 <div class="max-w-4xl mx-auto space-y-6">
-    <h1 class="text-2xl font-bold text-white">Sepetim
-        <span class="text-slate-400 text-lg font-normal ml-2">({{ cartItems.length }} ürün)</span>
-    </h1>
+  <h1 class="text-2xl font-bold text-white">
+    Sepetim
+    <span class="text-slate-400 text-lg font-normal ml-2">({{ cartItems.length }} ürün)</span>
+  </h1>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Items -->
-        <div class="lg:col-span-2 space-y-3">
-            <div *ngIf="cartItems.length === 0" class="glass-card p-12 text-center">
-                <lucide-icon name="shopping-cart" [size]="48" class="text-slate-600 mx-auto mb-4"></lucide-icon>
-                <p class="text-slate-400">Sepetiniz boş</p>
-                <a routerLink="/products" class="btn-primary inline-block mt-4">Alışverişe Başla</a>
-            </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Items -->
+    <div class="lg:col-span-2 space-y-3">
+      <div *ngIf="cartItems.length === 0" class="glass-card p-12 text-center">
+        <lucide-icon name="shopping-cart" [size]="48" class="text-slate-600 mx-auto mb-4"></lucide-icon>
+        <p class="text-slate-400 mb-2">Sepetiniz boş</p>
+        <p class="text-slate-500 text-sm">Ürünleri keşfetmek için alışverişe başlayın.</p>
+        <a routerLink="/products" class="btn-primary inline-block mt-4">Alışverişe Başla</a>
+      </div>
 
-            <div *ngFor="let item of cartItems"
-                class="glass-card p-4 flex items-center gap-4 animate__animated animate__fadeIn">
-                <div class="w-16 h-16 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0">
-                    <lucide-icon name="package" [size]="28" class="text-slate-500"></lucide-icon>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-medium text-slate-200 truncate">{{ item.name }}</h4>
-                    <p class="text-primary font-semibold mt-1">${{ item.unitPrice | number:'1.2-2' }}</p>
-                </div>
-                <!-- Quantity Controls -->
-                <div class="flex items-center gap-2 bg-slate-800 rounded-xl p-1 border border-slate-700">
-                    <button (click)="decreaseQty(item)"
-                        class="w-8 h-8 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-all flex items-center justify-center">-</button>
-                    <span class="w-8 text-center text-slate-200 font-medium text-sm">{{ item.qty }}</span>
-                    <button (click)="increaseQty(item)"
-                        class="w-8 h-8 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-all flex items-center justify-center">+</button>
-                </div>
-                <span class="text-white font-bold w-20 text-right">${{ (item.unitPrice * item.qty) | number:'1.2-2'
-                    }}</span>
-                <button (click)="removeItem(item)"
-                    class="p-2 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
-                    <lucide-icon name="trash-2" [size]="16"></lucide-icon>
-                </button>
-            </div>
+      <div *ngFor="let item of cartItems"
+           class="glass-card p-4 flex items-center gap-4 animate__animated animate__fadeIn border border-slate-700/30 hover:border-primary/20 transition-colors">
+        <!-- Icon -->
+        <div class="w-16 h-16 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0">
+          <lucide-icon name="package" [size]="28" class="text-slate-500"></lucide-icon>
         </div>
-
-        <!-- Order Summary -->
-        <div class="glass-card p-6 h-fit sticky top-6">
-            <h3 class="font-semibold text-white mb-4">Sipariş Özeti</h3>
-            <div class="space-y-3 mb-4">
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-400">Ara Toplam</span>
-                    <span class="text-slate-200">${{ subtotal | number:'1.2-2' }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-400">Kargo</span>
-                    <span class="text-emerald-400">Ücretsiz</span>
-                </div>
-                <hr class="border-slate-700">
-                <div class="flex justify-between font-bold">
-                    <span class="text-white">Toplam</span>
-                    <span class="text-xl gradient-text">${{ subtotal | number:'1.2-2' }}</span>
-                </div>
-            </div>
-
-            <!-- Payment Method -->
-            <div class="mb-4">
-                <label class="block text-sm text-slate-400 mb-2">Ödeme Yöntemi</label>
-                <select [(ngModel)]="paymentMethod"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-primary/60">
-                    <option value="CREDIT_CARD">Kredi Kartı</option>
-                    <option value="DEBIT_CARD">Banka Kartı</option>
-                    <option value="BANK_TRANSFER">Havale/EFT</option>
-                </select>
-            </div>
-
-            <button (click)="checkout()" [disabled]="cartItems.length === 0 || isProcessing"
-                class="btn-primary w-full flex items-center justify-center gap-2">
-                <div *ngIf="isProcessing"
-                    class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <lucide-icon *ngIf="!isProcessing" name="credit-card" [size]="16"></lucide-icon>
-                {{ isProcessing ? 'İşleniyor...' : 'Siparişi Tamamla' }}
-            </button>
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <h4 class="font-medium text-slate-200 truncate">{{ item.name }}</h4>
+          <p class="text-xs text-slate-500 mt-0.5">SKU: {{ item.sku }}</p>
+          <p class="text-primary font-semibold mt-1">₺{{ item.unitPrice | number:'1.2-2' }}</p>
         </div>
+        <!-- Qty Controls -->
+        <div class="flex items-center gap-2 bg-slate-800 rounded-xl p-1 border border-slate-700">
+          <button (click)="decreaseQty(item)"
+            class="w-8 h-8 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-all flex items-center justify-center font-bold">−</button>
+          <span class="w-8 text-center text-slate-200 font-medium text-sm">{{ item.qty }}</span>
+          <button (click)="increaseQty(item)"
+            class="w-8 h-8 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-all flex items-center justify-center font-bold">+</button>
+        </div>
+        <!-- Line Total -->
+        <span class="text-white font-bold w-24 text-right">₺{{ (item.unitPrice * item.qty) | number:'1.2-2' }}</span>
+        <!-- Remove -->
+        <button (click)="removeItem(item)"
+          class="p-2 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all">
+          <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+        </button>
+      </div>
     </div>
+
+    <!-- Order Summary -->
+    <div class="glass-card p-6 h-fit sticky top-6">
+      <h3 class="font-semibold text-white mb-4">Sipariş Özeti</h3>
+      <div class="space-y-3 mb-4">
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-400">Ara Toplam</span>
+          <span class="text-slate-200">₺{{ subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-400">Kargo</span>
+          <span class="text-emerald-400">Ücretsiz</span>
+        </div>
+        <hr class="border-slate-700">
+        <div class="flex justify-between font-bold">
+          <span class="text-white">Toplam</span>
+          <span class="text-xl gradient-text">₺{{ subtotal | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="mb-4">
+        <label class="block text-sm text-slate-400 mb-2">Ödeme Yöntemi</label>
+        <select [(ngModel)]="paymentMethod"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-primary/60">
+          <option value="CREDIT_CARD">Kredi Kartı</option>
+          <option value="DEBIT_CARD">Banka Kartı</option>
+          <option value="BANK_TRANSFER">Havale/EFT</option>
+        </select>
+      </div>
+
+      <button (click)="checkout()" [disabled]="cartItems.length === 0 || isProcessing"
+        class="btn-primary w-full flex items-center justify-center gap-2">
+        <div *ngIf="isProcessing" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        <lucide-icon *ngIf="!isProcessing" name="credit-card" [size]="16"></lucide-icon>
+        {{ isProcessing ? 'İşleniyor...' : 'Siparişi Tamamla' }}
+      </button>
+    </div>
+  </div>
 </div>

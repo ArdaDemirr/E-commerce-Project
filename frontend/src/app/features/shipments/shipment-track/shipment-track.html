@@ -25,15 +25,12 @@
         <div *ngIf="!ordersLoading && orders.length === 0" class="text-center py-8">
           <lucide-icon name="shopping-bag" [size]="32" class="text-slate-600 mx-auto mb-2"></lucide-icon>
           <p class="text-slate-400 text-sm">Henüz siparişiniz yok.</p>
-          <a routerLink="/products" class="btn-primary inline-block mt-3 text-xs px-4 py-2">
-            Alışverişe Başla
-          </a>
+          <a routerLink="/products" class="btn-primary inline-block mt-3 text-xs px-4 py-2">Alışverişe Başla</a>
         </div>
 
         <!-- Order list -->
         <div *ngIf="!ordersLoading && orders.length > 0" class="space-y-2">
-          <button
-            *ngFor="let order of orders"
+          <button *ngFor="let order of orders"
             (click)="selectOrder(order.id)"
             class="w-full text-left p-3 rounded-xl transition-all duration-200 border"
             [ngClass]="selectedOrderId === order.id
@@ -62,8 +59,9 @@
     <!-- Right: Shipment Detail -->
     <div class="lg:col-span-2">
 
-      <!-- No selection yet -->
-      <div *ngIf="!selectedOrderId" class="glass-card p-16 text-center h-full flex flex-col items-center justify-center">
+      <!-- No selection -->
+      <div *ngIf="!selectedOrderId"
+           class="glass-card p-16 text-center flex flex-col items-center justify-center min-h-[300px]">
         <div class="w-20 h-20 rounded-2xl bg-slate-800 flex items-center justify-center mb-4">
           <lucide-icon name="search" [size]="36" class="text-slate-600"></lucide-icon>
         </div>
@@ -71,7 +69,7 @@
         <p class="text-slate-400 text-sm">Kargo bilgilerini görüntülemek için soldaki listeden bir sipariş seçin.</p>
       </div>
 
-      <!-- Loading shipment -->
+      <!-- Loading -->
       <div *ngIf="selectedOrderId && shipmentLoading" class="glass-card p-8 space-y-4">
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 bg-slate-700 rounded-2xl animate-pulse"></div>
@@ -85,24 +83,80 @@
         </div>
       </div>
 
-      <!-- Not Found (not shipped yet) -->
+      <!-- MOCK Timeline (shown when not yet shipped = notFound) -->
       <div *ngIf="selectedOrderId && !shipmentLoading && notFound"
-           class="glass-card p-12 text-center">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-          <lucide-icon name="clock" [size]="32" class="text-amber-400"></lucide-icon>
+           class="glass-card p-6 animate__animated animate__fadeIn">
+
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
+            <lucide-icon name="clock" [size]="20" class="text-amber-400"></lucide-icon>
+          </div>
+          <div>
+            <h3 class="font-semibold text-white">Sipariş #{{ selectedOrderId }}</h3>
+            <p class="text-slate-400 text-sm">Hazırlanma sürecinde</p>
+          </div>
+          <span class="ml-auto text-xs px-3 py-1 rounded-lg bg-amber-500/15 text-amber-400 font-medium">Hazırlanıyor</span>
         </div>
-        <h3 class="text-xl font-semibold text-white mb-2">Henüz Kargoya Verilmedi</h3>
-        <p class="text-slate-400 text-sm">
-          #{{ selectedOrderId }} numaralı sipariş henüz kargoya verilmemiş.<br>
-          Sipariş işleme alındıktan sonra kargo bilgileri burada görüntülenecektir.
-        </p>
-        <div class="mt-6 flex items-center justify-center gap-2 text-amber-400 text-sm">
-          <lucide-icon name="info" [size]="16"></lucide-icon>
-          <span>Durum: Hazırlanıyor</span>
+
+        <!-- Progress Steps -->
+        <div class="relative">
+          <!-- Connecting line -->
+          <div class="absolute left-5 top-8 bottom-8 w-0.5 bg-slate-700"></div>
+
+          <div class="space-y-6">
+            <!-- Step 1: Sipariş Alındı ✅ -->
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center shrink-0 z-10">
+                <lucide-icon name="check" [size]="16" class="text-green-400"></lucide-icon>
+              </div>
+              <div class="pt-1.5">
+                <p class="font-medium text-white text-sm">Sipariş Alındı</p>
+                <p class="text-slate-500 text-xs mt-0.5">Siparişiniz sistemimize başarıyla kaydedildi.</p>
+              </div>
+            </div>
+
+            <!-- Step 2: Hazırlanıyor 🔄 (active) -->
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center shrink-0 z-10">
+                <div class="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
+              </div>
+              <div class="pt-1.5">
+                <p class="font-medium text-primary text-sm">Hazırlanıyor</p>
+                <p class="text-slate-500 text-xs mt-0.5">Ürünleriniz depodan toplanıyor ve paketleniyor.</p>
+              </div>
+            </div>
+
+            <!-- Step 3: Kargoya Verildi ⏳ -->
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center shrink-0 z-10">
+                <lucide-icon name="truck" [size]="16" class="text-slate-500"></lucide-icon>
+              </div>
+              <div class="pt-1.5">
+                <p class="font-medium text-slate-500 text-sm">Kargoya Verildi</p>
+                <p class="text-slate-600 text-xs mt-0.5">Henüz teslim edilmedi.</p>
+              </div>
+            </div>
+
+            <!-- Step 4: Teslim Edildi ⏳ -->
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-full bg-slate-700 border-2 border-slate-600 flex items-center justify-center shrink-0 z-10">
+                <lucide-icon name="home" [size]="16" class="text-slate-500"></lucide-icon>
+              </div>
+              <div class="pt-1.5">
+                <p class="font-medium text-slate-500 text-sm">Teslim Edildi</p>
+                <p class="text-slate-600 text-xs mt-0.5">Bekleniyor...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs flex items-center gap-2">
+          <lucide-icon name="info" [size]="14"></lucide-icon>
+          Sipariş kargoya verildikten sonra takip numaranız burada görünecektir.
         </div>
       </div>
 
-      <!-- Shipment Detail Card -->
+      <!-- Real Shipment Detail (from API) -->
       <div *ngIf="selectedOrderId && !shipmentLoading && shipment"
            class="space-y-4 animate__animated animate__fadeIn">
 
@@ -120,14 +174,12 @@
                   {{ getStatusLabel(shipment.status) }}
                 </span>
               </div>
-              <p class="text-slate-400 text-sm mt-1">
-                {{ getModeLabel(shipment.mode) }} • {{ shipment.warehouse }} Deposu
-              </p>
+              <p class="text-slate-400 text-sm mt-1">{{ getModeLabel(shipment.mode) }} • {{ shipment.warehouse }} Deposu</p>
             </div>
           </div>
         </div>
 
-        <!-- Tracking ID banner -->
+        <!-- Tracking ID -->
         <div class="glass-card p-4 flex items-center gap-3">
           <div class="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center shrink-0">
             <lucide-icon name="scan-barcode" [size]="18" class="text-primary"></lucide-icon>
@@ -136,15 +188,10 @@
             <p class="text-slate-400 text-xs">Takip Numarası</p>
             <p class="text-white font-mono font-bold text-base tracking-wider">{{ shipment.trackingId }}</p>
           </div>
-          <lucide-icon name="clipboard-copy" [size]="16" class="text-slate-500 cursor-pointer hover:text-white transition-colors"
-            (click)="$any(null)">
-          </lucide-icon>
         </div>
 
         <!-- Detail Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-          <!-- Carrier / Mode -->
           <div class="glass-card p-5">
             <div class="flex items-center gap-3 mb-3">
               <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -153,10 +200,7 @@
               <span class="text-slate-400 text-sm font-medium">Kargo Türü</span>
             </div>
             <p class="text-white font-semibold">{{ getModeLabel(shipment.mode) }}</p>
-            <p class="text-slate-500 text-xs mt-0.5">{{ shipment.mode }}</p>
           </div>
-
-          <!-- Warehouse -->
           <div class="glass-card p-5">
             <div class="flex items-center gap-3 mb-3">
               <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
@@ -165,10 +209,7 @@
               <span class="text-slate-400 text-sm font-medium">Depo</span>
             </div>
             <p class="text-white font-semibold">{{ shipment.warehouse }}</p>
-            <p class="text-slate-500 text-xs mt-0.5">Sevkiyat noktası</p>
           </div>
-
-          <!-- Status -->
           <div class="glass-card p-5">
             <div class="flex items-center gap-3 mb-3">
               <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -176,13 +217,10 @@
               </div>
               <span class="text-slate-400 text-sm font-medium">Durum</span>
             </div>
-            <span class="text-sm font-semibold px-3 py-1 rounded-lg"
-                  [ngClass]="getStatusClass(shipment.status)">
+            <span class="text-sm font-semibold px-3 py-1 rounded-lg" [ngClass]="getStatusClass(shipment.status)">
               {{ getStatusLabel(shipment.status) }}
             </span>
           </div>
-
-          <!-- Product Importance -->
           <div class="glass-card p-5">
             <div class="flex items-center gap-3 mb-3">
               <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center">
@@ -190,15 +228,13 @@
               </div>
               <span class="text-slate-400 text-sm font-medium">Öncelik</span>
             </div>
-            <span class="text-sm font-semibold px-3 py-1 rounded-lg"
-                  [ngClass]="getImportanceClass(shipment.productImportance)">
+            <span class="text-sm font-semibold px-3 py-1 rounded-lg" [ngClass]="getImportanceClass(shipment.productImportance)">
               {{ getImportanceLabel(shipment.productImportance) }}
             </span>
           </div>
         </div>
-
       </div>
-    </div>
 
+    </div>
   </div>
 </div>

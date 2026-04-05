@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
+import { Observable } from 'rxjs';
 
 interface MenuItem {
   path: string;
@@ -26,7 +28,11 @@ export class SidebarComponent implements OnInit {
   managementItems: MenuItem[] = [];
   showManagement = false;
 
-  constructor(private authService: AuthService) { }
+  cartCount$: Observable<number>;
+
+  constructor(private authService: AuthService, private cartService: CartService) {
+    this.cartCount$ = this.cartService.count$;
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(() => {

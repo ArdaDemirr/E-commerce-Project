@@ -1,6 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
+import { CartService } from '../../../core/services/cart.service';
+import { OrderService } from '../../../core/services/order.service';
+import { CartItem } from '../../../core/models/cart.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   standalone: false,
@@ -8,57 +13,79 @@ import { ApiService } from '../../../core/services/api.service';
   templateUrl: './cart-page.html',
   styleUrl: './cart-page.scss'
 })
-export class CartPageComponent implements OnInit {
-  cartItems: any[] = [];
+export class CartPageComponent implements OnInit, OnDestroy {
+  cartItems: CartItem[] = [];
   paymentMethod = 'CREDIT_CARD';
   isProcessing = false;
+
+  private destroy$ = new Subject<void>();
 
   get subtotal(): number {
     return this.cartItems.reduce((sum, i) => sum + i.unitPrice * i.qty, 0);
   }
 
-  constructor(private api: ApiService, private router: Router) { }
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private cartService: CartService,
+    private orderService: OrderService,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
-    // Load cart items — replace with NgRx store
-    this.cartItems = [
-      { id: 1, name: 'Laptop Pro X', unitPrice: 1299.99, qty: 1, storeId: 1 },
-      { id: 2, name: 'Wireless Mouse', unitPrice: 49.99, qty: 2, storeId: 1 }
-    ];
+    this.cartService.items$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(items => {
+        this.cartItems = items;
+        this.cdr.detectChanges();
+      });
   }
 
-  increaseQty(item: any): void { item.qty++; }
-
-  decreaseQty(item: any): void {
-    if (item.qty > 1) item.qty--;
-    else this.removeItem(item);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  removeItem(item: any): void {
-    this.cartItems = this.cartItems.filter(c => c.id !== item.id);
+  increaseQty(item: CartItem): void {
+    this.cartService.increaseQty(item.id);
+  }
+
+  decreaseQty(item: CartItem): void {
+    this.cartService.decreaseQty(item.id);
+  }
+
+  removeItem(item: CartItem): void {
+    this.cartService.removeItem(item.id);
+    this.toastr.info(`"${item.name}" sepetten çıkarıldı.`, '', { timeOut: 1800 });
   }
 
   checkout(): void {
     if (!this.cartItems.length) return;
     this.isProcessing = true;
 
-    // Derive storeId from first item (all items should be from same store)
     const storeId: number = this.cartItems[0]?.storeId ?? 1;
-
     const payload = {
       storeId,
       paymentMethod: this.paymentMethod,
       items: this.cartItems.map(i => ({ productId: i.id, quantity: i.qty })),
     };
 
-    this.api.post('/orders', payload).subscribe({
+    this.orderService.placeMockOrder(payload, this.cartItems).subscribe({
       next: () => {
-        this.cartItems = [];
+        this.cartService.clearCart();
         this.isProcessing = false;
+        this.toastr.success('Siparişiniz başarıyla alındı! 🎉', 'Sipariş Verildi', {
+          timeOut: 3000,
+          progressBar: true,
+        });
         this.router.navigate(['/orders']);
       },
-      error: () => { this.isProcessing = false; }
+      error: (err) => {
+        this.isProcessing = false;
+        const msg = err?.error?.message || 'Sipariş alınamadı. Lütfen tekrar deneyin.';
+        this.toastr.error(msg, 'Hata');
+      }
     });
   }
 }
-

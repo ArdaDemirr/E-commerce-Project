@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { ProductService } from '../../../core/services/product.service';
 import { Product, Category } from '../../../core/models/product.model';
+import { CartService } from '../../../core/services/cart.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   standalone: false,
@@ -40,6 +42,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private router: Router,
     private cdr: ChangeDetectorRef,
+    private cartService: CartService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -149,7 +153,16 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   addToCart(product: Product, event: Event): void {
     event.stopPropagation();
-    console.log('Add to cart:', product.name);
+    if ((product.stock ?? product.stockQty ?? 0) === 0) {
+      this.toastr.warning('Bu ürün stokta yok.', 'Stok Yok');
+      return;
+    }
+    this.cartService.addItem(product);
+    this.toastr.success(`"${product.name}" sepete eklendi! 🛒`, 'Sepete Eklendi', {
+      timeOut: 2500,
+      positionClass: 'toast-top-right',
+      progressBar: true,
+    });
   }
 
   prevPage(): void {

@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   ScanBarcode,
   ClipboardCopy,
+  Check,
+  Home,
 } from 'lucide-angular';
 
 import { ShipmentsRoutingModule } from './shipments-routing.module';
@@ -41,6 +43,8 @@ import { ShipmentTrackComponent } from './shipment-track/shipment-track';
       ShieldCheck,
       ScanBarcode,
       ClipboardCopy,
+      Check,
+      Home,
     }),
   ],
 })

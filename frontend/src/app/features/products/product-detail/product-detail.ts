@@ -6,6 +6,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
 import { ReviewService } from '../../../core/services/review.service';
 import { ProductReviewDTO } from '../../../core/models/review.model';
+import { CartService } from '../../../core/services/cart.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -35,6 +36,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private location: Location,
     private productService: ProductService,
     private reviewService: ReviewService,
+    private cartService: CartService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -69,11 +71,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (product) => {
-          if (product) {
-            this.product = product;
-          } else {
-            this.error = true;
-          }
+          this.product = product ?? null;
+          if (!product) this.error = true;
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -105,7 +104,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   submitReview(): void {
     if (!this.product || !this.newComment.trim()) return;
     this.submittingReview = true;
-
     this.reviewService.addReview({
       productId: this.product.id,
       rating: this.newRating,
@@ -122,6 +120,19 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         this.toastr.error('Yorum eklenemedi. Lütfen tekrar deneyin.', 'Hata');
         this.submittingReview = false;
       }
+    });
+  }
+
+  addToCart(product: Product): void {
+    if ((product.stock ?? product.stockQty ?? 0) === 0) {
+      this.toastr.warning('Bu ürün stokta yok.', 'Stok Yok');
+      return;
+    }
+    this.cartService.addItem(product);
+    this.toastr.success(`"${product.name}" sepete eklendi! 🛒`, 'Sepete Eklendi', {
+      timeOut: 2500,
+      positionClass: 'toast-top-right',
+      progressBar: true,
     });
   }
 
@@ -156,13 +167,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  goBack(): void {
-    this.location.back();
-  }
-
-  addToCart(product: Product): void {
-    console.log('Add to cart:', product.name);
-  }
+  goBack(): void { this.location.back(); }
 
   getStockDisplay(p: Product): number {
     return p.stock ?? p.stockQty ?? 0;

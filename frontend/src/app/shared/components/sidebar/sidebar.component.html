@@ -27,7 +27,16 @@
                 class="sidebar-item mb-1" [title]="isCollapsed ? item.label : ''">
                 <lucide-icon [name]="item.icon" [size]="20" class="shrink-0"></lucide-icon>
                 <span *ngIf="!isCollapsed" class="animate__animated animate__fadeIn">{{ item.label }}</span>
-                <span *ngIf="!isCollapsed && item.badge" class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold"
+                <!-- Cart badge -->
+                <ng-container *ngIf="!isCollapsed && item.path === '/cart' && (cartCount$ | async) as count">
+                  <span *ngIf="count > 0"
+                    class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-primary text-white">
+                    {{ count }}
+                  </span>
+                </ng-container>
+                <!-- Other badges -->
+                <span *ngIf="!isCollapsed && item.badge && item.path !== '/cart'"
+                    class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold"
                     style="background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white">
                     {{ item.badge }}
                 </span>
