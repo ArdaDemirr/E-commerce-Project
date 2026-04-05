@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ShipmentService } from '../../../core/services/shipment.service';
 import { ShipmentResponseDTO } from '../../../core/models/shipment.model';
 import { OrderService } from '../../../core/services/order.service';
@@ -23,6 +23,7 @@ export class ShipmentTrackComponent implements OnInit {
   constructor(
     private shipmentService: ShipmentService,
     private orderService: OrderService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -30,8 +31,12 @@ export class ShipmentTrackComponent implements OnInit {
       next: (data) => {
         this.orders = data;
         this.ordersLoading = false;
+        this.cdr.detectChanges();
       },
-      error: () => { this.ordersLoading = false; }
+      error: () => {
+        this.ordersLoading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -40,16 +45,18 @@ export class ShipmentTrackComponent implements OnInit {
     this.shipment = null;
     this.notFound = false;
     this.shipmentLoading = true;
+    this.cdr.detectChanges();
 
     this.shipmentService.getShipmentByOrderId(orderId).subscribe({
       next: (data) => {
         this.shipment = data;
         this.shipmentLoading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.shipmentLoading = false;
-        // 404 means order exists but hasn't been shipped yet
         this.notFound = true;
+        this.cdr.detectChanges();
       }
     });
   }

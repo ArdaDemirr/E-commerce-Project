@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReviewService } from '../../../core/services/review.service';
 import { MyReviewDTO } from '../../../core/models/review.model';
 
@@ -13,17 +13,22 @@ export class ReviewListComponent implements OnInit {
   loading = true;
   error = false;
 
-  constructor(private reviewService: ReviewService) {}
+  constructor(
+    private reviewService: ReviewService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.reviewService.getMyReviews().subscribe({
       next: (data) => {
         this.reviews = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = true;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

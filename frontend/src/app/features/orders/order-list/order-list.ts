@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { OrderService } from '../../../core/services/order.service';
 
 @Component({
@@ -13,17 +13,22 @@ export class OrderList implements OnInit {
   error = false;
   expandedOrderId: number | null = null;
 
-  constructor(private orderService: OrderService) {}
+  constructor(
+    private orderService: OrderService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({
       next: (data) => {
         this.orders = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = true;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
