@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 public class ShipmentService {
 
     @Autowired
-    private ShipmentRepository shipmentRepository;
+    private ShipmentRepository shipmentRepository; // inject the repository
 
+    // returns a shipment response dto for a given order id
+    // uses repositories findbyorderid(id) method gets a shipment object
+    // then creates a new dto object, uses its setters to set the values
+    // then returns the dto
     public ShipmentResponseDTO getShipmentByOrderId(Long orderId) {
         return shipmentRepository.findByOrderId(orderId).map(shipment -> {
             ShipmentResponseDTO dto = new ShipmentResponseDTO();

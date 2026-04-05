@@ -13,16 +13,19 @@ public class ShipmentController {
 
     @Autowired
     private ShipmentService shipmentService;
+    // injects the shipment service
 
     @GetMapping("/order/{orderId}")
     public ResponseEntity<ShipmentResponseDTO> getTrackingInfo(@PathVariable Long orderId) {
         ShipmentResponseDTO shipment = shipmentService.getShipmentByOrderId(orderId);
+        // calls the shipment service to get the shipment response dto
+        // if the shipment is null, returns 404
+        // otherwise returns the shipment response dto
 
         if (shipment == null) {
             // Return 404 if the order hasn't been shipped yet
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(shipment);
     }
 }
