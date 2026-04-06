@@ -45,16 +45,14 @@
 
   <!-- Order Cards -->
   <div *ngIf="!loading && !error && orders.length > 0" class="space-y-4">
-    <div *ngFor="let order of orders"
-         class="glass-card overflow-hidden transition-all duration-300">
+    <div *ngFor="let order of orders" class="glass-card overflow-hidden transition-all duration-300">
 
       <!-- Order Header (clickable) -->
       <div class="p-5 flex items-center gap-4 cursor-pointer hover:bg-slate-800/30 transition-colors"
-           (click)="toggleOrder(order.id)">
+        (click)="toggleOrder(order.id)">
 
         <!-- Status Icon -->
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-             [ngClass]="{
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" [ngClass]="{
                'bg-amber-500/15 text-amber-400': order.status?.toLowerCase() === 'pending',
                'bg-blue-500/15 text-blue-400':   order.status?.toLowerCase() === 'shipped',
                'bg-green-500/15 text-green-400': order.status?.toLowerCase() === 'completed',
@@ -71,8 +69,8 @@
             <span class="text-slate-400 text-xs">{{ order.createdAt | date:'d MMM y, HH:mm' }}</span>
           </div>
           <div class="flex items-center gap-3 mt-1 flex-wrap">
-            <span class="text-slate-300 text-sm">{{ order.store?.name || 'Mağaza' }}</span>
-            <span class="text-slate-600 text-xs">•</span>
+            <!-- <span class="text-slate-300 text-sm">{{ order.store?.name || 'Mağaza' }}</span>
+            <span class="text-slate-600 text-xs">•</span> -->
             <span class="text-slate-400 text-xs">{{ order.paymentMethod || '—' }}</span>
           </div>
         </div>
@@ -82,8 +80,7 @@
           <div class="text-white font-bold text-lg gradient-text">
             ₺{{ order.grandTotal | number:'1.2-2' }}
           </div>
-          <span class="text-xs px-2 py-0.5 rounded-lg font-medium"
-                [ngClass]="{
+          <span class="text-xs px-2 py-0.5 rounded-lg font-medium" [ngClass]="{
                   'bg-amber-500/15 text-amber-400': order.status?.toLowerCase() === 'pending',
                   'bg-blue-500/15 text-blue-400':   order.status?.toLowerCase() === 'shipped',
                   'bg-green-500/15 text-green-400': order.status?.toLowerCase() === 'completed',
@@ -94,16 +91,14 @@
         </div>
 
         <!-- Chevron -->
-        <lucide-icon
-          [name]="expandedOrderId === order.id ? 'chevron-up' : 'chevron-down'"
-          [size]="18"
+        <lucide-icon [name]="expandedOrderId === order.id ? 'chevron-up' : 'chevron-down'" [size]="18"
           class="text-slate-500 shrink-0 transition-transform">
         </lucide-icon>
       </div>
 
       <!-- Expanded Order Items -->
       <div *ngIf="expandedOrderId === order.id"
-           class="border-t border-slate-700/50 bg-slate-800/30 px-5 py-4 animate__animated animate__fadeIn">
+        class="border-t border-slate-700/50 bg-slate-800/30 px-5 py-4 animate__animated animate__fadeIn">
 
         <h4 class="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
           <lucide-icon name="list" [size]="14"></lucide-icon>
@@ -112,7 +107,7 @@
 
         <div *ngIf="order.items && order.items.length > 0; else noItems" class="space-y-2">
           <div *ngFor="let item of order.items"
-               class="flex items-center justify-between text-sm py-2 border-b border-slate-700/30 last:border-0">
+            class="flex items-center justify-between text-sm py-2 border-b border-slate-700/30 last:border-0">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center">
                 <lucide-icon name="box" [size]="14" class="text-slate-400"></lucide-icon>
