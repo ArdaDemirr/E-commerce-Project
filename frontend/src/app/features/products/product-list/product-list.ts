@@ -44,7 +44,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private cartService: CartService,
     private toastr: ToastrService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Debounced search
@@ -169,6 +169,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (this.currentPage > 0) {
       this.currentPage--;
       this.cdr.detectChanges();
+      this.scrollToTop();
     }
   }
 
@@ -176,6 +177,16 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (!this.isLastPage) {
       this.currentPage++;
       this.cdr.detectChanges();
+      this.scrollToTop();
+    }
+  }
+
+  private scrollToTop(): void {
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
