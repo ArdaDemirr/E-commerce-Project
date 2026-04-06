@@ -54,8 +54,7 @@ export class SidebarComponent implements OnInit {
         { path: '/cart', label: 'Sepet', icon: 'shopping-cart' },
         { path: '/orders', label: 'Siparişlerim', icon: 'shopping-bag' },
         { path: '/shipments', label: 'Kargo Takibi', icon: 'truck' },
-        { path: '/reviews', label: 'Yorumlarım', icon: 'star' },
-        { path: '/analytics', label: 'Analizlerim', icon: 'pie-chart' }
+        { path: '/reviews', label: 'Yorumlarım', icon: 'star' }
       );
       this.showManagement = false;
     } else if (role === 'CORPORATE') {
