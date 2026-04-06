@@ -1,6 +1,6 @@
 package com.advanced.projectspring.services;
 
-import com.advanced.projectspring.dto.individual.ShipmentResponseDTO;
+import com.advanced.projectspring.dto.individual.Shipment.ShipmentResponseDTO;
 import com.advanced.projectspring.repositories.ShipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

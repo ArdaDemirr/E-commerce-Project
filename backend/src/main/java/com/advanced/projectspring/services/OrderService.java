@@ -1,6 +1,10 @@
 package com.advanced.projectspring.services;
 
-import com.advanced.projectspring.dto.individual.OrderRequestDTO;
+import com.advanced.projectspring.dto.individual.Order.OrderItemRequestDTO;
+import com.advanced.projectspring.dto.individual.Order.OrderItemResponseDTO;
+import com.advanced.projectspring.dto.individual.Order.OrderRequestDTO;
+import com.advanced.projectspring.dto.individual.Order.OrderResponseDTO;
+import com.advanced.projectspring.dto.StoreSummaryDTO;
 import com.advanced.projectspring.models.*;
 import com.advanced.projectspring.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,7 +30,7 @@ public class OrderService {
     private ProductRepository productRepository;
 
     @Transactional
-    public Order placeOrder(Long userId, OrderRequestDTO request) {
+    public OrderResponseDTO placeOrder(Long userId, OrderRequestDTO request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -46,7 +50,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // 2. Process each item in the cart
-        for (OrderRequestDTO.OrderItemRequest itemReq : request.getItems()) {
+        for (OrderItemRequestDTO itemReq : request.getItems()) {
             Product product = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
@@ -71,10 +75,38 @@ public class OrderService {
 
         // 3. Update the final total and save again
         savedOrder.setGrandTotal(grandTotal);
-        return orderRepository.save(savedOrder);
+        Order finalOrder = orderRepository.save(savedOrder);
+
+        return mapToOrderResponseDTO(finalOrder);
     }
 
-    public List<Order> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId);
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setId(order.getId());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setGrandTotal(order.getGrandTotal());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setStatus(order.getStatus());
+        dto.setStore(new StoreSummaryDTO(order.getStore().getId(), order.getStore().getName(),
+                order.getStore().getStatus()));
+
+        List<OrderItemResponseDTO> itemDTOs = orderItemRepository.findByOrderId(order.getId()).stream().map(item -> {
+            OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
+            itemDto.setProductId(item.getProduct().getId());
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setUnitPrice(item.getPrice());
+            itemDto.setTotalPrice(item.getQuantity() * item.getPrice());
+            return itemDto;
+        }).toList();
+
+        dto.setItems(itemDTOs);
+        return dto;
+    }
+
+    public List<OrderResponseDTO> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId).stream()
+                .map(this::mapToOrderResponseDTO)
+                .toList();
     }
 }

@@ -1,4 +1,4 @@
-package com.advanced.projectspring.dto.individual;
+package com.advanced.projectspring.dto.individual.Review;
 
 import java.time.LocalDateTime;
 

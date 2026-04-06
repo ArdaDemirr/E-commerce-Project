@@ -1,4 +1,4 @@
-package com.advanced.projectspring.dto.individual;
+package com.advanced.projectspring.dto.individual.Shipment;
 
 public class ShipmentResponseDTO {
     private String trackingId; // Matches trackingId in model

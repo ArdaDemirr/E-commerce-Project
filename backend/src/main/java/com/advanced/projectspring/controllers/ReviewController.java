@@ -1,10 +1,11 @@
 package com.advanced.projectspring.controllers;
 
 import com.advanced.projectspring.auth.JwtUtil;
-import com.advanced.projectspring.dto.individual.ReviewRequestDTO;
-import com.advanced.projectspring.dto.individual.ProductReviewDTO;
-import com.advanced.projectspring.dto.individual.MyReviewDTO;
-import com.advanced.projectspring.models.Review;
+import com.advanced.projectspring.dto.individual.Review.ProductReviewDTO;
+import com.advanced.projectspring.dto.individual.Review.MyReviewDTO;
+import com.advanced.projectspring.dto.individual.Review.ReviewRequestDTO;
+import com.advanced.projectspring.dto.individual.Review.ReviewResponseDTO;
+
 import com.advanced.projectspring.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class ReviewController {
     private JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<Review> addReview(
+    public ResponseEntity<ReviewResponseDTO> addReview(
             @RequestBody ReviewRequestDTO request,
             @RequestHeader("Authorization") String authHeader) {
         String email = jwtUtil.extractEmail(authHeader.substring(7));

@@ -1,6 +1,6 @@
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.dto.individual.ShipmentResponseDTO;
+import com.advanced.projectspring.dto.individual.Shipment.ShipmentResponseDTO;
 import com.advanced.projectspring.services.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

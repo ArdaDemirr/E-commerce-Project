@@ -1,4 +1,4 @@
-package com.advanced.projectspring.dto.individual;
+package com.advanced.projectspring.dto.individual.Review;
 
 public class ReviewRequestDTO {
     private Long productId;

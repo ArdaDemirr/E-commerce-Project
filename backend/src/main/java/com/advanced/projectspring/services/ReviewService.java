@@ -1,8 +1,9 @@
 package com.advanced.projectspring.services;
 
-import com.advanced.projectspring.dto.individual.ReviewRequestDTO;
-import com.advanced.projectspring.dto.individual.ProductReviewDTO;
-import com.advanced.projectspring.dto.individual.MyReviewDTO;
+import com.advanced.projectspring.dto.individual.Review.ProductReviewDTO;
+import com.advanced.projectspring.dto.individual.Review.MyReviewDTO;
+import com.advanced.projectspring.dto.individual.Review.ReviewRequestDTO;
+import com.advanced.projectspring.dto.individual.Review.ReviewResponseDTO;
 import com.advanced.projectspring.models.Product;
 import com.advanced.projectspring.models.Review;
 import com.advanced.projectspring.models.User;
@@ -27,7 +28,7 @@ public class ReviewService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Review addReview(String email, ReviewRequestDTO request) {
+    public ReviewResponseDTO addReview(String email, ReviewRequestDTO request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(request.getProductId())
@@ -54,7 +55,18 @@ public class ReviewService {
             review.setSentiment("negative");
         }
 
-        return reviewRepository.save(review);
+        Review savedReview = reviewRepository.save(review);
+
+        ReviewResponseDTO response = new ReviewResponseDTO();
+        response.setId(savedReview.getId());
+        response.setProductId(product.getId());
+        response.setProductName(product.getName());
+        response.setRating(savedReview.getStarRating());
+        response.setComment(savedReview.getComment());
+        response.setSentiment(savedReview.getSentiment());
+        response.setCreatedAt(savedReview.getCreatedAt());
+
+        return response;
     }
 
     // VERSION 1: User Specific (For the Yorumlarım tab)

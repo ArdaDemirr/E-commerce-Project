@@ -1,8 +1,8 @@
 package com.advanced.projectspring.controllers;
 
 import com.advanced.projectspring.auth.JwtUtil;
-import com.advanced.projectspring.dto.individual.OrderRequestDTO;
-import com.advanced.projectspring.models.Order;
+import com.advanced.projectspring.dto.individual.Order.OrderRequestDTO;
+import com.advanced.projectspring.dto.individual.Order.OrderResponseDTO;
 import com.advanced.projectspring.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +22,17 @@ public class OrderController {
     private JwtUtil jwtUtil;
 
     @PostMapping
-    public ResponseEntity<Order> placeOrder(
+    public ResponseEntity<OrderResponseDTO> placeOrder(
             @RequestBody OrderRequestDTO request,
             @RequestHeader("Authorization") String authHeader) {
 
         Long userId = jwtUtil.extractUserId(authHeader.substring(7));
-        Order createdOrder = orderService.placeOrder(userId, request);
+        OrderResponseDTO createdOrder = orderService.placeOrder(userId, request);
         return ResponseEntity.ok(createdOrder);
     }
 
     @GetMapping("/my-orders")
-    public ResponseEntity<List<Order>> getMyOrders(
+    public ResponseEntity<List<OrderResponseDTO>> getMyOrders(
             @RequestHeader("Authorization") String authHeader) {
 
         Long userId = jwtUtil.extractUserId(authHeader.substring(7));
