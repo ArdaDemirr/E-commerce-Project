@@ -45,7 +45,6 @@ export class SidebarComponent implements OnInit {
     const role = this.authService.userRole;
 
     this.mainMenuItems = [
-      { path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
       { path: '/products', label: 'Ürünler', icon: 'package' },
       { path: '/chat', label: 'Asistan (AI)', icon: 'bot' }
     ];
@@ -60,6 +59,7 @@ export class SidebarComponent implements OnInit {
       );
       this.showManagement = false;
     } else if (role === 'CORPORATE') {
+      this.mainMenuItems.unshift({ path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' });
       this.mainMenuItems.push(
         { path: '/orders', label: 'Siparişler', icon: 'shopping-bag' },
         { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' },
@@ -70,6 +70,7 @@ export class SidebarComponent implements OnInit {
       ];
       this.showManagement = true;
     } else if (role === 'ADMIN') {
+      this.mainMenuItems.unshift({ path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' });
       this.mainMenuItems.push(
         { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' }
       );

@@ -29,7 +29,7 @@ const routes: Routes = [
         loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule)
       },
       { path: 'chat', loadChildren: () => import('./features/chat/chat.module').then(m => m.ChatModule) },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '', redirectTo: 'products', pathMatch: 'full' },
     ]
   },
   { path: '**', redirectTo: '/auth/login' }
