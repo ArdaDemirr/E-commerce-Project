@@ -1,6 +1,6 @@
-package com.advanced.projectspring.dto;
+package com.advanced.projectspring.dto.admin;
 
-public class CategoryRequestDTO {
+public class AdminCategoryRequestDTO {
     private String categoryName;
     private Long parentCategoryId;
 

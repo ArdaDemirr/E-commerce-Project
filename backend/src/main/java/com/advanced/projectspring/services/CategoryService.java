@@ -1,7 +1,7 @@
 package com.advanced.projectspring.services;
 
-import com.advanced.projectspring.dto.CategoryRequestDTO;
 import com.advanced.projectspring.dto.CategoryResponseDTO;
+import com.advanced.projectspring.dto.admin.AdminCategoryRequestDTO;
 import com.advanced.projectspring.models.Category;
 import com.advanced.projectspring.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class CategoryService {
         return responseDTO;
     }
 
-    public CategoryResponseDTO createCategory(CategoryRequestDTO request) {
+    public CategoryResponseDTO createCategory(AdminCategoryRequestDTO request) {
         Category category = new Category();
         category.setName(request.getCategoryName());
 
@@ -55,7 +55,7 @@ public class CategoryService {
         return mapToCategoryResponseDTO(savedCategory);
     }
 
-    public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO request) {
+    public CategoryResponseDTO updateCategory(Long id, AdminCategoryRequestDTO request) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
