@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class MyReviewDTO {
     private Long id;
     private Long productId;
-    private String productName; // Shows WHAT they reviewed
+    private String productName;
     private Integer rating;
     private String comment;
     private LocalDateTime createdAt;

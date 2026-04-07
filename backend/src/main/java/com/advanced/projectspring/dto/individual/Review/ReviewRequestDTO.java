@@ -2,7 +2,7 @@ package com.advanced.projectspring.dto.individual.Review;
 
 public class ReviewRequestDTO {
     private Long productId;
-    private Integer rating; // Matches your "rating" naming convention
+    private Integer rating;
     private String comment;
 
     public Long getProductId() {

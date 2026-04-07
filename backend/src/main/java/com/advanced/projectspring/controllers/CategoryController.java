@@ -1,11 +1,11 @@
 /*
- *exposes endpoint for categories
-*/
+ * exposes endpoint for categories
+ */
 
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.models.Category;
-import com.advanced.projectspring.repositories.CategoryRepository;
+import com.advanced.projectspring.dto.CategoryResponseDTO;
+import com.advanced.projectspring.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,11 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryRepository categoryRepository; // connect to database
+    private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() { // returns a list of Category objects
-        return ResponseEntity.ok(categoryRepository.findAll()); // return all of them
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() { // returns a list of Category objects
+        return ResponseEntity.ok(categoryService.getAllCategories()); // return all of them
         // GET /api/categories → returns all 23 categories
     }
 }
