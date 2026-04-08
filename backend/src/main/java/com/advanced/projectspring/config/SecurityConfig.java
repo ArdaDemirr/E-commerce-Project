@@ -57,6 +57,8 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/v3/api-docs").permitAll()
 
+                        .requestMatchers("/actuator/**").permitAll() // Public health check
+
                         // Allowing anyone to SEE products, categories, and reviews
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()
