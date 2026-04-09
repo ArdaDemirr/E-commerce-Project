@@ -25,7 +25,7 @@ const routes: Routes = [
       { path: 'analytics', loadChildren: () => import('./features/analytics/analytics.module').then(m => m.AnalyticsModule) },
       {
         path: 'admin',
-        canActivate: [RoleGuard], data: { roles: ['ADMIN'] },
+        canActivate: [RoleGuard], data: { roles: ['ADMIN', 'CORPORATE'] },
         loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule)
       },
       { path: 'chat', loadChildren: () => import('./features/chat/chat.module').then(m => m.ChatModule) },
