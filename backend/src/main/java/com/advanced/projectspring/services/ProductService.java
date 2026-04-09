@@ -21,13 +21,23 @@ public class ProductService {
     // we use dto to only return thing needed toı be return, not sensitive data
     // and also less data to return, more speed
     private ProductResponseDTO toDTO(Product p) {
-        CategorySummaryDTO category = new CategorySummaryDTO(
+        CategorySummaryDTO category = null;
+        if (p.getCategory() != null) {
+            category = new CategorySummaryDTO(
                 p.getCategory().getId(),
-                p.getCategory().getName());
-        StoreSummaryDTO store = new StoreSummaryDTO(
+                p.getCategory().getName()
+            );
+        }
+
+        StoreSummaryDTO store = null;
+        if (p.getStore() != null) {
+            store = new StoreSummaryDTO(
                 p.getStore().getId(),
                 p.getStore().getName(),
-                p.getStore().getStatus());
+                p.getStore().getStatus()
+            );
+        }
+
         return new ProductResponseDTO(
                 p.getId(),
                 p.getName(),
