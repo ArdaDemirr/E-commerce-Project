@@ -76,7 +76,7 @@ export class SidebarComponent implements OnInit {
       this.managementItems = [
         { path: '/admin/user-management', label: 'Kullanıcılar', icon: 'users' },
         { path: '/admin/category-management', label: 'Kategoriler', icon: 'tags' },
-        { path: '/admin/store-management', label: 'Mağazalar', icon: 'store' }
+        { path: '/admin/stores', label: 'Mağazalar', icon: 'store' }
       ];
       this.showManagement = true;
     }

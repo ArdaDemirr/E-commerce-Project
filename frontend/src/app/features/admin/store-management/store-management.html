@@ -123,7 +123,7 @@
         <label class="block text-slate-400 mb-1.5 font-medium">Kategori *</label>
         <select [(ngModel)]="formData.categoryId" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none">
           <option [ngValue]="0" disabled>Kategori Seçin</option>
-          <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+          <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.categoryName }}</option>
         </select>
       </div>
 

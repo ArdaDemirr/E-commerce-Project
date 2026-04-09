@@ -68,8 +68,8 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
     this.isEditMode = true;
     this.editingId = cat.id;
     this.formData = {
-      categoryName: cat.name,
-      parentCategoryId: cat.parent?.id || null
+      categoryName: cat.categoryName,
+      parentCategoryId: cat.parentId || null
     };
     this.showModal = true;
   }
@@ -125,11 +125,11 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
 
   // Gets top level categories
   get rootCategories(): CategoryResponseDTO[] {
-    return this.categories.filter(c => !c.parent);
+    return this.categories.filter(c => !c.parentId);
   }
 
   // Gets children of a specific category
   getChildren(parentId: number): CategoryResponseDTO[] {
-    return this.categories.filter(c => c.parent?.id === parentId);
+    return this.categories.filter(c => c.parentId === parentId);
   }
 }

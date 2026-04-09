@@ -35,7 +35,7 @@
         <div>
           <h3 class="text-lg font-bold text-white flex items-center gap-2">
             <lucide-icon name="folder" [size]="18" class="text-primary"></lucide-icon>
-            {{ root.name }}
+            {{ root.categoryName }}
           </h3>
           <span class="text-xs text-slate-500 mt-1">ID: #{{ root.id }}</span>
         </div>
@@ -59,7 +59,7 @@
         <div *ngFor="let child of getChildren(root.id)" class="flex items-center justify-between group/sub">
           <span class="text-sm font-medium text-slate-300 flex items-center gap-2">
             <lucide-icon name="corner-down-right" [size]="14" class="text-slate-500"></lucide-icon>
-            {{ child.name }}
+            {{ child.categoryName }}
           </span>
           <div class="opacity-0 group-hover/sub:opacity-100 transition-opacity flex gap-1">
             <button (click)="openEditModal(child)" class="p-1 text-slate-400 hover:text-white rounded-md">
@@ -103,7 +103,7 @@
           <ng-container *ngFor="let cat of categories">
             <!-- Cannot select itself as parent -->
             <option *ngIf="!isEditMode || cat.id !== editingId" [ngValue]="cat.id">
-              {{ cat.parent ? cat.parent.name + ' > ' : '' }}{{ cat.name }}
+              {{ cat.parentCategoryName ? cat.parentCategoryName + ' > ' : '' }}{{ cat.categoryName }}
             </option>
           </ng-container>
         </select>

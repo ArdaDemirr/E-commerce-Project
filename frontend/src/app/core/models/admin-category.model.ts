@@ -1,7 +1,8 @@
 export interface CategoryResponseDTO {
   id: number;
-  name: string;
-  parent?: CategoryResponseDTO;
+  categoryName: string;
+  parentId?: number | null;
+  parentCategoryName?: string;
 }
 
 export interface AdminCategoryRequestDTO {

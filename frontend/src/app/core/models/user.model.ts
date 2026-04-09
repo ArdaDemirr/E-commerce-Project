@@ -9,6 +9,16 @@ export interface User {
     active: boolean;
 }
 
+export interface UserResponseDTO {
+    id: number;
+    email: string;
+    role: string;
+    name: string;
+    surname: string;
+    gender: string;
+    active: boolean;
+}
+
 export interface AuthResponse {
     token: string;
     role: string;
