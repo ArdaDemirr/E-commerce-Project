@@ -16,7 +16,7 @@ public class Category {
     private String name;
 
     // self-referencing many-to-one relationship
-    @ManyToOne // Many subcategories can belong to One parent category
+    @ManyToOne(fetch = FetchType.LAZY) // Many subcategories can belong to One parent category
     @JoinColumn(name = "parent_id") // the column name in the database - links them
     private Category parent; // parent is actually another category? yes
 
