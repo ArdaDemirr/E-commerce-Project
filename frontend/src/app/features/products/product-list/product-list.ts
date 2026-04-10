@@ -44,7 +44,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private cartService: CartService,
     private toastr: ToastrService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     // Debounced search
@@ -133,8 +133,31 @@ export class ProductListComponent implements OnInit, OnDestroy {
   selectCategory(id: number | null): void {
     this.selectedCategoryId = id;
     this.currentPage = 0;
-    this.applyFilters();
-    this.cdr.detectChanges();
+    this.loading = true; // Trigger skeleton loading
+
+    if (id === null) {
+      // Fetch all products
+      this.loadProducts();
+    } else {
+      // Fetch products specific to that category using the proper backend endpoint
+      this.productService
+        .getProductsByCategory(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (products) => {
+            this.products = products;
+            this.applyFilters(); // will apply sort/search
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.products = [];
+            this.filteredProducts = [];
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+        });
+    }
   }
 
   onSearch(): void {
@@ -158,11 +181,15 @@ export class ProductListComponent implements OnInit, OnDestroy {
       return;
     }
     this.cartService.addItem(product);
-    this.toastr.success(`"${product.name}" sepete eklendi! 🛒`, 'Sepete Eklendi', {
-      timeOut: 2500,
-      positionClass: 'toast-top-right',
-      progressBar: true,
-    });
+    this.toastr.success(
+      `"${product.name}" sepete eklendi! 🛒`,
+      'Sepete Eklendi',
+      {
+        timeOut: 2500,
+        positionClass: 'toast-top-right',
+        progressBar: true,
+      },
+    );
   }
 
   prevPage(): void {
