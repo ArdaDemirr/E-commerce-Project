@@ -14,6 +14,7 @@ import com.advanced.projectspring.models.User;
 // User model — create and save User objects here
 
 import com.advanced.projectspring.repositories.UserRepository;
+import com.advanced.projectspring.repositories.StoreRepository;
 // to find users by email and save new users
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository; // connect to database
+
+    @Autowired
+    private StoreRepository storeRepository;
 
     @Autowired
     private JwtUtil jwtUtil; // connect to jwtUtil to create tokens
@@ -70,6 +74,15 @@ public class AuthService {
         user.setPasswordHash(hashedPassword);
 
         User savedUser = userRepository.save(user);
+
+        if ("CORPORATE".equalsIgnoreCase(request.getRole()) && request.getStoreName() != null
+                && !request.getStoreName().trim().isEmpty()) {
+            com.advanced.projectspring.models.Store store = new com.advanced.projectspring.models.Store();
+            store.setName(request.getStoreName().trim());
+            store.setStatus("open");
+            store.setOwner(savedUser);
+            storeRepository.save(store);
+        }
 
         // Generate JWT token
         String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getRole(), savedUser.getId());

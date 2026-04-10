@@ -8,6 +8,7 @@ public class RegisterRequest {
     private String surname;
     private String role;
     private String gender;
+    private String storeName;
 
     public RegisterRequest() {
     }
@@ -60,5 +61,13 @@ public class RegisterRequest {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }
