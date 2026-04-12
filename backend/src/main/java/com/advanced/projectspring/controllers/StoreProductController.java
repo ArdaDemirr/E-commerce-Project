@@ -1,9 +1,9 @@
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.auth.JwtUtil;
 import com.advanced.projectspring.dto.corporate.StoreProductsRequestDTO;
 import com.advanced.projectspring.dto.corporate.StoreProductsResponseDTO;
 import com.advanced.projectspring.services.StoreProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,48 +12,52 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/corporate/products")
-@CrossOrigin(origins = "http://localhost:4200")
-public class StoreProductController { 
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+public class StoreProductController {
+
     @Autowired
     private StoreProductService storeProductService;
 
-    @Autowired
-    private JwtUtil jwtUtil; // We need this to get the User ID from the Token!
+    // userId is extracted from the JWT cookie by JwtAuthFilter and set as a request attribute.
+    // No need to manually parse the Authorization header anymore.
+    private Long getUserId(HttpServletRequest request) {
+        Object userId = request.getAttribute("userId");
+        if (userId == null) {
+            throw new org.springframework.security.access.AccessDeniedException("User ID not found in token");
+        }
+        return (Long) userId;
+    }
 
     @GetMapping
-    public ResponseEntity<List<StoreProductsResponseDTO>> getAllProducts(
-            @RequestHeader("Authorization") String authHeader) {
-
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
+    public ResponseEntity<List<StoreProductsResponseDTO>> getAllProducts(HttpServletRequest request) {
+        Long userId = getUserId(request);
         return ResponseEntity.ok(storeProductService.listProductsByStoreId(userId));
     }
 
     @PostMapping
     public ResponseEntity<StoreProductsResponseDTO> addProduct(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestBody StoreProductsRequestDTO productRequestDTO) {
-
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
+        Long userId = getUserId(request);
         return ResponseEntity.ok(storeProductService.addProduct(userId, productRequestDTO));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<StoreProductsResponseDTO> updateProduct(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable Long id,
             @RequestBody StoreProductsRequestDTO productRequestDTO) {
-
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
+        Long userId = getUserId(request);
         return ResponseEntity.ok(storeProductService.updateProduct(userId, id, productRequestDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable Long id) {
-
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
+        Long userId = getUserId(request);
         storeProductService.deleteProduct(userId, id);
-        return ResponseEntity.noContent().build(); // Standard for DELETE is 204 No Content
+        return ResponseEntity.noContent().build();
     }
 }
+

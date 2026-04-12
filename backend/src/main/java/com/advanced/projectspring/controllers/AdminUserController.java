@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ import com.advanced.projectspring.dto.admin.AdminUserRequestDTO;
 
 @RestController
 @RequestMapping("/api/admin/users")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AdminUserController {
 
     @Autowired
@@ -29,6 +30,14 @@ public class AdminUserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    // PatchMapping for role — frontend sends PATCH /api/admin/users/{id}/role
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<UserResponseDTO> updateRolePatch(@PathVariable Long id,
+            @RequestBody AdminUserRequestDTO request) {
+        return ResponseEntity.ok(userService.updateRole(id, request));
+    }
+
+    // PutMapping kept for backward compatibility
     @PutMapping("/{id}/role")
     public ResponseEntity<UserResponseDTO> updateRole(@PathVariable Long id,
             @RequestBody AdminUserRequestDTO request) {
@@ -46,5 +55,5 @@ public class AdminUserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-
 }
+

@@ -51,9 +51,15 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private Long expiration;
-    // Reads jwt.expiration = 86400000 (milliseconds)
-    // 86400000ms = 24 hours
-    // token expires after 24 hours, user must login again
+    // Reads jwt.expiration = 900000 (milliseconds)
+    // 900000ms = 15 minutes
+    // token expires after 15 minutes, refresh token extends the session
+
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpiration;
+    // Reads jwt.refresh-expiration = 604800000 (milliseconds)
+    // 604800000ms = 7 days
+    // refresh token keeps the user logged in for 7 days
 
     private Key getSigningKey() {
         // Converts our secret string into a proper cryptographic Key object
@@ -66,44 +72,34 @@ public class JwtUtil {
     // --------------------Generate JWT token---------------------
 
     public String generateToken(String email, String role, Long userId) {
-        // Called after successful login or register
-        // Returns the JWT string like "eyJhbGci..."
-
         Map<String, Object> claims = new HashMap<>();
-        // claims = the data we want to store INSIDE the token
-        // think of it as a small JSON object
-
         claims.put("role", role);
-        // puts the user role into the claims map
 
         return Jwts.builder()
-                // start building the token
-
                 .setClaims(claims)
-                // put our claims (role) inside
-
                 .setSubject(email)
-                // subject = who this token belongs to
-                // we use email as the unique identifier
-
                 .claim("role", role)
                 .claim("userId", userId)
-
                 .setIssuedAt(new Date())
-                // record when the token was created
-
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                // set when the token expires
-                // System.currentTimeMillis() = right now in milliseconds
-                // + expiration = + 86400000ms = + 24 hours
-
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                // sign the token with our secret key using HS256 algorithm
-                // this creates the signature part (3rd part of the token)
-                // if anyone changes the payload, signature won't match
-
                 .compact();
-        // build and return the final JWT string
+    }
+
+    public String generateRefreshToken(String email, Long userId) {
+        // Refresh token only contains the subject (email) and userId
+        // It does NOT contain role — roles can change, refresh should re-validate from DB
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("type", "refresh"); // marker to distinguish from access tokens
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     // --------------------Validate JWT token---------------------

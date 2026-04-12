@@ -1,46 +1,31 @@
 package com.advanced.projectspring.auth.dto;
 
-// this is what Angular RECEIVES after successful login
-// Angular reads the token and stores it in localStorage
-// Angular reads the role and navigates to the right dashboard
+// What Angular receives after successful login/register.
+// Tokens are NO LONGER in the body — they are set as HttpOnly cookies by the controller.
+// Angular only needs metadata to display the UI correctly.
 public class LoginResponse {
-    private String token;
-    // the JWT token string "eyJhbGci..."
-    // Angular stores this and sends it with every future request
-    // in the Authorization header
 
     private String role;
-    // "admin", "corporate", or "individual"
-    // Angular uses this to decide which page to navigate to:
-    // admin → /admin/dashboard
-    // corporate → /corporate/dashboard
-    // individual → /shop
+    // "ADMIN", "CORPORATE", or "INDIVIDUAL"
+    // Angular uses this to navigate to the right dashboard
 
     private String name;
-    // the user's display name
-    // Angular shows this in the header "Welcome, John"
+    // The user's display name — shown in the header
 
     private String surname;
 
     private Long userId;
-    // the user's database ID
-    // Angular might need this for future requests
-    // like GET /api/users/5/profile
+    // Needed for profile-related requests
 
-    // Constructor — AuthService uses this to build the response
-    public LoginResponse(String token, String role, String name, String surname, Long userId) {
-        this.token = token;
+    // Constructor
+    public LoginResponse(String role, String name, String surname, Long userId) {
         this.role = role;
         this.name = name;
         this.surname = surname;
         this.userId = userId;
     }
 
-    // Getters — Spring reads these to convert to JSON
-    public String getToken() {
-        return token;
-    }
-
+    // Getters
     public String getRole() {
         return role;
     }

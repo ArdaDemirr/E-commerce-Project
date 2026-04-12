@@ -1,58 +1,130 @@
-/*
-    POST /api/auth/register → calls authService.register()
-    POST /api/auth/login    → calls authService.login()
-    These are the only two public endpoints in the entire app
- */
-
 package com.advanced.projectspring.auth;
 
 import com.advanced.projectspring.auth.dto.LoginRequest;
 import com.advanced.projectspring.auth.dto.LoginResponse;
 import com.advanced.projectspring.auth.dto.RegisterRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController // listen for HTTP requests from the frontend and send back JSON data.
-@RequestMapping("/api/auth") // path prefix for all endpoints in this controller
-@CrossOrigin(origins = "http://localhost:4200") // for security reasons, allows requests from Angular dev server
-// LATER add a proper CorsConfig for production
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class AuthController {
 
-    @Autowired // inject AuthService
+    @Autowired
     private AuthService authService;
-    // will use for checking values in database and sending response to frontend
 
-    @PostMapping("/register") // register endpoint
-    // handles POST /api/auth/register
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        // @RequestBody → Spring reads JSON from request body
-        // and converts it to RegisterRequest object automatically
-        // { "name": "John", "email": "john@email.com", ... }
-        // → RegisterRequest with fields filled
+    // ─── Helper: Set both tokens as HttpOnly cookies ──────────────────────────────
+    private void setAuthCookies(HttpServletResponse response, String accessToken, String refreshToken) {
+        // Access token: HttpOnly, valid for 15 minutes, available to all paths
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(900)           // 15 minutes in seconds
+                .sameSite("Strict")
+                .build();
 
-        LoginResponse response = authService.register(request);
-        // call AuthService.register()
-        // returns LoginResponse with token + role + name + userId
+        // Refresh token: HttpOnly, valid for 7 days, ONLY sent to /api/auth/refresh
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .path("/api/auth/refresh")
+                .maxAge(604800)        // 7 days in seconds
+                .sameSite("Strict")
+                .build();
 
-        return ResponseEntity.ok(response);
-        // 200 OK + LoginResponse as JSON body
-        // Angular receives:
-        // { "token": "eyJhbGci...", "role": "individual", "name": "John", "userId": 5 }
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
+    // ─── Register ────────────────────────────────────────────────────────────────
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+        Map<String, Object> result = authService.register(request);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> tokens = (Map<String, String>) result.get("tokens");
+        LoginResponse body = (LoginResponse) result.get("body");
+
+        setAuthCookies(response, tokens.get("accessToken"), tokens.get("refreshToken"));
+        return ResponseEntity.ok(body);
+    }
+
+    // ─── Login ───────────────────────────────────────────────────────────────────
     @PostMapping("/login")
-    // handles POST /api/auth/login
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        // @RequestBody → converts JSON to LoginRequest
-        // { "email": "admin@platform.com", "password": "admin123" }
-        // → LoginRequest with email and password filled
+    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        Map<String, Object> result = authService.login(request);
 
-        LoginResponse response = authService.login(request);
-        // call AuthService.login()
-        // returns LoginResponse with token + role + name + userId
+        @SuppressWarnings("unchecked")
+        Map<String, String> tokens = (Map<String, String>) result.get("tokens");
+        LoginResponse body = (LoginResponse) result.get("body");
 
-        return ResponseEntity.ok(response);
-        // 200 OK + LoginResponse as JSON
+        setAuthCookies(response, tokens.get("accessToken"), tokens.get("refreshToken"));
+        return ResponseEntity.ok(body);
+    }
+
+    // ─── Refresh ─────────────────────────────────────────────────────────────────
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
+        // Find the refresh_token cookie
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).body("No refresh token found");
+        }
+
+        // Validate and generate a new access token
+        String newAccessToken = authService.refreshAccessToken(refreshToken);
+
+        // Set the new access_token cookie
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccessToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(900)
+                .sameSite("Strict")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+
+        return ResponseEntity.ok().body("Token refreshed successfully");
+    }
+
+    // ─── Logout ──────────────────────────────────────────────────────────────────
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // Delete both cookies by setting Max-Age to 0
+        ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .path("/api/auth/refresh")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+
+        return ResponseEntity.ok().body("Logged out successfully");
     }
 }
+

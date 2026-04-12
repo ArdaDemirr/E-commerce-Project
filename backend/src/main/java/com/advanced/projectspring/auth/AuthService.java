@@ -1,63 +1,53 @@
-/*
- * register() → validate → hash password → save user → return token
- * login()    → find user → verify password → return token
- */
-
 package com.advanced.projectspring.auth;
 
 import com.advanced.projectspring.auth.dto.LoginRequest;
 import com.advanced.projectspring.auth.dto.LoginResponse;
 import com.advanced.projectspring.auth.dto.RegisterRequest;
-// 3 DTOs   
 
 import com.advanced.projectspring.models.User;
-// User model — create and save User objects here
 
 import com.advanced.projectspring.repositories.UserRepository;
 import com.advanced.projectspring.repositories.StoreRepository;
-// to find users by email and save new users
 
 import org.springframework.beans.factory.annotation.Autowired;
-// to inject JwtUtil and UserRepository automatically
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-// BCrypt = the hashing algorithm for passwords
-// industry standard, very secure
-// "admin123" → "$2a$10$N9qo8uLOickgx2ZMRZoMye..."
 
 import org.springframework.stereotype.Service;
-// @Service = tells Spring this is a service layer class
-// similar to @Component but semantically means business logic
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
-// Optional = safer way to handle nullable values
-// instead of returning null when user not found
-// we return Optional.empty()
 
 @Service
 public class AuthService {
 
     @Autowired
-    private UserRepository userRepository; // connect to database
+    private UserRepository userRepository;
 
     @Autowired
     private StoreRepository storeRepository;
 
     @Autowired
-    private JwtUtil jwtUtil; // connect to jwtUtil to create tokens
+    private JwtUtil jwtUtil;
 
-    // private final BCryptPasswordEncoder passwordEncoder = new
-    // BCryptPasswordEncoder();
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-    // create one BCrypt encoder instance
-    // use this to hash passwords and verify them
-    // BCrypt automatically adds salt — same password hashes differently each time
-    // but checkpw() still works correctly
 
-    public LoginResponse register(RegisterRequest request) {
+    // ─── Internal helper ─────────────────────────────────────────────────────────
+    // Returns both access and refresh tokens so the controller can set them as cookies.
+    private Map<String, String> buildTokenPair(User user) {
+        String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail(), user.getId());
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+        return tokens;
+    }
 
-        // Check if email already exists
+    // ─── Register ────────────────────────────────────────────────────────────────
+    public Map<String, Object> register(RegisterRequest request) {
+
         Optional<User> existing = userRepository.findByEmail(request.getEmail());
         if (existing.isPresent()) {
             throw new IllegalStateException("Email already registered");
@@ -70,8 +60,7 @@ public class AuthService {
         user.setRole(request.getRole().toUpperCase());
         user.setGender(request.getGender());
         user.setActive(true);
-        String hashedPassword = passwordEncoder.encode(request.getPassword());
-        user.setPasswordHash(hashedPassword);
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
         User savedUser = userRepository.save(user);
 
@@ -84,31 +73,60 @@ public class AuthService {
             storeRepository.save(store);
         }
 
-        // Generate JWT token
-        String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getRole(), savedUser.getId());
+        Map<String, String> tokens = buildTokenPair(savedUser);
+        LoginResponse body = new LoginResponse(
+                savedUser.getRole(), savedUser.getName(), savedUser.getSurname(), savedUser.getId());
 
-        // Return response
-        return new LoginResponse(token, savedUser.getRole(), savedUser.getName(), savedUser.getSurname(),
-                savedUser.getId());
+        Map<String, Object> result = new HashMap<>();
+        result.put("tokens", tokens);
+        result.put("body", body);
+        return result;
     }
 
-    public LoginResponse login(LoginRequest request) {
-        // Find user by email
+    // ─── Login ───────────────────────────────────────────────────────────────────
+    public Map<String, Object> login(LoginRequest request) {
+
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found"));
 
-        // Verify password
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new IllegalArgumentException("Invalid password");
         }
 
-        // Check if user is active
         if (!user.isActive()) {
             throw new org.springframework.security.access.AccessDeniedException("Account suspended");
         }
 
-        // Generate token and return
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getId());
-        return new LoginResponse(token, user.getRole(), user.getName(), user.getSurname(), user.getId());
+        Map<String, String> tokens = buildTokenPair(user);
+        LoginResponse body = new LoginResponse(
+                user.getRole(), user.getName(), user.getSurname(), user.getId());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("tokens", tokens);
+        result.put("body", body);
+        return result;
+    }
+
+    // ─── Refresh ─────────────────────────────────────────────────────────────────
+    // Called by AuthController when the frontend hits POST /api/auth/refresh.
+    // Validates the refresh token, fetches the latest user data, and returns a fresh access token.
+    public String refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new IllegalArgumentException("Invalid or expired refresh token");
+        }
+
+        String email = jwtUtil.extractEmail(refreshToken);
+        Long userId = jwtUtil.extractUserId(refreshToken);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found"));
+
+        if (!user.isActive()) {
+            throw new org.springframework.security.access.AccessDeniedException("Account suspended");
+        }
+
+        // Generate a fresh access token — role always re-read from DB (handles role changes)
+        return jwtUtil.generateToken(user.getEmail(), user.getRole(), userId);
     }
 }
+
