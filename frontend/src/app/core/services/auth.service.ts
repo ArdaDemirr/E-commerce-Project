@@ -12,43 +12,23 @@ import {
   UserRole,
 } from '../models/user.model';
 
+// ── Mock users for offline development ──────────────────────────────────────────
 const MOCK_USERS: Record<string, { password: string; user: User }> = {
   'admin@test.com': {
     password: '12345678',
-    user: {
-      id: 1,
-      email: 'admin@test.com',
-      name: 'Admin',
-      surname: 'User',
-      role: 'ADMIN' as UserRole,
-      active: true,
-    },
+    user: { id: 1, email: 'admin@test.com', name: 'Admin', surname: 'User', role: 'ADMIN' as UserRole, active: true },
   },
   'store@test.com': {
     password: '12345678',
-    user: {
-      id: 2,
-      email: 'store@test.com',
-      name: 'Corporate',
-      surname: 'User',
-      role: 'CORPORATE' as UserRole,
-      active: true,
-    },
+    user: { id: 2, email: 'store@test.com', name: 'Corporate', surname: 'User', role: 'CORPORATE' as UserRole, active: true },
   },
   'user@test.com': {
     password: '12345678',
-    user: {
-      id: 3,
-      email: 'user@test.com',
-      name: 'Individual',
-      surname: 'User',
-      role: 'INDIVIDUAL' as UserRole,
-      active: true,
-    },
+    user: { id: 3, email: 'user@test.com', name: 'Individual', surname: 'User', role: 'INDIVIDUAL' as UserRole, active: true },
   },
 };
 
-const USE_MOCK = false; // Mock devre dışı, backend kullanılacak
+const USE_MOCK = false;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -61,22 +41,22 @@ export class AuthService {
     private tokenService: TokenService,
     private router: Router,
   ) {
+    // Restore user from sessionStorage on app start
     const user = this.tokenService.getUser();
     if (user) this.currentUserSubject.next(user);
   }
 
+  // ── Login ─────────────────────────────────────────────────────────────────────
   login(req: LoginRequest): Observable<AuthResponse> {
     if (USE_MOCK) {
       const match = MOCK_USERS[req.email];
       if (match && match.password === req.password) {
         const mockRes: AuthResponse = {
-          token: `mock-access-${match.user.role}`,
           role: match.user.role,
           name: match.user.name,
           surname: match.user.surname,
           userId: match.user.id,
         };
-        this.tokenService.setTokens(mockRes.token, '');
         this.tokenService.setUser(match.user);
         this.currentUserSubject.next(match.user);
         return of(mockRes);
@@ -84,7 +64,8 @@ export class AuthService {
       return throwError(() => new Error('Geçersiz e-posta veya şifre'));
     }
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, req).pipe(
+    // withCredentials: true → browser will save the HttpOnly cookies from Set-Cookie response header
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, req, { withCredentials: true }).pipe(
       tap((res: AuthResponse) => {
         const user: User = {
           id: res.userId,
@@ -94,59 +75,63 @@ export class AuthService {
           role: res.role as UserRole,
           active: true,
         };
-        this.tokenService.setTokens(res.token, '');
+        // Only store metadata — token is safely in an HttpOnly cookie
         this.tokenService.setUser(user);
         this.currentUserSubject.next(user);
       }),
     );
   }
 
+  // ── Register ──────────────────────────────────────────────────────────────────
   register(req: RegisterRequest): Observable<any> {
     if (USE_MOCK) {
       const mockRes: AuthResponse = {
-        token: 'mock-access-INDIVIDUAL',
         role: req.role,
         name: req.name,
         surname: req.surname,
         userId: 99,
       };
-      const mockUser: User = {
-        id: 99,
-        email: req.email,
-        name: req.name,
-        surname: req.surname,
-        role: req.role,
-        active: true,
-      };
-      this.tokenService.setTokens(mockRes.token, '');
+      const mockUser: User = { id: 99, email: req.email, name: req.name, surname: req.surname, role: req.role, active: true };
       this.tokenService.setUser(mockUser);
       this.currentUserSubject.next(mockUser);
       return of(mockRes);
     }
 
-    // Backend returns plain text "User registered successfully." — use responseType:'text'
     return this.http
       .post(`${this.apiUrl}/auth/register`, req, { responseType: 'text' })
       .pipe(
         tap(() => {
-          // Registration succeeds → redirect to login to authenticate
           this.router.navigate(['/auth/login']);
         }),
       );
   }
 
+  // ── Logout ────────────────────────────────────────────────────────────────────
   logout(): void {
-    this.tokenService.clear();
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    // Tell the backend to clear the HttpOnly cookies
+    this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      complete: () => {
+        this.tokenService.clear();
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        // Even if the request fails, clear local state and redirect
+        this.tokenService.clear();
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    return throwError(
-      () => new Error('Refresh not supported via interceptor anymore'),
-    );
+  // ── Refresh Token ─────────────────────────────────────────────────────────────
+  // Calls /api/auth/refresh — browser automatically sends the refresh_token cookie.
+  // Backend validates it and sets a new access_token cookie.
+  refreshToken(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/refresh`, {}, { withCredentials: true });
   }
 
+  // ── Getters ───────────────────────────────────────────────────────────────────
   get currentUser(): User | null {
     return this.currentUserSubject.value;
   }
@@ -160,3 +145,4 @@ export class AuthService {
     return this.userRole === role;
   }
 }
+

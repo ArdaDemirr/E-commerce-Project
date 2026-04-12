@@ -20,7 +20,7 @@ export interface UserResponseDTO {
 }
 
 export interface AuthResponse {
-    token: string;
+    // token is NO LONGER here — backend sets it as an HttpOnly cookie
     role: string;
     name: string;
     surname: string;

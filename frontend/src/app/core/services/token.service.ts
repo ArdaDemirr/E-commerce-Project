@@ -1,26 +1,31 @@
 import { Injectable } from '@angular/core';
 
-const ACCESS_KEY = 'access_token';
-const REFRESH_KEY = 'refresh_token';
+// Tokens (access + refresh) are now HttpOnly cookies — the browser manages them automatically.
+// This service only stores non-sensitive user METADATA (name, role, userId) in sessionStorage.
+// sessionStorage is cleared when the browser tab/window is closed (more secure than localStorage).
+
 const USER_KEY = 'current_user';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
-    setTokens(access: string, refresh: string): void {
-        localStorage.setItem(ACCESS_KEY, access);
-        localStorage.setItem(REFRESH_KEY, refresh);
+
+    // ── User Metadata ─────────────────────────────────────────────────────────────
+    setUser(user: any): void {
+        sessionStorage.setItem(USER_KEY, JSON.stringify(user));
     }
-    getAccessToken(): string | null { return localStorage.getItem(ACCESS_KEY); }
-    getRefreshToken(): string | null { return localStorage.getItem(REFRESH_KEY); }
-    setUser(user: any): void { localStorage.setItem(USER_KEY, JSON.stringify(user)); }
+
     getUser(): any {
-        const u = localStorage.getItem(USER_KEY);
+        const u = sessionStorage.getItem(USER_KEY);
         return u ? JSON.parse(u) : null;
     }
+
     clear(): void {
-        localStorage.removeItem(ACCESS_KEY);
-        localStorage.removeItem(REFRESH_KEY);
-        localStorage.removeItem(USER_KEY);
+        sessionStorage.removeItem(USER_KEY);
     }
-    isLoggedIn(): boolean { return !!this.getAccessToken(); }
+
+    // A user is considered "logged in" if their metadata exists in sessionStorage.
+    // The actual auth proof is the HttpOnly access_token cookie (invisible to JS).
+    isLoggedIn(): boolean {
+        return !!this.getUser();
+    }
 }
