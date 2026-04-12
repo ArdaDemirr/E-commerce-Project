@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ReviewController {
 
     @Autowired
@@ -26,17 +27,17 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> addReview(
-            @RequestBody ReviewRequestDTO request,
-            @RequestHeader("Authorization") String authHeader) {
-        String email = jwtUtil.extractEmail(authHeader.substring(7));
-        return ResponseEntity.ok(reviewService.addReview(email, request));
+            @RequestBody ReviewRequestDTO requestDTO,
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        return ResponseEntity.ok(reviewService.addReview(email, requestDTO));
     }
 
     // Endpoint for Yorumlarım tab
     @GetMapping("/my-reviews")
     public ResponseEntity<List<MyReviewDTO>> getMyReviews(
-            @RequestHeader("Authorization") String authHeader) {
-        String email = jwtUtil.extractEmail(authHeader.substring(7));
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
         return ResponseEntity.ok(reviewService.getUserReviews(email));
     }
 

@@ -9,12 +9,17 @@ import com.advanced.projectspring.dto.UserResponseDTO;
 import com.advanced.projectspring.dto.admin.AdminUserRequestDTO;
 import com.advanced.projectspring.models.User;
 import com.advanced.projectspring.repositories.UserRepository;
+import com.advanced.projectspring.repositories.StoreRepository;
+import com.advanced.projectspring.models.Store;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
 
     private UserResponseDTO mapToAdminUserResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
@@ -48,6 +53,16 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // If the user is a CORPORATE user, they might have an associated store.
+        // We must delete the store first to avoid foreign key constraint violations.
+        if ("CORPORATE".equalsIgnoreCase(user.getRole())) {
+            List<Store> userStores = storeRepository.findByOwnerId(id);
+            if (userStores != null && !userStores.isEmpty()) {
+                storeRepository.deleteAll(userStores);
+            }
+        }
+        
         userRepository.delete(user);
     }
 }

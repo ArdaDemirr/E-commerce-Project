@@ -7,12 +7,13 @@ import com.advanced.projectspring.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 // exposes the endpoint for chat-AI
 
 @RestController
 @RequestMapping("/api/chat") // endpoint
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class ChatController {
 
     @Autowired
@@ -23,18 +24,15 @@ public class ChatController {
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(
-            @RequestBody ChatRequest request, // sends a JSON object containing the user's message
-            @RequestHeader("Authorization") String authHeader) { // incoming token to inspect
+            @RequestBody ChatRequest requestDTO, // sends a JSON object containing the user's message
+            HttpServletRequest request) { // Use request to access attributes
 
-        // Extract token
-        String token = authHeader.substring(7);
+        // Extract user info from attributes set by JwtAuthFilter
+        String email = (String) request.getAttribute("email");
+        String role = (String) request.getAttribute("role");
+        Long userId = (Long) request.getAttribute("userId");
 
-        // Extract user info from token — no database call needed
-        String email = jwtUtil.extractEmail(token);
-        String role = jwtUtil.extractRole(token);
-        Long userId = jwtUtil.extractUserId(token);
-
-        ChatResponse response = chatService.processMessage(request, email, role, userId);
+        ChatResponse response = chatService.processMessage(requestDTO, email, role, userId);
         return ResponseEntity.ok(response);
     }
 }

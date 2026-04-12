@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class OrderController {
 
     @Autowired
@@ -23,19 +24,19 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> placeOrder(
-            @RequestBody OrderRequestDTO request,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestBody OrderRequestDTO requestDTO,
+            HttpServletRequest request) {
 
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
-        OrderResponseDTO createdOrder = orderService.placeOrder(userId, request);
+        Long userId = (Long) request.getAttribute("userId");
+        OrderResponseDTO createdOrder = orderService.placeOrder(userId, requestDTO);
         return ResponseEntity.ok(createdOrder);
     }
 
     @GetMapping("/my-orders")
     public ResponseEntity<List<OrderResponseDTO>> getMyOrders(
-            @RequestHeader("Authorization") String authHeader) {
+            HttpServletRequest request) {
 
-        Long userId = jwtUtil.extractUserId(authHeader.substring(7));
+        Long userId = (Long) request.getAttribute("userId");
         return ResponseEntity.ok(orderService.getUserOrders(userId));
     }
 }

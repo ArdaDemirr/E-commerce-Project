@@ -65,10 +65,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String role = jwtUtil.extractRole(token);
         Long userId = jwtUtil.extractUserId(token);
 
-        // Set userId as a request attribute so controllers can use it directly
+        // Set user attributes so controllers can use them directly
         // without parsing the token again via Authorization header
         if (userId != null) {
             request.setAttribute("userId", userId);
+        }
+        if (email != null) {
+            request.setAttribute("email", email);
+        }
+        if (role != null) {
+            request.setAttribute("role", role);
         }
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
