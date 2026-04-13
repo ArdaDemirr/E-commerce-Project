@@ -35,7 +35,8 @@ public class AuthService {
     private BCryptPasswordEncoder passwordEncoder;
 
     // ─── Internal helper ─────────────────────────────────────────────────────────
-    // Returns both access and refresh tokens so the controller can set them as cookies.
+    // Returns both access and refresh tokens so the controller can set them as
+    // cookies.
     private Map<String, String> buildTokenPair(User user) {
         String accessToken = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getId());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail(), user.getId());
@@ -57,14 +58,17 @@ public class AuthService {
         user.setName(request.getName());
         user.setSurname(request.getSurname());
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole().toUpperCase());
+        String assignedRole = (request.getRole() != null && !request.getRole().trim().isEmpty())
+                ? request.getRole().toUpperCase()
+                : "INDIVIDUAL";
+        user.setRole(assignedRole);
         user.setGender(request.getGender());
         user.setActive(true);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
         User savedUser = userRepository.save(user);
 
-        if ("CORPORATE".equalsIgnoreCase(request.getRole()) && request.getStoreName() != null
+        if ("CORPORATE".equalsIgnoreCase(assignedRole) && request.getStoreName() != null
                 && !request.getStoreName().trim().isEmpty()) {
             com.advanced.projectspring.models.Store store = new com.advanced.projectspring.models.Store();
             store.setName(request.getStoreName().trim());
@@ -109,7 +113,8 @@ public class AuthService {
 
     // ─── Refresh ─────────────────────────────────────────────────────────────────
     // Called by AuthController when the frontend hits POST /api/auth/refresh.
-    // Validates the refresh token, fetches the latest user data, and returns a fresh access token.
+    // Validates the refresh token, fetches the latest user data, and returns a
+    // fresh access token.
     public String refreshAccessToken(String refreshToken) {
         if (!jwtUtil.validateToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid or expired refresh token");
@@ -125,8 +130,8 @@ public class AuthService {
             throw new org.springframework.security.access.AccessDeniedException("Account suspended");
         }
 
-        // Generate a fresh access token — role always re-read from DB (handles role changes)
+        // Generate a fresh access token — role always re-read from DB (handles role
+        // changes)
         return jwtUtil.generateToken(user.getEmail(), user.getRole(), userId);
     }
 }
-
