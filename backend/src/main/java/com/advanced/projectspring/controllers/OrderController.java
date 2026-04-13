@@ -1,6 +1,6 @@
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.auth.JwtUtil;
+//import com.advanced.projectspring.auth.JwtUtil;
 import com.advanced.projectspring.dto.individual.Order.OrderRequestDTO;
 import com.advanced.projectspring.dto.individual.Order.OrderResponseDTO;
 import com.advanced.projectspring.services.OrderService;
@@ -19,8 +19,8 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    // @Autowired
+    // private JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<OrderResponseDTO> placeOrder(

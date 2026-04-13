@@ -1,6 +1,6 @@
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.auth.JwtUtil;
+//import com.advanced.projectspring.auth.JwtUtil;
 import com.advanced.projectspring.dto.chat.ChatRequest;
 import com.advanced.projectspring.dto.chat.ChatResponse;
 import com.advanced.projectspring.services.ChatService;
@@ -19,8 +19,8 @@ public class ChatController {
     @Autowired
     private ChatService chatService; // inejct service
 
-    @Autowired
-    private JwtUtil jwtUtil; // inject Util - to validate/open token
+    // @Autowired
+    // private JwtUtil jwtUtil; // inject Util - to validate/open token
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(

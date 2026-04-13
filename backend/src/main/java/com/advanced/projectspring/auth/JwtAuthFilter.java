@@ -30,7 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // ── Step 1: Try to read token from HttpOnly cookie (preferred, secure) ──────
+        // ── Step 1: Try to read token from HttpOnly cookie
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("access_token".equals(cookie.getName())) {
@@ -40,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // ── Step 2: Fallback to Authorization header (backward compatibility) ────────
+        // ── Step 2: Fallback to Authorization header
         if (token == null) {
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -48,44 +48,46 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
-        // ── Step 3: If no token found, pass request through (security rules handle it)
+        // ── Step 3: If no token found, let Spring Security handle it
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ── Step 4: Validate token ────────────────────────────────────────────────────
+        // ── Step 4: Validate token (BUG #1 FIXED)
         if (!jwtUtil.validateToken(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            // Do NOT return 401 here!
+            // We must let the request continue so public endpoints (like /refresh) can
+            // still work.
+            // Protected endpoints will be automatically blocked by Spring Security.
+            filterChain.doFilter(request, response);
             return;
         }
 
-        // ── Step 5: Extract claims and set SecurityContext ────────────────────────────
+        // ── Step 5: Extract claims
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
         Long userId = jwtUtil.extractUserId(token);
 
-        // Set user attributes so controllers can use them directly
-        // without parsing the token again via Authorization header
-        if (userId != null) {
+        if (userId != null)
             request.setAttribute("userId", userId);
-        }
-        if (email != null) {
+        if (email != null)
             request.setAttribute("email", email);
-        }
-        if (role != null) {
+        if (role != null)
             request.setAttribute("role", role);
-        }
+
+        // BUG #2 FIXED: Prevent NullPointerException if role is missing
+        List<SimpleGrantedAuthority> authorities = (role != null)
+                ? List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                : List.of();
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 email,
                 null,
-                List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-        );
+                authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
 }
-

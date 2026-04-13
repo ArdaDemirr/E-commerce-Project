@@ -1,6 +1,6 @@
 package com.advanced.projectspring.controllers;
 
-import com.advanced.projectspring.auth.JwtUtil;
+//import com.advanced.projectspring.auth.JwtUtil;
 import com.advanced.projectspring.dto.individual.Review.ProductReviewDTO;
 import com.advanced.projectspring.dto.individual.Review.MyReviewDTO;
 import com.advanced.projectspring.dto.individual.Review.ReviewRequestDTO;
@@ -22,8 +22,8 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    // @Autowired
+    // private JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> addReview(
