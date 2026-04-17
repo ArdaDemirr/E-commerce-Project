@@ -40,7 +40,7 @@ public class OrderController {
     }
 
     // GET SINGLE ORDER WITH ID, users can only get their own orders
-    @GetMapping("/{id}")
+    @GetMapping("/my-orders/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderById(
             @PathVariable Long id,
             HttpServletRequest request) {
