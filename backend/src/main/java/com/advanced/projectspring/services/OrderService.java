@@ -54,8 +54,8 @@ public class OrderService {
             Product product = productRepository.findByIdWithLock(itemReq.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-            if (product.getStock() < itemReq.getQuantity()) {
-                throw new IllegalArgumentException("Not enough stock for: " + product.getName());
+            if (product.getStock() == null || product.getStock() < itemReq.getQuantity()) {
+                throw new IllegalArgumentException("Product is out of stock or invalid: " + product.getName());
             }
 
             // Deduct stock
