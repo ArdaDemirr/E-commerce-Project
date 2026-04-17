@@ -58,7 +58,7 @@ public class ShipmentController {
         return new ResponseEntity<>(created, HttpStatus.CREATED); // Returns 201 Created for Postman
     }
 
-    @GetMapping("/corporate")
+    @GetMapping("/my-shipments")
     @PreAuthorize("hasRole('CORPORATE')")
     public ResponseEntity<List<ShipmentResponseDTO>> getMyStoreShipments(HttpServletRequest request) {
         Long userId = getUserId(request);

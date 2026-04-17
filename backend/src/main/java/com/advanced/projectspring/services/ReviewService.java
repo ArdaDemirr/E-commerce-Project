@@ -74,6 +74,11 @@ public class ReviewService {
         }).collect(Collectors.toList());
     }
 
+    public ReviewResponseDTO getReviewById(Long reviewId, String userEmail) {
+        Review review = getReviewAndVerifyOwnership(reviewId, userEmail);
+        return convertToResponseDTO(review);
+    }
+
     public List<ProductReviewDTO> getProductReviews(Long productId) {
         return reviewRepository.findByProductId(productId).stream().map(review -> {
             ProductReviewDTO dto = new ProductReviewDTO();

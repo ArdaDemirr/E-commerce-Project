@@ -60,6 +60,14 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getUserReviews(email));
     }
 
+    @GetMapping("/my-reviews/{id}")
+    public ResponseEntity<ReviewResponseDTO> getReviewById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        return ResponseEntity.ok(reviewService.getReviewById(id, email));
+    }
+
     // GET ONLY PRODUCT REVIEWS
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ProductReviewDTO>> getProductReviews(@PathVariable Long productId) {
