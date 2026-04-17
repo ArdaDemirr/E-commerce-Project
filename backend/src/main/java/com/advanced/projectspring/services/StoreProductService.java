@@ -11,6 +11,7 @@ import com.advanced.projectspring.repositories.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -126,5 +127,19 @@ public class StoreProductService {
         }
 
         productRepository.delete(product);
+    }
+
+    public List<StoreProductsResponseDTO> getMyTopReviewedProducts(Long corporateUserId, Pageable pageable) {
+        return productRepository.findMostReviewedByStoreOwner(corporateUserId, pageable)
+                .stream()
+                .map(this::mapToResponseDTO) // Uses your existing corporate mapping logic
+                .collect(Collectors.toList());
+    }
+
+    public List<StoreProductsResponseDTO> getMyHighestRatedProducts(Long corporateUserId, Pageable pageable) {
+        return productRepository.findHighestRatedByStoreOwner(corporateUserId, pageable)
+                .stream()
+                .map(this::mapToResponseDTO) // Uses your existing corporate mapping logic
+                .collect(Collectors.toList());
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ProductService {
@@ -24,18 +25,16 @@ public class ProductService {
         CategorySummaryDTO category = null;
         if (p.getCategory() != null) {
             category = new CategorySummaryDTO(
-                p.getCategory().getId(),
-                p.getCategory().getName()
-            );
+                    p.getCategory().getId(),
+                    p.getCategory().getName());
         }
 
         StoreSummaryDTO store = null;
         if (p.getStore() != null) {
             store = new StoreSummaryDTO(
-                p.getStore().getId(),
-                p.getStore().getName(),
-                p.getStore().getStatus()
-            );
+                    p.getStore().getId(),
+                    p.getStore().getName(),
+                    p.getStore().getStatus());
         }
 
         return new ProductResponseDTO(
@@ -82,5 +81,19 @@ public class ProductService {
         return productRepository.findByStoreIdAndCategoryId(storeId, categoryId).stream().map(this::toDTO)
                 .collect(Collectors.toList());
         // filter by store and category
+    }
+
+    public List<ProductResponseDTO> getMostReviewedProducts(Pageable pageable) {
+        return productRepository.findMostReviewedProducts(pageable)
+                .stream()
+                .map(this::toDTO) // Uses your existing mapping logic
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponseDTO> getHighestRatedProducts(Pageable pageable) {
+        return productRepository.findHighestRatedProducts(pageable)
+                .stream()
+                .map(this::toDTO) // Uses your existing mapping logic
+                .collect(Collectors.toList());
     }
 }

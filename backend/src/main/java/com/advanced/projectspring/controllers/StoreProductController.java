@@ -5,8 +5,10 @@ import com.advanced.projectspring.dto.corporate.StoreProductsResponseDTO;
 import com.advanced.projectspring.services.StoreProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ public class StoreProductController {
     @Autowired
     private StoreProductService storeProductService;
 
-    // userId is extracted from the JWT cookie by JwtAuthFilter and set as a request attribute.
+    // userId is extracted from the JWT cookie by JwtAuthFilter and set as a request
+    // attribute.
     // No need to manually parse the Authorization header anymore.
     private Long getUserId(HttpServletRequest request) {
         Object userId = request.getAttribute("userId");
@@ -59,5 +62,28 @@ public class StoreProductController {
         storeProductService.deleteProduct(userId, id);
         return ResponseEntity.noContent().build();
     }
-}
 
+    @GetMapping("/analytics/most-reviewed")
+    public ResponseEntity<List<StoreProductsResponseDTO>> getMyTopReviewed(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(storeProductService.getMyTopReviewedProducts(userId, pageable));
+    }
+
+    @GetMapping("/analytics/highest-rated")
+    public ResponseEntity<List<StoreProductsResponseDTO>> getMyHighestRated(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(storeProductService.getMyHighestRatedProducts(userId, pageable));
+    }
+}

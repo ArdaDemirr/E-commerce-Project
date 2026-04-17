@@ -2,9 +2,12 @@ package com.advanced.projectspring.controllers;
 
 import com.advanced.projectspring.dto.ProductResponseDTO;
 import com.advanced.projectspring.services.ProductService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -40,5 +43,23 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDTO>> getByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
         // GET /api/products/category/3 → returns products in that category
+    }
+
+    @GetMapping("/most-reviewed")
+    public ResponseEntity<List<ProductResponseDTO>> getMostReviewedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(productService.getMostReviewedProducts(pageable));
+    }
+
+    @GetMapping("/highest-rated")
+    public ResponseEntity<List<ProductResponseDTO>> getHighestRatedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(productService.getHighestRatedProducts(pageable));
     }
 }
