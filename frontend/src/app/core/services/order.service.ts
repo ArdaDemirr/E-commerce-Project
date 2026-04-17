@@ -49,6 +49,10 @@ export class OrderService {
     );
   }
 
+  getOrderById(id: number): Observable<any> {
+    return this.api.get<any>(`/orders/my-orders/${id}`);
+  }
+
   placeOrder(request: PlaceOrderRequest): Observable<any> {
     return this.api.post<any>('/orders', request);
   }

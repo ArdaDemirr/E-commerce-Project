@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReviewService } from '../../../core/services/review.service';
-import { MyReviewDTO } from '../../../core/models/review.model';
+import { MyReviewDTO, ReviewRequest } from '../../../core/models/review.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-review-list',
@@ -13,12 +14,27 @@ export class ReviewListComponent implements OnInit {
   loading = true;
   error = false;
 
+  // Edit State
+  showEditModal = false;
+  editingReviewId: number | null = null;
+  editFormData: ReviewRequest = {
+    productId: 0,
+    rating: 0,
+    comment: ''
+  };
+
   constructor(
     private reviewService: ReviewService,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    this.loadReviews();
+  }
+
+  loadReviews(): void {
+    this.loading = true;
     this.reviewService.getMyReviews().subscribe({
       next: (data) => {
         this.reviews = data;
@@ -52,6 +68,51 @@ export class ReviewListComponent implements OnInit {
       case 'neutral':  return 'Nötr';
       case 'negative': return 'Olumsuz';
       default:         return sentiment;
+    }
+  }
+
+  openEditModal(review: MyReviewDTO): void {
+    this.editingReviewId = review.id;
+    this.editFormData = {
+      productId: review.productId, // Required by ReviewRequest DTO
+      rating: review.rating,
+      comment: review.comment
+    };
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.editingReviewId = null;
+  }
+
+  saveReview(): void {
+    if (!this.editFormData.rating || !this.editFormData.comment) {
+      this.toastr.warning('Lütfen geçerli bir puan ve yorum girin.');
+      return;
+    }
+
+    if (this.editingReviewId) {
+      this.reviewService.updateReview(this.editingReviewId, this.editFormData).subscribe({
+        next: () => {
+          this.toastr.success('Yorum başarıyla güncellendi.');
+          this.closeEditModal();
+          this.loadReviews();
+        },
+        error: () => this.toastr.error('Yorum güncellenemedi.')
+      });
+    }
+  }
+
+  deleteReview(id: number): void {
+    if (confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
+      this.reviewService.deleteReview(id).subscribe({
+        next: () => {
+          this.toastr.success('Yorum silindi.');
+          this.loadReviews();
+        },
+        error: () => this.toastr.error('Yorum silinirken bir hata oluştu.')
+      });
     }
   }
 }

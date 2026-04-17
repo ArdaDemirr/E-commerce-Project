@@ -19,7 +19,19 @@ export class StoreProductService {
     return this.api.put<StoreProductsResponseDTO>(`/corporate/products/${id}`, product);
   }
 
+  getProductByIdAndStoreId(id: number): Observable<StoreProductsResponseDTO> {
+    return this.api.get<StoreProductsResponseDTO>(`/corporate/products/${id}`);
+  }
+
   deleteProduct(id: number): Observable<void> {
     return this.api.delete<void>(`/corporate/products/${id}`);
+  }
+
+  getMyTopReviewedProducts(page: number = 0, size: number = 5): Observable<StoreProductsResponseDTO[]> {
+    return this.api.get<StoreProductsResponseDTO[]>(`/corporate/products/analytics/most-reviewed?page=${page}&size=${size}`);
+  }
+
+  getMyHighestRatedProducts(page: number = 0, size: number = 5): Observable<StoreProductsResponseDTO[]> {
+    return this.api.get<StoreProductsResponseDTO[]>(`/corporate/products/analytics/highest-rated?page=${page}&size=${size}`);
   }
 }

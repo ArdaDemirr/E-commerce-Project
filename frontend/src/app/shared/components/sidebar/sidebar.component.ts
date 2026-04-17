@@ -65,7 +65,8 @@ export class SidebarComponent implements OnInit {
         { path: '/reviews', label: 'Yorumlar', icon: 'star' }
       );
       this.managementItems = [
-        { path: '/admin/store-management', label: 'Mağaza Ayarları', icon: 'settings' }
+        { path: '/admin/store-management', label: 'Mağaza Ürünleri', icon: 'settings' },
+        { path: '/admin/store-shipments', label: 'Gönderi Yönetimi', icon: 'truck' }
       ];
       this.showManagement = true;
     } else if (role === 'ADMIN') {

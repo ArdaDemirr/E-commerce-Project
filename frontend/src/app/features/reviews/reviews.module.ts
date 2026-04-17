@@ -8,7 +8,11 @@ import {
   AlertCircle,
   Star,
   ThumbsUp,
+  Edit,
+  Trash2,
+  X,
 } from 'lucide-angular';
+import { FormsModule } from '@angular/forms';
 
 import { ReviewsRoutingModule } from './reviews-routing.module';
 import { ReviewListComponent } from './review-list/review-list';
@@ -19,12 +23,16 @@ import { ReviewListComponent } from './review-list/review-list';
     CommonModule,
     RouterModule,
     ReviewsRoutingModule,
+    FormsModule,
     LucideAngularModule.pick({
       MessageSquare,
       Package,
       AlertCircle,
       Star,
       ThumbsUp,
+      Edit,
+      Trash2,
+      X,
     }),
   ],
 })

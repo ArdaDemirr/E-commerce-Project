@@ -1,1 +1,81 @@
-<p>analytics-page works!</p>
+<div class="space-y-8 animate__animated animate__fadeIn">
+  <!-- Header -->
+  <div>
+    <h1 class="text-3xl font-bold flex items-center gap-3 mb-2 text-white">
+      <lucide-icon name="bar-chart-2" [size]="32" class="text-primary"></lucide-icon>
+      Mağaza İstatistikleri
+    </h1>
+    <p class="text-slate-400">Ürünlerinizin performansı ve müşteri geri bildirimleri.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Most Reviewed Products Column -->
+    <div class="glass-card p-6 flex flex-col border border-slate-700/50">
+      <div class="flex flex-row gap-2 items-center text-xl font-bold text-white mb-6">
+        <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+          <lucide-icon name="message-square" [size]="20"></lucide-icon>
+        </div>
+        <h3>En Çok Yorum Alan Ürünler</h3>
+      </div>
+      
+      <div *ngIf="loadingMostReviewed" class="space-y-4 animate-pulse">
+        <div *ngFor="let i of [1,2,3,4,5]" class="h-14 bg-slate-700/20 rounded-xl"></div>
+      </div>
+
+      <div *ngIf="!loadingMostReviewed && mostReviewedProducts.length === 0" class="text-slate-400 text-center py-8">
+        Henüz yorum alan ürün bulunmuyor.
+      </div>
+
+      <div *ngIf="!loadingMostReviewed && mostReviewedProducts.length > 0" class="flex flex-col gap-3">
+        <div *ngFor="let product of mostReviewedProducts; let i = index" 
+             class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/50 transition border border-slate-700/30">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-300">
+              {{ i + 1 }}
+            </div>
+            <div>
+              <p class="font-medium text-white text-sm line-clamp-1">{{ product.name }}</p>
+              <p class="text-xs text-slate-500">{{ product.sku }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highest Rated Products Column -->
+    <div class="glass-card p-6 flex flex-col border border-slate-700/50">
+      <div class="flex flex-row gap-2 items-center text-xl font-bold text-white mb-6">
+        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+          <lucide-icon name="star" [size]="20"></lucide-icon>
+        </div>
+        <h3>En Yüksek Puanlı Ürünler</h3>
+      </div>
+
+      <div *ngIf="loadingHighestRated" class="space-y-4 animate-pulse">
+        <div *ngFor="let i of [1,2,3,4,5]" class="h-14 bg-slate-700/20 rounded-xl"></div>
+      </div>
+
+      <div *ngIf="!loadingHighestRated && highestRatedProducts.length === 0" class="text-slate-400 text-center py-8">
+        Henüz puanlanan ürün bulunmuyor.
+      </div>
+
+      <div *ngIf="!loadingHighestRated && highestRatedProducts.length > 0" class="flex flex-col gap-3">
+        <div *ngFor="let product of highestRatedProducts; let i = index" 
+             class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/50 transition border border-slate-700/30">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-sm text-slate-300">
+              {{ i + 1 }}
+            </div>
+            <div>
+              <p class="font-medium text-white text-sm line-clamp-1">{{ product.name }}</p>
+              <p class="text-xs text-slate-500">{{ product.sku }}</p>
+            </div>
+          </div>
+          <!-- Not drawing stars since we don't have product rating prop, but backend ranks them -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

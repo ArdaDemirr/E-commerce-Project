@@ -19,4 +19,16 @@ export class ReviewService {
   addReview(request: ReviewRequest): Observable<any> {
     return this.api.post<any>('/reviews', request);
   }
+
+  getReviewById(id: number): Observable<any> {
+    return this.api.get<any>(`/reviews/my-reviews/${id}`);
+  }
+
+  updateReview(id: number, request: ReviewRequest): Observable<any> {
+    return this.api.put<any>(`/reviews/${id}`, request);
+  }
+
+  deleteReview(id: number): Observable<void> {
+    return this.api.delete<void>(`/reviews/${id}`);
+  }
 }

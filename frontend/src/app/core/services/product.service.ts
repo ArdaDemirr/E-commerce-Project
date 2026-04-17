@@ -321,6 +321,28 @@ export class ProductService {
       );
   }
 
+  getMostReviewedProducts(page: number = 0, size: number = 10): Observable<Product[]> {
+    if (USE_MOCK) return of(MOCK_PRODUCTS.slice(0, size));
+    return this.http.get<any>(`${this.base}/products/most-reviewed?page=${page}&size=${size}`).pipe(
+      map((res) => (Array.isArray(res) ? this.mapProducts(res) : [])),
+      catchError((err) => {
+        console.error('Failed to fetch most reviewed products:', err);
+        return of([]);
+      }),
+    );
+  }
+
+  getHighestRatedProducts(page: number = 0, size: number = 10): Observable<Product[]> {
+    if (USE_MOCK) return of(MOCK_PRODUCTS.slice(0, size));
+    return this.http.get<any>(`${this.base}/products/highest-rated?page=${page}&size=${size}`).pipe(
+      map((res) => (Array.isArray(res) ? this.mapProducts(res) : [])),
+      catchError((err) => {
+        console.error('Failed to fetch highest rated products:', err);
+        return of([]);
+      }),
+    );
+  }
+
   private mapProducts(raw: any[]): Product[] {
     return raw.map((p) => this.mapProduct(p));
   }

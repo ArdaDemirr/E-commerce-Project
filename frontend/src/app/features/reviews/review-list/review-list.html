@@ -81,12 +81,68 @@
           <!-- Comment -->
           <p class="text-slate-300 text-sm mt-2 leading-relaxed">{{ review.comment }}</p>
 
-          <!-- Helpful Votes Footer -->
-          <div class="flex items-center gap-1 mt-3 text-slate-500 text-xs">
-            <lucide-icon name="thumbs-up" [size]="12"></lucide-icon>
-            <span>{{ review.helpfulVotes }} kişi faydalı buldu</span>
+          <!-- Helpful Votes Footer & Action Buttons -->
+          <div class="flex items-center justify-between mt-3">
+            <div class="flex items-center gap-1 text-slate-500 text-xs">
+              <lucide-icon name="thumbs-up" [size]="12"></lucide-icon>
+              <span>{{ review.helpfulVotes }} kişi faydalı buldu</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button (click)="openEditModal(review)" class="text-xs flex items-center gap-1 text-slate-400 hover:text-white transition-colors duration-200">
+                <lucide-icon name="edit" [size]="14"></lucide-icon>
+                <span>Düzenle</span>
+              </button>
+              <button (click)="deleteReview(review.id)" class="text-xs flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors duration-200 ml-2">
+                <lucide-icon name="trash-2" [size]="14"></lucide-icon>
+                <span>Sil</span>
+              </button>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Review Modal -->
+  <div *ngIf="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeEditModal()"></div>
+    
+    <div class="relative w-full max-w-lg glass-card p-6 animate__animated animate__fadeInUp animate__faster border border-slate-700">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-bold text-white">Yorumu Düzenle</h3>
+        <button (click)="closeEditModal()" class="text-slate-400 hover:text-white transition-colors">
+          <lucide-icon name="x" [size]="24"></lucide-icon>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Rating Select -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-slate-300 mb-1.5">Puan</label>
+          <select [(ngModel)]="editFormData.rating" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+            <option [ngValue]="5">5 Yıldız</option>
+            <option [ngValue]="4">4 Yıldız</option>
+            <option [ngValue]="3">3 Yıldız</option>
+            <option [ngValue]="2">2 Yıldız</option>
+            <option [ngValue]="1">1 Yıldız</option>
+          </select>
+        </div>
+
+        <!-- Comment -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-slate-300 mb-1.5">Yorumunuz</label>
+          <textarea [(ngModel)]="editFormData.comment" rows="4" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex justify-end gap-3">
+        <button (click)="closeEditModal()" class="px-5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+          İptal
+        </button>
+        <button (click)="saveReview()" class="btn-primary">
+          Kaydet
+        </button>
       </div>
     </div>
   </div>
