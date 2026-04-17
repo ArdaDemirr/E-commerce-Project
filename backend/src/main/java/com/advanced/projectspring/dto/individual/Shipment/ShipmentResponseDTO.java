@@ -1,6 +1,7 @@
 package com.advanced.projectspring.dto.individual.Shipment;
 
 public class ShipmentResponseDTO {
+    private Long id;
     private String trackingId; // Matches trackingId in model
     private String mode; // This acts as the carrier (Flight, Ship, Road, etc.)
     private String status;
@@ -9,6 +10,14 @@ public class ShipmentResponseDTO {
     private Long orderId;
 
     // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTrackingId() {
         return trackingId;
     }

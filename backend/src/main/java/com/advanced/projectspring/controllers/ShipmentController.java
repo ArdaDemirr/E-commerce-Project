@@ -65,7 +65,7 @@ public class ShipmentController {
         return ResponseEntity.ok(shipmentService.getShipmentsForStoreOwner(userId));
     }
 
-    @PatchMapping("/{id}/status")
+    @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('CORPORATE')")
     public ResponseEntity<ShipmentResponseDTO> updateShipmentStatus(
             @PathVariable Long id,

@@ -35,8 +35,6 @@ public class ShipmentService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
-        // SECURITY CHECK: Ensure this order actually belongs to the requesting store
-        // owner
         if (!storeOwnerId.equals(order.getStore().getOwner().getId())) {
             throw new SecurityException("You do not have permission to fulfill this order");
         }
@@ -91,6 +89,7 @@ public class ShipmentService {
 
     private ShipmentResponseDTO convertToResponseDTO(Shipment shipment) {
         ShipmentResponseDTO dto = new ShipmentResponseDTO();
+        dto.setId(shipment.getId());
         dto.setTrackingId(shipment.getTrackingId());
         dto.setMode(shipment.getMode());
         dto.setStatus(shipment.getStatus());
