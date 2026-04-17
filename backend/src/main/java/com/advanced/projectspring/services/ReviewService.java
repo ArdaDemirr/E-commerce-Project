@@ -98,6 +98,25 @@ public class ReviewService {
         }).collect(Collectors.toList());
     }
 
+    public List<ProductReviewDTO> getStoreOwnerReviews(Long ownerId) {
+        return reviewRepository.findByProductStoreOwnerId(ownerId).stream().map(review -> {
+            ProductReviewDTO dto = new ProductReviewDTO();
+            dto.setId(review.getId());
+
+            String fullName = review.getUser().getName();
+            if (review.getUser().getSurname() != null) {
+                fullName += " " + review.getUser().getSurname();
+            }
+            dto.setReviewerName(fullName);
+            dto.setRating(review.getStarRating());
+            dto.setComment(review.getComment());
+            dto.setCreatedAt(review.getCreatedAt());
+            dto.setHelpfulVotes(review.getHelpfulVotes());
+            dto.setSentiment(review.getSentiment());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
     public void deleteReview(Long reviewId, String userEmail) {
         Review review = getReviewAndVerifyOwnership(reviewId, userEmail);
         reviewRepository.delete(review);

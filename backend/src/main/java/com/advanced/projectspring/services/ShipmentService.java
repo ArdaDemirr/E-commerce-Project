@@ -1,6 +1,8 @@
 package com.advanced.projectspring.services;
 
 import com.advanced.projectspring.dto.individual.Shipment.ShipmentResponseDTO;
+import com.advanced.projectspring.dto.corporate.CorporateShipmentResponseDTO;
+import com.advanced.projectspring.dto.CustomerSummaryDTO;
 import com.advanced.projectspring.models.Order;
 import com.advanced.projectspring.models.Shipment;
 import com.advanced.projectspring.repositories.OrderRepository;
@@ -31,7 +33,7 @@ public class ShipmentService {
     }
 
     @Transactional
-    public ShipmentResponseDTO addShipment(Long orderId, Long storeOwnerId) {
+    public CorporateShipmentResponseDTO addShipment(Long orderId, Long storeOwnerId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
@@ -45,18 +47,18 @@ public class ShipmentService {
 
         Shipment shipment = new Shipment();
         shipment.setOrder(order);
-        shipment.setStatus("SHIPPED");
+        shipment.setStatus("PREPARING");
         shipment.setTrackingId("TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         shipment.setWarehouse("Central Distribution");
         shipment.setMode("Road");
         shipment.setProductImportance("Standard");
 
         Shipment savedShipment = shipmentRepository.save(shipment);
-        return convertToResponseDTO(savedShipment);
+        return convertToCorporateResponseDTO(savedShipment);
     }
 
     @Transactional
-    public ShipmentResponseDTO updateShipmentStatus(Long shipmentId, String newStatus, Long storeOwnerId) {
+    public CorporateShipmentResponseDTO updateShipmentStatus(Long shipmentId, String newStatus, Long storeOwnerId) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Shipment not found"));
 
@@ -67,16 +69,28 @@ public class ShipmentService {
 
         shipment.setStatus(newStatus);
         Shipment updatedShipment = shipmentRepository.save(shipment);
-        return convertToResponseDTO(updatedShipment);
+        return convertToCorporateResponseDTO(updatedShipment);
     }
 
-    public List<ShipmentResponseDTO> getShipmentsForStoreOwner(Long storeOwnerId) {
+    public List<CorporateShipmentResponseDTO> getShipmentsForStoreOwner(Long storeOwnerId) {
         // Filters all shipments to return only those belonging to this specific store
         // owner
         return shipmentRepository.findAll().stream()
                 .filter(s -> storeOwnerId.equals(s.getOrder().getStore().getOwner().getId()))
-                .map(this::convertToResponseDTO)
+                .map(this::convertToCorporateResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public CorporateShipmentResponseDTO getShipmentById(Long shipmentId, Long storeOwnerId) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Shipment not found"));
+
+        // SECURITY CHECK: Verify Ownership before getting
+        if (!storeOwnerId.equals(shipment.getOrder().getStore().getOwner().getId())) {
+            throw new SecurityException("You do not have permission to get this shipment");
+        }
+
+        return convertToCorporateResponseDTO(shipment);
     }
 
     private boolean canAccessShipment(Shipment shipment, Long userId, String role) {
@@ -98,6 +112,26 @@ public class ShipmentService {
 
         if (shipment.getOrder() != null) {
             dto.setOrderId(shipment.getOrder().getId());
+        }
+        return dto;
+    }
+
+    private CorporateShipmentResponseDTO convertToCorporateResponseDTO(Shipment shipment) {
+        CorporateShipmentResponseDTO dto = new CorporateShipmentResponseDTO();
+        dto.setId(shipment.getId());
+        dto.setTrackingId(shipment.getTrackingId());
+        dto.setMode(shipment.getMode());
+        dto.setStatus(shipment.getStatus());
+        dto.setWarehouse(shipment.getWarehouse());
+        dto.setProductImportance(shipment.getProductImportance());
+
+        if (shipment.getOrder() != null) {
+            dto.setOrderId(shipment.getOrder().getId());
+            dto.setCustomer(new CustomerSummaryDTO(
+                    shipment.getOrder().getUser().getId(),
+                    shipment.getOrder().getUser().getName(),
+                    shipment.getOrder().getUser().getSurname(),
+                    shipment.getOrder().getUser().getEmail()));
         }
         return dto;
     }

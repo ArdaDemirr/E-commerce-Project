@@ -1,4 +1,4 @@
-package com.advanced.projectspring.controllers;
+package com.advanced.projectspring.controllers.Individual;
 
 import com.advanced.projectspring.dto.individual.Order.OrderRequestDTO;
 import com.advanced.projectspring.dto.individual.Order.OrderResponseDTO;
@@ -31,7 +31,7 @@ public class OrderController {
     }
 
     // GET ONLY MY ORDERS
-    @GetMapping("/my-orders")
+    @GetMapping
     public ResponseEntity<List<OrderResponseDTO>> getMyOrders(
             HttpServletRequest request) {
 
@@ -40,7 +40,7 @@ public class OrderController {
     }
 
     // GET SINGLE ORDER WITH ID, users can only get their own orders
-    @GetMapping("/my-orders/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderById(
             @PathVariable Long id,
             HttpServletRequest request) {

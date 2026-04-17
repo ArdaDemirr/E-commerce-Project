@@ -1,4 +1,4 @@
-package com.advanced.projectspring.controllers;
+package com.advanced.projectspring.controllers.Individual;
 
 //import com.advanced.projectspring.auth.JwtUtil;
 import com.advanced.projectspring.dto.individual.Review.ProductReviewDTO;
@@ -23,8 +23,27 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    // @Autowired
-    // private JwtUtil jwtUtil;
+    // GET ONLY PRODUCT REVIEWS
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<List<ProductReviewDTO>> getProductReviews(@PathVariable Long productId) {
+        return ResponseEntity.ok(reviewService.getProductReviews(productId));
+    }
+
+    // GET ONLY MY REVIEWS
+    @GetMapping
+    public ResponseEntity<List<MyReviewDTO>> getMyReviews(
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        return ResponseEntity.ok(reviewService.getUserReviews(email));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ReviewResponseDTO> getReviewById(
+            @PathVariable Long id,
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        return ResponseEntity.ok(reviewService.getReviewById(id, email));
+    }
 
     // CREATE REVIEW
     @PostMapping
@@ -50,27 +69,5 @@ public class ReviewController {
         String email = (String) request.getAttribute("email");
         reviewService.deleteReview(id, email);
         return ResponseEntity.noContent().build();
-    }
-
-    // GET ONLY MY REVIEWS
-    @GetMapping("/my-reviews")
-    public ResponseEntity<List<MyReviewDTO>> getMyReviews(
-            HttpServletRequest request) {
-        String email = (String) request.getAttribute("email");
-        return ResponseEntity.ok(reviewService.getUserReviews(email));
-    }
-
-    @GetMapping("/my-reviews/{id}")
-    public ResponseEntity<ReviewResponseDTO> getReviewById(
-            @PathVariable Long id,
-            HttpServletRequest request) {
-        String email = (String) request.getAttribute("email");
-        return ResponseEntity.ok(reviewService.getReviewById(id, email));
-    }
-
-    // GET ONLY PRODUCT REVIEWS
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<ProductReviewDTO>> getProductReviews(@PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getProductReviews(productId));
     }
 }

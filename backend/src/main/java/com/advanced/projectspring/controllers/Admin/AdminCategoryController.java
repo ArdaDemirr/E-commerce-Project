@@ -1,4 +1,4 @@
-package com.advanced.projectspring.controllers;
+package com.advanced.projectspring.controllers.Admin;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.advanced.projectspring.dto.CategoryResponseDTO;
 import com.advanced.projectspring.dto.admin.AdminCategoryRequestDTO;
 import com.advanced.projectspring.services.CategoryService;
@@ -21,6 +22,7 @@ import com.advanced.projectspring.services.CategoryService;
 @RestController
 @RequestMapping("/api/admin/categories")
 @CrossOrigin(origins = "http://localhost:4200")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminCategoryController {
     @Autowired
     private CategoryService categoryService;

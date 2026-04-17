@@ -4,6 +4,8 @@ import com.advanced.projectspring.dto.individual.Order.OrderItemRequestDTO;
 import com.advanced.projectspring.dto.individual.Order.OrderItemResponseDTO;
 import com.advanced.projectspring.dto.individual.Order.OrderRequestDTO;
 import com.advanced.projectspring.dto.individual.Order.OrderResponseDTO;
+import com.advanced.projectspring.dto.corporate.CorporateOrderResponseDTO;
+import com.advanced.projectspring.dto.CustomerSummaryDTO;
 import com.advanced.projectspring.dto.StoreSummaryDTO;
 import com.advanced.projectspring.models.*;
 import com.advanced.projectspring.repositories.*;
@@ -28,6 +30,32 @@ public class OrderService {
     private StoreRepository storeRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ShipmentService shipmentService;
+
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setId(order.getId());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setGrandTotal(order.getGrandTotal());
+        dto.setPaymentMethod(order.getPaymentMethod());
+        dto.setStatus(order.getStatus());
+        dto.setStore(new StoreSummaryDTO(order.getStore().getId(), order.getStore().getName(),
+                order.getStore().getStatus()));
+
+        List<OrderItemResponseDTO> itemDTOs = orderItemRepository.findByOrderId(order.getId()).stream().map(item -> {
+            OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
+            itemDto.setProductId(item.getProduct().getId());
+            itemDto.setProductName(item.getProduct().getName());
+            itemDto.setQuantity(item.getQuantity());
+            itemDto.setUnitPrice(item.getPrice());
+            itemDto.setTotalPrice(item.getQuantity() * item.getPrice());
+            return itemDto;
+        }).toList();
+
+        dto.setItems(itemDTOs);
+        return dto;
+    }
 
     @Transactional
     public OrderResponseDTO placeOrder(Long userId, OrderRequestDTO request) {
@@ -48,6 +76,8 @@ public class OrderService {
         order.setGrandTotal(0.0); // Temporary, we will calculate below
         order.setCreatedAt(LocalDateTime.now());
         Order savedOrder = orderRepository.save(order);
+
+        shipmentService.addShipment(savedOrder.getId(), savedOrder.getStore().getOwner().getId());
 
         // 2. Process each item in the cart
         for (OrderItemRequestDTO itemReq : request.getItems()) {
@@ -80,15 +110,27 @@ public class OrderService {
         return mapToOrderResponseDTO(finalOrder);
     }
 
-    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
-        OrderResponseDTO dto = new OrderResponseDTO();
+    public List<OrderResponseDTO> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId).stream()
+                .map(this::mapToOrderResponseDTO)
+                .toList();
+    }
+
+    public OrderResponseDTO getOrderById(Long orderId, Long userId) {
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .map(this::mapToOrderResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found or access denied"));
+    }
+
+    private CorporateOrderResponseDTO mapToCorporateOrderResponseDTO(Order order) {
+        CorporateOrderResponseDTO dto = new CorporateOrderResponseDTO();
         dto.setId(order.getId());
         dto.setCreatedAt(order.getCreatedAt());
         dto.setGrandTotal(order.getGrandTotal());
         dto.setPaymentMethod(order.getPaymentMethod());
         dto.setStatus(order.getStatus());
-        dto.setStore(new StoreSummaryDTO(order.getStore().getId(), order.getStore().getName(),
-                order.getStore().getStatus()));
+        dto.setCustomer(new CustomerSummaryDTO(order.getUser().getId(), order.getUser().getName(),
+                order.getUser().getSurname(), order.getUser().getEmail()));
 
         List<OrderItemResponseDTO> itemDTOs = orderItemRepository.findByOrderId(order.getId()).stream().map(item -> {
             OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
@@ -104,15 +146,16 @@ public class OrderService {
         return dto;
     }
 
-    public List<OrderResponseDTO> getUserOrders(Long userId) {
-        return orderRepository.findByUserId(userId).stream()
-                .map(this::mapToOrderResponseDTO)
+    // STORE ORDERS
+    public List<CorporateOrderResponseDTO> getStoreOrders(Long userId) {
+        return orderRepository.findByStoreOwnerId(userId).stream()
+                .map(this::mapToCorporateOrderResponseDTO)
                 .toList();
     }
 
-    public OrderResponseDTO getOrderById(Long orderId, Long userId) {
-        return orderRepository.findByIdAndUserId(orderId, userId)
-                .map(this::mapToOrderResponseDTO)
+    public CorporateOrderResponseDTO getStoreOrderById(Long orderId, Long userId) {
+        return orderRepository.findByIdAndStoreOwnerId(orderId, userId)
+                .map(this::mapToCorporateOrderResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found or access denied"));
     }
 }

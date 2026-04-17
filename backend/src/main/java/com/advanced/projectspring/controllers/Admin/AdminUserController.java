@@ -1,4 +1,4 @@
-package com.advanced.projectspring.controllers;
+package com.advanced.projectspring.controllers.Admin;
 
 import org.springframework.web.bind.annotation.RestController;
 import com.advanced.projectspring.services.UserService;

@@ -72,16 +72,26 @@ public class ProductService {
         // filter by category
     }
 
-    public List<ProductResponseDTO> getProductsByStore(Long storeId) {
-        return productRepository.findByStoreId(storeId).stream().map(this::toDTO).collect(Collectors.toList());
-        // filter by store
-    }
+    /*
+     * public List<ProductResponseDTO> getProductsByStore(Long storeId) {
+     * return
+     * productRepository.findByStoreId(storeId).stream().map(this::toDTO).collect(
+     * Collectors.toList());
+     * // filter by store
+     * }
+     */
 
-    public List<ProductResponseDTO> getProductsByStoreAndCategory(Long storeId, Long categoryId) {
-        return productRepository.findByStoreIdAndCategoryId(storeId, categoryId).stream().map(this::toDTO)
-                .collect(Collectors.toList());
-        // filter by store and category
-    }
+    /*
+     * public List<ProductResponseDTO> getProductsByStoreAndCategory(Long storeId,
+     * Long categoryId) {
+     * return
+     * productRepository.findByStoreIdAndCategoryId(storeId,
+     * categoryId).stream().map(
+     * this::toDTO)
+     * .collect(Collectors.toList());
+     * // filter by store and category
+     * }
+     */
 
     public List<ProductResponseDTO> getMostReviewedProducts(Pageable pageable) {
         return productRepository.findMostReviewedProducts(pageable)

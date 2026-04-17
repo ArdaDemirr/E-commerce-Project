@@ -4,12 +4,9 @@ import com.advanced.projectspring.dto.CategoryResponseDTO;
 import com.advanced.projectspring.dto.admin.AdminCategoryRequestDTO;
 import com.advanced.projectspring.models.Category;
 import com.advanced.projectspring.repositories.CategoryRepository;
-
 import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,12 +15,6 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
-    /*
-     * public List<Category> getAllCategories() {
-     * return categoryRepository.findAll();
-     * }
-     */
 
     // ---------------- GENERAL METHOD TO LIST CATEGORIES ----------------
 

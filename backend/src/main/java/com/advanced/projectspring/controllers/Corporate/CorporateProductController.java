@@ -1,4 +1,4 @@
-package com.advanced.projectspring.controllers;
+package com.advanced.projectspring.controllers.Corporate;
 
 import com.advanced.projectspring.dto.corporate.StoreProductsRequestDTO;
 import com.advanced.projectspring.dto.corporate.StoreProductsResponseDTO;
@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/corporate/products")
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @PreAuthorize("hasRole('CORPORATE')")
-public class StoreProductController {
+public class CorporateProductController {
 
     @Autowired
     private StoreProductService storeProductService;
@@ -34,7 +34,7 @@ public class StoreProductController {
         return (Long) userId;
     }
 
-    // GET ALL PRODUCTS
+    // GET ALL STORE PRODUCTS
     @GetMapping
     public ResponseEntity<List<StoreProductsResponseDTO>> getAllProducts(HttpServletRequest request) {
         Long userId = getUserId(request);

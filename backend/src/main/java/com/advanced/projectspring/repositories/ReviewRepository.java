@@ -21,4 +21,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // this is important for AI. When chatbot is asked "show me negative reviews for
     // this product" we call findBySentiment("negative")
     List<Review> findBySentiment(String sentiment);
+
+    // used by store owners to view reviews made on their specific products
+    List<Review> findByProductStoreOwnerId(Long ownerId);
 }
