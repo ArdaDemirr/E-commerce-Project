@@ -63,9 +63,12 @@ public class StoreProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<StoreProductsResponseDTO> getProductByIdAndStoreId(Long productId, Long storeId) {
-        // Find the product by BOTH the product ID and the owning Store/User ID
-        return productRepository.findByIdAndStoreId(productId, storeId)
+    public Optional<StoreProductsResponseDTO> getProductByIdAndStoreId(Long productId, Long userId) {
+        // 1. Get the actual Store entity using the userId
+        Store store = getStoreByUserId(userId);
+
+        // 2. Pass the store.getId() to the repository, not the userId!
+        return productRepository.findByIdAndStoreId(productId, store.getId())
                 .map(this::mapToResponseDTO);
     }
 
