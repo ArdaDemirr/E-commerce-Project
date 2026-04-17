@@ -71,7 +71,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
       items: this.cartItems.map(i => ({ productId: i.id, quantity: i.qty })),
     };
 
-    this.orderService.placeMockOrder(payload, this.cartItems).subscribe({
+    this.orderService.placeOrder(payload).subscribe({
       next: () => {
         this.cartService.clearCart();
         this.isProcessing = false;
