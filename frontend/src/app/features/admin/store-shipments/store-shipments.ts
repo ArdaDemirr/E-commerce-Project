@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ShipmentService } from '../../../core/services/shipment.service';
 import { ShipmentResponseDTO } from '../../../core/models/shipment.model';
 import { ToastrService } from 'ngx-toastr';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-store-shipments',
@@ -15,7 +16,8 @@ export class StoreShipmentsComponent implements OnInit {
 
   constructor(
     private shipmentService: ShipmentService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -26,12 +28,14 @@ export class StoreShipmentsComponent implements OnInit {
     this.loading = true;
     this.shipmentService.getMyStoreShipments().subscribe({
       next: (data) => {
-        this.shipments = data;
+        this.shipments = data || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.toastr.error('Gönderiler yüklenirken hata oluştu.');
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

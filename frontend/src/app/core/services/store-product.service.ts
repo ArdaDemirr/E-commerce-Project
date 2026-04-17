@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { StoreProductsRequestDTO, StoreProductsResponseDTO } from '../models/store-product.model';
 
@@ -28,10 +29,14 @@ export class StoreProductService {
   }
 
   getMyTopReviewedProducts(page: number = 0, size: number = 5): Observable<StoreProductsResponseDTO[]> {
-    return this.api.get<StoreProductsResponseDTO[]>(`/corporate/products/analytics/most-reviewed?page=${page}&size=${size}`);
+    return this.api.get<any>(`/corporate/products/analytics/most-reviewed?page=${page}&size=${size}`).pipe(
+      map(res => res.content ? res.content : res)
+    );
   }
 
   getMyHighestRatedProducts(page: number = 0, size: number = 5): Observable<StoreProductsResponseDTO[]> {
-    return this.api.get<StoreProductsResponseDTO[]>(`/corporate/products/analytics/highest-rated?page=${page}&size=${size}`);
+    return this.api.get<any>(`/corporate/products/analytics/highest-rated?page=${page}&size=${size}`).pipe(
+      map(res => res.content ? res.content : res)
+    );
   }
 }
