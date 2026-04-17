@@ -4,6 +4,9 @@ import com.advanced.projectspring.dto.CategoryResponseDTO;
 import com.advanced.projectspring.dto.admin.AdminCategoryRequestDTO;
 import com.advanced.projectspring.models.Category;
 import com.advanced.projectspring.repositories.CategoryRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,12 @@ public class CategoryService {
         return categoryRepository.findAll().stream()
                 .map(this::mapToCategoryResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public CategoryResponseDTO getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+        return mapToCategoryResponseDTO(category);
     }
 
     // ---------------- ADMIN METHODS ----------------

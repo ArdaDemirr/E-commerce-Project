@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +61,12 @@ public class StoreProductService {
         return productRepository.findByStoreId(store.getId()).stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<StoreProductsResponseDTO> getProductByIdAndStoreId(Long productId, Long storeId) {
+        // Find the product by BOTH the product ID and the owning Store/User ID
+        return productRepository.findByIdAndStoreId(productId, storeId)
+                .map(this::mapToResponseDTO);
     }
 
     // 2. CREATE (Add a new product)

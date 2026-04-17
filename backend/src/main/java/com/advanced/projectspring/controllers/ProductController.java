@@ -18,6 +18,7 @@ public class ProductController {
     @Autowired
     private ProductService productService; // inject service
 
+    // GET ALL PRODUCTS
     @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
@@ -25,6 +26,7 @@ public class ProductController {
     // returns a list of ProductResponseDTO to hide sensitive data from public
     // exposure
 
+    // GET SINGLE PRODUCT WITH ID
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
@@ -33,18 +35,21 @@ public class ProductController {
         // GET /api/products/1 → returns product or 404
     }
 
+    // SEARCH PRODUCTS BY NAME
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponseDTO>> searchProducts(@RequestParam String name) {
         return ResponseEntity.ok(productService.searchProducts(name));
         // GET /api/products/search?name=phone → returns matching products
     }
 
+    // GET PRODUCTS BY CATEGORY
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ProductResponseDTO>> getByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
         // GET /api/products/category/3 → returns products in that category
     }
 
+    // GET MOST REVIEWED PRODUCTS
     @GetMapping("/most-reviewed")
     public ResponseEntity<List<ProductResponseDTO>> getMostReviewedProducts(
             @RequestParam(defaultValue = "0") int page,
@@ -54,6 +59,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getMostReviewedProducts(pageable));
     }
 
+    // GET HIGHEST RATED PRODUCTS
     @GetMapping("/highest-rated")
     public ResponseEntity<List<ProductResponseDTO>> getHighestRatedProducts(
             @RequestParam(defaultValue = "0") int page,

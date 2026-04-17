@@ -1,7 +1,7 @@
 package com.advanced.projectspring.repositories;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,6 +28,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                                                              // store and category
 
     List<Product> findByStoreOwnerId(Long ownerId);
+
+    Optional<Product> findByIdAndStoreId(Long productId, Long storeId);
 
     /**
      * Retrieves a paginated list of products ordered by the total number of

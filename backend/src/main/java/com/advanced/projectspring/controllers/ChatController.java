@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 // exposes the endpoint for chat-AI
 
@@ -24,7 +25,7 @@ public class ChatController {
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(
-            @RequestBody ChatRequest requestDTO, // sends a JSON object containing the user's message
+            @Valid @RequestBody ChatRequest requestDTO, // sends a JSON object containing the user's message
             HttpServletRequest request) { // Use request to access attributes
 
         // Extract user info from attributes set by JwtAuthFilter

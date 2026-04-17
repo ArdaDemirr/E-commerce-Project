@@ -28,6 +28,10 @@ public class ReviewService {
     @Autowired
     private ProductRepository productRepository;
 
+    // ==========================================
+    // CORE METHODS
+    // ==========================================
+
     public ReviewResponseDTO addReview(String email, ReviewRequestDTO request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -46,30 +50,12 @@ public class ReviewService {
         review.setCreatedAt(LocalDateTime.now());
         review.setHelpfulVotes(0);
         review.setTotalVotes(0);
-
-        if (request.getRating() >= 4) {
-            review.setSentiment("positive");
-        } else if (request.getRating() == 3) {
-            review.setSentiment("neutral");
-        } else {
-            review.setSentiment("negative");
-        }
+        review.setSentiment(calculateSentiment(request.getRating()));
 
         Review savedReview = reviewRepository.save(review);
-
-        ReviewResponseDTO response = new ReviewResponseDTO();
-        response.setId(savedReview.getId());
-        response.setProductId(product.getId());
-        response.setProductName(product.getName());
-        response.setRating(savedReview.getStarRating());
-        response.setComment(savedReview.getComment());
-        response.setSentiment(savedReview.getSentiment());
-        response.setCreatedAt(savedReview.getCreatedAt());
-
-        return response;
+        return convertToResponseDTO(savedReview);
     }
 
-    // VERSION 1: User Specific (For the Yorumlarım tab)
     public List<MyReviewDTO> getUserReviews(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -88,7 +74,6 @@ public class ReviewService {
         }).collect(Collectors.toList());
     }
 
-    // VERSION 2: Global/Product Specific (For the Product Details page)
     public List<ProductReviewDTO> getProductReviews(Long productId) {
         return reviewRepository.findByProductId(productId).stream().map(review -> {
             ProductReviewDTO dto = new ProductReviewDTO();
@@ -106,5 +91,75 @@ public class ReviewService {
             dto.setSentiment(review.getSentiment());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public void deleteReview(Long reviewId, String userEmail) {
+        Review review = getReviewAndVerifyOwnership(reviewId, userEmail);
+        reviewRepository.delete(review);
+    }
+
+    public ReviewResponseDTO updateReview(Long reviewId, String userEmail, ReviewRequestDTO requestDTO) {
+        if (requestDTO.getRating() < 1 || requestDTO.getRating() > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+
+        // Fetch and verify ownership using the helper
+        Review review = getReviewAndVerifyOwnership(reviewId, userEmail);
+
+        // Update fields
+        review.setStarRating(requestDTO.getRating());
+        review.setComment(requestDTO.getComment());
+        review.setSentiment(calculateSentiment(requestDTO.getRating())); // Recalculate sentiment
+
+        Review updatedReview = reviewRepository.save(review);
+        return convertToResponseDTO(updatedReview);
+    }
+
+    // ==========================================
+    // HELPER METHODS
+    // ==========================================
+
+    /**
+     * Fetches the review and ensures the requesting user is the actual owner.
+     */
+    private Review getReviewAndVerifyOwnership(Long reviewId, String userEmail) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new EntityNotFoundException("Review not found"));
+
+        if (!review.getUser().getEmail().equals(userEmail)) {
+            throw new SecurityException("You do not have permission to modify this review");
+        }
+        return review;
+    }
+
+    /**
+     * Converts a Review entity into a standard Response DTO.
+     */
+    private ReviewResponseDTO convertToResponseDTO(Review review) {
+        ReviewResponseDTO response = new ReviewResponseDTO();
+        response.setId(review.getId());
+
+        if (review.getProduct() != null) {
+            response.setProductId(review.getProduct().getId());
+            response.setProductName(review.getProduct().getName());
+        }
+
+        response.setRating(review.getStarRating());
+        response.setComment(review.getComment());
+        response.setSentiment(review.getSentiment());
+        response.setCreatedAt(review.getCreatedAt());
+
+        return response;
+    }
+
+    /**
+     * Determines sentiment based on the 1-5 star rating.
+     */
+    private String calculateSentiment(int rating) {
+        if (rating >= 4)
+            return "positive";
+        if (rating == 3)
+            return "neutral";
+        return "negative";
     }
 }

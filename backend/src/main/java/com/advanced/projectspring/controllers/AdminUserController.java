@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import java.util.List;
 
 import com.advanced.projectspring.dto.UserResponseDTO;
@@ -25,35 +26,50 @@ public class AdminUserController {
     @Autowired
     private UserService userService;
 
+    // GET ALL OF THEM
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // PatchMapping for role — frontend sends PATCH /api/admin/users/{id}/role
+    // GET SINGLE ONE WITH ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    // UPDATE ROLE
     @PatchMapping("/{id}/role")
     public ResponseEntity<UserResponseDTO> updateRolePatch(@PathVariable Long id,
-            @RequestBody AdminUserRequestDTO request) {
+            @Valid @RequestBody AdminUserRequestDTO request) {
         return ResponseEntity.ok(userService.updateRole(id, request));
     }
 
-    // PutMapping kept for backward compatibility
+    // UPDATE ROLE
     @PutMapping("/{id}/role")
     public ResponseEntity<UserResponseDTO> updateRole(@PathVariable Long id,
-            @RequestBody AdminUserRequestDTO request) {
+            @Valid @RequestBody AdminUserRequestDTO request) {
         return ResponseEntity.ok(userService.updateRole(id, request));
     }
 
+    // UPDATE ACTIVE
     @PutMapping("/{id}/active")
     public ResponseEntity<UserResponseDTO> updateActive(@PathVariable Long id,
-            @RequestBody AdminUserRequestDTO request) {
+            @Valid @RequestBody AdminUserRequestDTO request) {
         return ResponseEntity.ok(userService.updateActive(id, request));
     }
 
+    // UPDATE ACTIVE
+    @PatchMapping("/{id}/active")
+    public ResponseEntity<UserResponseDTO> updateActivePatch(@PathVariable Long id,
+            @Valid @RequestBody AdminUserRequestDTO request) {
+        return ResponseEntity.ok(userService.updateActive(id, request));
+    }
+
+    // DELETE USER
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 }
-

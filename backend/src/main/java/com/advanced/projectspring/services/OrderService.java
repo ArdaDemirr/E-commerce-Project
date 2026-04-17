@@ -109,4 +109,10 @@ public class OrderService {
                 .map(this::mapToOrderResponseDTO)
                 .toList();
     }
+
+    public OrderResponseDTO getOrderById(Long orderId, Long userId) {
+        return orderRepository.findByIdAndUserId(orderId, userId)
+                .map(this::mapToOrderResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found or access denied"));
+    }
 }

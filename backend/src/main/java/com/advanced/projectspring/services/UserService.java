@@ -42,6 +42,11 @@ public class UserService {
         return userRepository.findAll().stream().map(this::mapToAdminUserResponseDTO).collect(Collectors.toList());
     }
 
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return mapToAdminUserResponseDTO(user);
+    }
+
     public UserResponseDTO updateRole(Long id, AdminUserRequestDTO request) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setRole(request.getRole());

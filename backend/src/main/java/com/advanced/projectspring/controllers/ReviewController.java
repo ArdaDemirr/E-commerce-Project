@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -25,15 +26,33 @@ public class ReviewController {
     // @Autowired
     // private JwtUtil jwtUtil;
 
+    // CREATE REVIEW
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> addReview(
-            @RequestBody ReviewRequestDTO requestDTO,
+            @Valid @RequestBody ReviewRequestDTO requestDTO,
             HttpServletRequest request) {
         String email = (String) request.getAttribute("email");
         return ResponseEntity.ok(reviewService.addReview(email, requestDTO));
     }
 
-    // Endpoint for Yorumlarım tab
+    // UPDATE REVIEW
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewResponseDTO> updateReview(@PathVariable Long id,
+            @Valid @RequestBody ReviewRequestDTO requestDTO,
+            HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        return ResponseEntity.ok(reviewService.updateReview(id, email, requestDTO));
+    }
+
+    // DELETE REVIEW
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id, HttpServletRequest request) {
+        String email = (String) request.getAttribute("email");
+        reviewService.deleteReview(id, email);
+        return ResponseEntity.noContent().build();
+    }
+
+    // GET ONLY MY REVIEWS
     @GetMapping("/my-reviews")
     public ResponseEntity<List<MyReviewDTO>> getMyReviews(
             HttpServletRequest request) {
@@ -41,7 +60,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getUserReviews(email));
     }
 
-    // Endpoint for Product Details page
+    // GET ONLY PRODUCT REVIEWS
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<ProductReviewDTO>> getProductReviews(@PathVariable Long productId) {
         return ResponseEntity.ok(reviewService.getProductReviews(productId));

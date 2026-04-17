@@ -11,21 +11,24 @@ public class ShipmentService {
     @Autowired
     private ShipmentRepository shipmentRepository; // inject the repository
 
-    // returns a shipment response dto for a given order id
-    // uses repositories findbyorderid(id) method gets a shipment object
-    // then creates a new dto object, uses its setters to set the values
-    // then returns the dto
-    public ShipmentResponseDTO getShipmentByOrderId(Long orderId) {
-        return shipmentRepository.findByOrderId(orderId).map(shipment -> {
-            ShipmentResponseDTO dto = new ShipmentResponseDTO();
-            // Matching the exact getters from your Shipment.java model
-            dto.setTrackingId(shipment.getTrackingId());
-            dto.setMode(shipment.getMode());
-            dto.setStatus(shipment.getStatus());
-            dto.setWarehouse(shipment.getWarehouse());
-            dto.setProductImportance(shipment.getProductImportance());
-            dto.setOrderId(shipment.getOrder().getId());
-            return dto;
-        }).orElse(null);
+    public ShipmentResponseDTO getShipmentByOrderId(Long orderId, Long userId, String role) {
+        return shipmentRepository.findByOrderId(orderId)
+                .filter(shipment -> {
+                    boolean isOwner = userId != null && userId.equals(shipment.getOrder().getUser().getId());
+                    boolean isAdmin = "ADMIN".equals(role);
+                    boolean isStoreOwner = userId != null
+                            && userId.equals(shipment.getOrder().getStore().getOwner().getId());
+                    return isOwner || isAdmin || isStoreOwner;
+                })
+                .map(shipment -> {
+                    ShipmentResponseDTO dto = new ShipmentResponseDTO();
+                    dto.setTrackingId(shipment.getTrackingId());
+                    dto.setMode(shipment.getMode());
+                    dto.setStatus(shipment.getStatus());
+                    dto.setWarehouse(shipment.getWarehouse());
+                    dto.setProductImportance(shipment.getProductImportance());
+                    dto.setOrderId(shipment.getOrder().getId());
+                    return dto;
+                }).orElse(null);
     }
 }

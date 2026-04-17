@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.advanced.projectspring.dto.CategoryResponseDTO;
 import com.advanced.projectspring.dto.admin.AdminCategoryRequestDTO;
@@ -24,22 +25,32 @@ public class AdminCategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    // GET ALL OF THEM
     @GetMapping
     public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
+    // GET SINGLE ONE WITH ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    }
+
+    // CREATE CATEGORY
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody AdminCategoryRequestDTO request) {
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody AdminCategoryRequestDTO request) {
         return ResponseEntity.ok(categoryService.createCategory(request));
     }
 
+    // UPDATE CATEGORY
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id,
-            @RequestBody AdminCategoryRequestDTO request) {
+            @Valid @RequestBody AdminCategoryRequestDTO request) {
         return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
 
+    // DELETE CATEGORY
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
