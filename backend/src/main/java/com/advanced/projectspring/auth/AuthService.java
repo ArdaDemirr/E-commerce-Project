@@ -58,9 +58,8 @@ public class AuthService {
         user.setName(request.getName());
         user.setSurname(request.getSurname());
         user.setEmail(request.getEmail());
-        String assignedRole = (request.getRole() != null && !request.getRole().trim().isEmpty())
-                ? request.getRole().toUpperCase()
-                : "INDIVIDUAL";
+        String requested = (request.getRole() != null) ? request.getRole().toUpperCase().trim() : "";
+        String assignedRole = requested.equals("CORPORATE") ? "CORPORATE" : "INDIVIDUAL";
         user.setRole(assignedRole);
         user.setGender(request.getGender());
         user.setActive(true);

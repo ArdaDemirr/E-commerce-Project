@@ -6,6 +6,7 @@ import com.advanced.projectspring.auth.dto.RegisterRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -22,13 +23,14 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // ─── Helper: Set both tokens as HttpOnly cookies ──────────────────────────────
+    // ─── Helper: Set both tokens as HttpOnly cookies
+    // ──────────────────────────────
     private void setAuthCookies(HttpServletResponse response, String accessToken, String refreshToken) {
         // Access token: HttpOnly, valid for 15 minutes, available to all paths
         ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)
                 .path("/")
-                .maxAge(900)           // 15 minutes in seconds
+                .maxAge(900) // 15 minutes in seconds
                 .sameSite("Strict")
                 .build();
 
@@ -36,7 +38,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
                 .path("/api/auth/refresh")
-                .maxAge(604800)        // 7 days in seconds
+                .maxAge(604800) // 7 days in seconds
                 .sameSite("Strict")
                 .build();
 
@@ -46,7 +48,7 @@ public class AuthController {
 
     // ─── Register ────────────────────────────────────────────────────────────────
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) {
         Map<String, Object> result = authService.register(request);
 
         @SuppressWarnings("unchecked")
@@ -59,7 +61,7 @@ public class AuthController {
 
     // ─── Login ───────────────────────────────────────────────────────────────────
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         Map<String, Object> result = authService.login(request);
 
         @SuppressWarnings("unchecked")
@@ -127,4 +129,3 @@ public class AuthController {
         return ResponseEntity.ok().body("Logged out successfully");
     }
 }
-

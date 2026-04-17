@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import com.advanced.projectspring.models.Product;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -30,6 +31,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStoreOwnerId(Long ownerId);
 
     Optional<Product> findByIdAndStoreId(Long productId, Long storeId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Product p WHERE p.id = :id")
+    Optional<Product> findByIdWithLock(@Param("id") Long id);
 
     /**
      * Retrieves a paginated list of products ordered by the total number of

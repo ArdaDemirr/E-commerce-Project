@@ -51,7 +51,7 @@ public class OrderService {
 
         // 2. Process each item in the cart
         for (OrderItemRequestDTO itemReq : request.getItems()) {
-            Product product = productRepository.findById(itemReq.getProductId())
+            Product product = productRepository.findByIdWithLock(itemReq.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
             if (product.getStock() < itemReq.getQuantity()) {
