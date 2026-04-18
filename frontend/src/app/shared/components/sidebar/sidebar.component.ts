@@ -60,12 +60,12 @@ export class SidebarComponent implements OnInit {
     } else if (role === 'CORPORATE') {
       this.mainMenuItems.unshift({ path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' });
       this.mainMenuItems.push(
-        { path: '/orders', label: 'Siparişler', icon: 'shopping-bag' },
-        { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' },
-        { path: '/reviews', label: 'Yorumlar', icon: 'star' }
+        { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' }
       );
       this.managementItems = [
         { path: '/admin/store-management', label: 'Mağaza Ürünleri', icon: 'settings' },
+        { path: '/orders', label: 'Siparişler', icon: 'shopping-bag' },
+        { path: '/reviews', label: 'Yorumlar', icon: 'star' },
         { path: '/admin/store-shipments', label: 'Gönderi Yönetimi', icon: 'truck' }
       ];
       this.showManagement = true;

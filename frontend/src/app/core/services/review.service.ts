@@ -1,14 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, forwardRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 import { MyReviewDTO, ProductReviewDTO, ReviewRequest } from '../models/review.model';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    @Inject(forwardRef(() => AuthService)) private authService: AuthService
+  ) {}
 
   getMyReviews(): Observable<MyReviewDTO[]> {
+    if (this.authService.userRole === 'CORPORATE') {
+      return this.api.get<MyReviewDTO[]>('/corporate/reviews');
+    }
     return this.api.get<MyReviewDTO[]>('/reviews');
   }
 
