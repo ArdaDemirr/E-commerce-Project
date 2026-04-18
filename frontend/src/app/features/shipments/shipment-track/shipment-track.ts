@@ -29,7 +29,8 @@ export class ShipmentTrackComponent implements OnInit {
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({
       next: (data) => {
-        this.orders = data;
+        // En yeni sipariş/kargo en üstte olacak şekilde id'ye göre azalan sıralama yapıyoruz
+        this.orders = data.sort((a: any, b: any) => b.id - a.id);
         this.ordersLoading = false;
         this.cdr.detectChanges();
       },

@@ -21,7 +21,8 @@ export class OrderList implements OnInit {
   ngOnInit(): void {
     this.orderService.getMyOrders().subscribe({
       next: (data) => {
-        this.orders = data;
+        // En yeni sipariş en üstte olacak şekilde id'ye göre azalan (descending) sıralama
+        this.orders = data.sort((a: any, b: any) => b.id - a.id);
         this.loading = false;
         this.cdr.detectChanges();
       },
