@@ -77,7 +77,9 @@ public class OrderService {
         order.setCreatedAt(LocalDateTime.now());
         Order savedOrder = orderRepository.save(order);
 
-        shipmentService.addShipment(savedOrder.getId(), savedOrder.getStore().getOwner().getId());
+        if (savedOrder.getStore() != null && savedOrder.getStore().getOwner() != null) {
+            shipmentService.addShipment(savedOrder.getId(), savedOrder.getStore().getOwner().getId());
+        }
 
         // 2. Process each item in the cart
         for (OrderItemRequestDTO itemReq : request.getItems()) {
@@ -129,8 +131,12 @@ public class OrderService {
         dto.setGrandTotal(order.getGrandTotal());
         dto.setPaymentMethod(order.getPaymentMethod());
         dto.setStatus(order.getStatus());
-        dto.setCustomer(new CustomerSummaryDTO(order.getUser().getId(), order.getUser().getName(),
-                order.getUser().getSurname(), order.getUser().getEmail()));
+        if (order.getUser() != null) {
+            dto.setCustomer(new CustomerSummaryDTO(order.getUser().getId(), order.getUser().getName(),
+                    order.getUser().getSurname(), order.getUser().getEmail()));
+        } else {
+            dto.setCustomer(null);
+        }
 
         List<OrderItemResponseDTO> itemDTOs = orderItemRepository.findByOrderId(order.getId()).stream().map(item -> {
             OrderItemResponseDTO itemDto = new OrderItemResponseDTO();

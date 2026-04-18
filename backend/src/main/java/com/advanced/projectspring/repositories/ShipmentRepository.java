@@ -15,4 +15,6 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
 
     // corporate sees all shipments by status (pending/in_transit/delivered)
     List<Shipment> findByStatus(String status);
+
+    List<Shipment> findByOrder_Store_OwnerId(Long storeOwnerId);
 }

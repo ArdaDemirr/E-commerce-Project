@@ -73,10 +73,7 @@ public class ShipmentService {
     }
 
     public List<CorporateShipmentResponseDTO> getShipmentsForStoreOwner(Long storeOwnerId) {
-        // Filters all shipments to return only those belonging to this specific store
-        // owner
-        return shipmentRepository.findAll().stream()
-                .filter(s -> storeOwnerId.equals(s.getOrder().getStore().getOwner().getId()))
+        return shipmentRepository.findByOrder_Store_OwnerId(storeOwnerId).stream()
                 .map(this::convertToCorporateResponseDTO)
                 .collect(Collectors.toList());
     }
