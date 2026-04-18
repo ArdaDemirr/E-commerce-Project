@@ -79,7 +79,8 @@ export class ShipmentTrackComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status?.toLowerCase()) {
-      case 'pending':    return 'bg-amber-500/15 text-amber-400';
+      case 'pending':
+      case 'preparing':  return 'bg-amber-500/15 text-amber-400';
       case 'shipped':    return 'bg-blue-500/15 text-blue-400';
       case 'delivered':  return 'bg-green-500/15 text-green-400';
       case 'cancelled':  return 'bg-red-500/15 text-red-400';
@@ -89,8 +90,9 @@ export class ShipmentTrackComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     switch (status?.toLowerCase()) {
-      case 'pending':   return 'Beklemede';
-      case 'shipped':   return 'Yolda';
+      case 'pending':
+      case 'preparing': return 'Hazırlanıyor';
+      case 'shipped':   return 'Yolda / Kargoya Verildi';
       case 'delivered': return 'Teslim Edildi';
       case 'cancelled': return 'İptal';
       default:          return status || '—';

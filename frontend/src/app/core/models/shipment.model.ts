@@ -6,4 +6,10 @@ export interface ShipmentResponseDTO {
   warehouse: string;
   productImportance: string;
   orderId: number;
+  customer?: {
+    id: number;
+    name: string;
+    surname: string;
+    email: string;
+  };
 }

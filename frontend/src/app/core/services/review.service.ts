@@ -9,7 +9,7 @@ export class ReviewService {
   constructor(private api: ApiService) {}
 
   getMyReviews(): Observable<MyReviewDTO[]> {
-    return this.api.get<MyReviewDTO[]>('/reviews/my-reviews');
+    return this.api.get<MyReviewDTO[]>('/reviews');
   }
 
   getProductReviews(productId: number): Observable<ProductReviewDTO[]> {
@@ -21,7 +21,7 @@ export class ReviewService {
   }
 
   getReviewById(id: number): Observable<any> {
-    return this.api.get<any>(`/reviews/my-reviews/${id}`);
+    return this.api.get<any>(`/reviews/${id}`);
   }
 
   updateReview(id: number, request: ReviewRequest): Observable<any> {
