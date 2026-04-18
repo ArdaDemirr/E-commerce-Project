@@ -5,7 +5,6 @@ import { ShipmentResponseDTO } from '../models/shipment.model';
 
 @Injectable({ providedIn: 'root' })
 export class ShipmentService {
-
   constructor(private api: ApiService) {}
 
   getShipmentByOrderId(orderId: number): Observable<ShipmentResponseDTO> {
@@ -13,14 +12,20 @@ export class ShipmentService {
   }
 
   createShipment(orderId: number): Observable<ShipmentResponseDTO> {
-    return this.api.post<ShipmentResponseDTO>('/shipments/create', orderId);
+    return this.api.post<ShipmentResponseDTO>('/corporate/shipments', orderId);
   }
 
   getMyStoreShipments(): Observable<ShipmentResponseDTO[]> {
-    return this.api.get<ShipmentResponseDTO[]>('/shipments/my-shipments');
+    return this.api.get<ShipmentResponseDTO[]>('/corporate/shipments');
   }
 
-  updateShipmentStatus(id: number, status: string): Observable<ShipmentResponseDTO> {
-    return this.api.put<ShipmentResponseDTO>(`/shipments/${id}/status`, { status });
+  updateShipmentStatus(
+    id: number,
+    status: string,
+  ): Observable<ShipmentResponseDTO> {
+    return this.api.put<ShipmentResponseDTO>(
+      `/corporate/shipments/${id}/status`,
+      { status },
+    );
   }
 }

@@ -17,11 +17,11 @@ export interface PlaceOrderRequest {
 export class OrderService {
   constructor(private api: ApiService) {}
   getMyOrders(): Observable<any[]> {
-    return this.api.get<any[]>('/orders/my-orders');
+    return this.api.get<any[]>('/orders');
   }
 
   getOrderById(id: number): Observable<any> {
-    return this.api.get<any>(`/orders/my-orders/${id}`);
+    return this.api.get<any>(`/orders/${id}`);
   }
 
   placeOrder(request: PlaceOrderRequest): Observable<any> {
