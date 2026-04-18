@@ -5,6 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
+import { StoreProductService } from '../../../core/services/store-product.service';
 import { User } from '../../../core/models/user.model';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card.component';
 
@@ -21,17 +22,17 @@ export class CorporateDashboardComponent implements OnInit {
   kpis: any[] = [];
   categories: any[] = [];
 
-  revenueChartData: ChartData<'line'> = {
-    labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+  revenueChartData: ChartData<'bar'> = {
+    labels: [],
     datasets: [{
-      label: 'Gelir', data: [1200, 1900, 1500, 2200, 1800, 2500, 3100],
-      borderColor: '#6366F1', backgroundColor: 'rgba(99,102,241,0.1)',
-      borderWidth: 2, fill: true, tension: 0.4,
-      pointBackgroundColor: '#6366F1', pointRadius: 4, pointHoverRadius: 6,
+      label: 'Ürün Fiyatı (₺)', data: [],
+      backgroundColor: 'rgba(99,102,241,0.8)',
+      categoryPercentage: 0.8,
+      barPercentage: 0.9,
     }]
   };
 
-  revenueChartOptions: ChartOptions<'line'> = {
+  revenueChartOptions: ChartOptions<'bar'> = {
     responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
@@ -39,13 +40,13 @@ export class CorporateDashboardComponent implements OnInit {
     },
     scales: {
       x: { grid: { color: 'rgba(51,65,85,0.5)' }, ticks: { color: '#64748B' } },
-      y: { grid: { color: 'rgba(51,65,85,0.5)' }, ticks: { color: '#64748B' } }
+      y: { grid: { color: 'rgba(51,65,85,0.5)' }, ticks: { color: '#64748B' }, beginAtZero: true }
     }
   };
 
   categoryChartData: ChartData<'doughnut'> = {
-    labels: ['Elektronik', 'Moda', 'Ev', 'Diğer'],
-    datasets: [{ data: [45, 25, 20, 10], backgroundColor: ['#6366F1', '#8B5CF6', '#F43F5E', '#cbd5e1'], borderWidth: 0 }]
+    labels: [],
+    datasets: [{ data: [], backgroundColor: ['#6366F1', '#8B5CF6', '#F43F5E', '#10B981', '#F59E0B', '#cbd5e1'], borderWidth: 0 }]
   };
 
   categoryChartOptions: ChartOptions<'doughnut'> = {
@@ -53,7 +54,10 @@ export class CorporateDashboardComponent implements OnInit {
     plugins: { legend: { display: false } }, cutout: '75%'
   };
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private storeProductService: StoreProductService
+  ) { }
 
   ngOnInit(): void {
     this.user = this.authService.currentUser;
@@ -63,12 +67,46 @@ export class CorporateDashboardComponent implements OnInit {
       { label: 'Aktif Müşteriler', value: '842', change: -2.4, icon: 'users', iconColor: '#F43F5E', iconBg: '244, 63, 94' },
       { label: 'Dönüşüm Oranı', value: '3.6%', change: 1.1, icon: 'zap', iconColor: '#10B981', iconBg: '16, 185, 129' },
     ];
-    this.categories = [
-      { name: 'Elektronik', percentage: 45, color: '#6366F1' },
-      { name: 'Moda', percentage: 25, color: '#8B5CF6' },
-      { name: 'Ev & Yaşam', percentage: 20, color: '#F43F5E' },
-      { name: 'Diğer', percentage: 10, color: '#cbd5e1' },
-    ];
+
+    // En Çok Yorumlanan Ürünler Grafiği (Bar Chart - Fiyat Karşılaştırmalı)
+    this.storeProductService.getMyTopReviewedProducts(0, 5).subscribe(products => {
+      if (products && products.length > 0) {
+        this.revenueChartData = {
+          labels: products.map(p => p.name.length > 15 ? p.name.substring(0, 15) + '...' : p.name),
+          datasets: [{
+            label: 'Ürün Fiyatı (₺)',
+            data: products.map(p => p.unitPrice),
+            backgroundColor: 'rgba(99,102,241,0.8)',
+            categoryPercentage: 0.8,
+            barPercentage: 0.9,
+          }]
+        };
+      }
+    });
+
+    // En Yüksek Puanlı Ürünler Grafiği (Doughnut Chart - Stok Karşılaştırmalı)
+    this.storeProductService.getMyHighestRatedProducts(0, 5).subscribe(products => {
+      const colors = ['#6366F1', '#8B5CF6', '#F43F5E', '#10B981', '#F59E0B'];
+      if (products && products.length > 0) {
+        const totalStock = products.reduce((sum, p) => sum + (p.stock || 0), 0);
+        this.categoryChartData = {
+          labels: products.map(p => p.name),
+          datasets: [{
+            data: products.map(p => p.stock),
+            backgroundColor: colors,
+            borderWidth: 0
+          }]
+        };
+
+        this.categories = products.map((p, index) => ({
+          name: p.name.length > 20 ? p.name.substring(0, 20) + '...' : p.name,
+          percentage: totalStock > 0 ? Math.round(((p.stock || 0) / totalStock) * 100) : 0,
+          color: colors[index % colors.length]
+        }));
+      } else {
+        this.categories = [];
+      }
+    });
   }
 
   setRevenuePeriod(period: string): void { this.revenuePeriod = period; }
