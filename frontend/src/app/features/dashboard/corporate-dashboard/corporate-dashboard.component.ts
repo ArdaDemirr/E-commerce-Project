@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
@@ -56,7 +56,8 @@ export class CorporateDashboardComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private storeProductService: StoreProductService
+    private storeProductService: StoreProductService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -81,6 +82,7 @@ export class CorporateDashboardComponent implements OnInit {
             barPercentage: 0.9,
           }]
         };
+        this.cdr.detectChanges();
       }
     });
 
@@ -103,6 +105,7 @@ export class CorporateDashboardComponent implements OnInit {
           percentage: totalStock > 0 ? Math.round(((p.stock || 0) / totalStock) * 100) : 0,
           color: colors[index % colors.length]
         }));
+        this.cdr.detectChanges();
       } else {
         this.categories = [];
       }
