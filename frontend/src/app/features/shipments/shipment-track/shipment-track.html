@@ -41,14 +41,8 @@
                 <p class="text-sm font-semibold">#{{ order.id }}</p>
                 <p class="text-xs text-slate-400 mt-0.5">{{ order.createdAt | date:'d MMM y' }}</p>
               </div>
-              <span class="text-xs px-2 py-0.5 rounded-lg font-medium"
-                    [ngClass]="{
-                      'bg-amber-500/15 text-amber-400': order.status?.toLowerCase() === 'pending',
-                      'bg-blue-500/15 text-blue-400':   order.status?.toLowerCase() === 'shipped',
-                      'bg-green-500/15 text-green-400': order.status?.toLowerCase() === 'completed',
-                      'bg-red-500/15 text-red-400':     order.status?.toLowerCase() === 'cancelled'
-                    }">
-                {{ getOrderStatusLabel(order.status) }}
+              <span class="text-xs px-2 py-0.5 rounded-lg font-medium" [ngClass]="getStatusClass(order.shipmentStatus || order.status)">
+                {{ getStatusLabel(order.shipmentStatus || order.status) }}
               </span>
             </div>
           </button>

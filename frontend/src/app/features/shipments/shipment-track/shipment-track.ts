@@ -31,6 +31,21 @@ export class ShipmentTrackComponent implements OnInit {
       next: (data) => {
         // En yeni sipariş/kargo en üstte olacak şekilde id'ye göre azalan sıralama yapıyoruz
         this.orders = data.sort((a: any, b: any) => b.id - a.id);
+        
+        // Siparişlerin gerçek kargo durumlarını yükle
+        this.orders.forEach(order => {
+          this.shipmentService.getShipmentByOrderId(order.id).subscribe({
+             next: (shipment) => {
+               if (shipment) {
+                 order.shipmentStatus = shipment.status;
+                 this.cdr.detectChanges();
+               }
+             },
+             // Hata olursa sessizce atla, varsayılan sipariş durumu görünür
+             error: () => {}
+          });
+        });
+
         this.ordersLoading = false;
         this.cdr.detectChanges();
       },
@@ -83,7 +98,8 @@ export class ShipmentTrackComponent implements OnInit {
       case 'pending':
       case 'preparing':  return 'bg-amber-500/15 text-amber-400';
       case 'shipped':    return 'bg-blue-500/15 text-blue-400';
-      case 'delivered':  return 'bg-green-500/15 text-green-400';
+      case 'delivered':
+      case 'completed':  return 'bg-green-500/15 text-green-400';
       case 'cancelled':  return 'bg-red-500/15 text-red-400';
       default:           return 'bg-slate-500/15 text-slate-400';
     }
@@ -95,6 +111,7 @@ export class ShipmentTrackComponent implements OnInit {
       case 'preparing': return 'Hazırlanıyor';
       case 'shipped':   return 'Yolda / Kargoya Verildi';
       case 'delivered': return 'Teslim Edildi';
+      case 'completed': return 'Tamamlandı';
       case 'cancelled': return 'İptal';
       default:          return status || '—';
     }
