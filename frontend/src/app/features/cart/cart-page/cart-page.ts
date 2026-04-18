@@ -64,7 +64,14 @@ export class CartPageComponent implements OnInit, OnDestroy {
     if (!this.cartItems.length) return;
     this.isProcessing = true;
 
-    const storeId: number = this.cartItems[0]?.storeId ?? 1;
+    const storeId = this.cartItems[0]?.storeId;
+
+    if (!storeId) {
+      this.toastr.error('Bu ürün için mağaza bilgisi eksik. Lütfen sepeti temizleyip ürünü yeniden ekleyin.', 'Sipariş Hatası', { timeOut: 3000 });
+      this.isProcessing = false;
+      return;
+    }
+
     const payload = {
       storeId,
       paymentMethod: this.paymentMethod,

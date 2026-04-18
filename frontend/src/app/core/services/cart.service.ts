@@ -39,7 +39,7 @@ export class CartService {
         sku: product.sku || '',
         unitPrice: product.unitPrice,
         qty: 1,
-        storeId: product.store?.id ?? 1,
+        storeId: product.store?.id || 0,
       };
       updated = [...current, newItem];
     }
