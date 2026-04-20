@@ -25,15 +25,22 @@ public class ChatController {
 
     @PostMapping("/ask")
     public ResponseEntity<ChatResponse> ask(
-            @Valid @RequestBody ChatRequest requestDTO, // sends a JSON object containing the user's message
-            HttpServletRequest request) { // Use request to access attributes
+            @Valid @RequestBody ChatRequest requestDTO,
+            HttpServletRequest request) {
 
         // Extract user info from attributes set by JwtAuthFilter
-        String email = (String) request.getAttribute("email");
+        // These will be null if no token was provided (guest user)
         String role = (String) request.getAttribute("role");
         Long userId = (Long) request.getAttribute("userId");
 
-        ChatResponse response = chatService.processMessage(requestDTO, email, role, userId);
+        // If user is not authenticated, treat them as GUEST
+        // GUEST users can only ask general public questions (no personal data)
+        if (role == null || userId == null) {
+            role = "GUEST";
+            userId = 0L;
+        }
+
+        ChatResponse response = chatService.processMessage(requestDTO, role, userId);
         return ResponseEntity.ok(response);
     }
 }
