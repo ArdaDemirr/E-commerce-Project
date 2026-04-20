@@ -5,4 +5,5 @@ export interface CartItem {
   unitPrice: number;
   qty: number;
   storeId: number;
+  imageUrl?: string;
 }

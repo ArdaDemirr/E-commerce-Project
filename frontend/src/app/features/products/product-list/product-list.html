@@ -1,194 +1,304 @@
 <div class="space-y-6">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Ürünler</h1>
+      <p class="text-slate-400 text-sm mt-1">
+        {{ totalProducts }} ürün listeleniyor
+      </p>
+    </div>
+  </div>
 
-    <!-- Page Header -->
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-white">Ürünler</h1>
-            <p class="text-slate-400 text-sm mt-1">{{ totalProducts }} ürün listeleniyor</p>
-        </div>
+  <!-- Filters Bar -->
+  <div class="glass-card p-4">
+    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <!-- Search -->
+      <div class="relative flex-1">
+        <input
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Ürün adı, SKU veya kategori ara..."
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pl-10 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary/60 transition-all"
+        />
+        <lucide-icon
+          name="search"
+          [size]="16"
+          class="absolute left-3.5 top-3 text-slate-500"
+        ></lucide-icon>
+      </div>
+
+      <!-- Sort -->
+      <select
+        [(ngModel)]="sortBy"
+        (ngModelChange)="onSortChange()"
+        class="bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-primary/60"
+      >
+        <option value="newest">En Yeni</option>
+        <option value="price_asc">Fiyat: Düşük → Yüksek</option>
+        <option value="price_desc">Fiyat: Yüksek → Düşük</option>
+      </select>
+
+      <!-- View Toggle -->
+      <div
+        class="flex gap-1 bg-slate-800 rounded-xl p-1 border border-slate-700"
+      >
+        <button
+          (click)="viewMode = 'grid'"
+          class="p-2 rounded-lg transition-all"
+          [class.bg-primary]="viewMode === 'grid'"
+          [class.text-white]="viewMode === 'grid'"
+          [class.text-slate-500]="viewMode !== 'grid'"
+        >
+          <lucide-icon name="grid" [size]="16"></lucide-icon>
+        </button>
+        <button
+          (click)="viewMode = 'list'"
+          class="p-2 rounded-lg transition-all"
+          [class.bg-primary]="viewMode === 'list'"
+          [class.text-white]="viewMode === 'list'"
+          [class.text-slate-500]="viewMode !== 'list'"
+        >
+          <lucide-icon name="list" [size]="16"></lucide-icon>
+        </button>
+      </div>
     </div>
 
-    <!-- Filters Bar -->
-    <div class="glass-card p-4">
-        <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
-            <!-- Search -->
-            <div class="relative flex-1">
-                <input [(ngModel)]="searchQuery" (ngModelChange)="onSearch()"
-                    placeholder="Ürün adı, SKU veya kategori ara..."
-                    class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 pl-10
-                      text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary/60 transition-all">
-                <lucide-icon name="search" [size]="16" class="absolute left-3.5 top-3 text-slate-500"></lucide-icon>
-            </div>
+    <!-- Category Tabs -->
+    <div class="flex flex-wrap gap-2 mt-4" *ngIf="categories.length > 0">
+      <button
+        (click)="selectCategory(null)"
+        class="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
+        [class.bg-primary]="selectedCategoryId === null"
+        [class.text-white]="selectedCategoryId === null"
+        [class.border-primary]="selectedCategoryId === null"
+        [class.border-slate-700]="selectedCategoryId !== null"
+        [class.text-slate-400]="selectedCategoryId !== null"
+      >
+        Tümü
+      </button>
+      <button
+        *ngFor="let cat of categories"
+        (click)="selectCategory(cat.id)"
+        class="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
+        [class.bg-primary]="selectedCategoryId === cat.id"
+        [class.text-white]="selectedCategoryId === cat.id"
+        [class.border-primary]="selectedCategoryId === cat.id"
+        [class.border-slate-700]="selectedCategoryId !== cat.id"
+        [class.text-slate-400]="selectedCategoryId !== cat.id"
+      >
+        {{ cat.name }}
+      </button>
+    </div>
+  </div>
 
-            <!-- Sort -->
-            <select [(ngModel)]="sortBy" (ngModelChange)="onSortChange()"
-                class="bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-300 focus:outline-none focus:border-primary/60">
-                <option value="newest">En Yeni</option>
-                <option value="price_asc">Fiyat: Düşük → Yüksek</option>
-                <option value="price_desc">Fiyat: Yüksek → Düşük</option>
-            </select>
+  <!-- Loading Skeleton -->
+  <div
+    *ngIf="loading"
+    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+  >
+    <div
+      *ngFor="let i of [1,2,3,4,5,6,7,8]"
+      class="glass-card p-4 animate-pulse"
+    >
+      <div class="w-full h-40 bg-slate-700/50 rounded-xl mb-4"></div>
+      <div class="h-4 bg-slate-700/50 rounded mb-2 w-3/4"></div>
+      <div class="h-3 bg-slate-700/50 rounded w-1/2"></div>
+    </div>
+  </div>
 
-            <!-- View Toggle -->
-            <div class="flex gap-1 bg-slate-800 rounded-xl p-1 border border-slate-700">
-                <button (click)="viewMode = 'grid'" class="p-2 rounded-lg transition-all"
-                    [class.bg-primary]="viewMode === 'grid'" [class.text-white]="viewMode === 'grid'"
-                    [class.text-slate-500]="viewMode !== 'grid'">
-                    <lucide-icon name="grid" [size]="16"></lucide-icon>
-                </button>
-                <button (click)="viewMode = 'list'" class="p-2 rounded-lg transition-all"
-                    [class.bg-primary]="viewMode === 'list'" [class.text-white]="viewMode === 'list'"
-                    [class.text-slate-500]="viewMode !== 'list'">
-                    <lucide-icon name="list" [size]="16"></lucide-icon>
-                </button>
-            </div>
+  <!-- Product Grid View -->
+  <div
+    *ngIf="!loading && viewMode === 'grid'"
+    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+  >
+    <!-- Product Card -->
+    <div
+      *ngFor="let product of pagedProducts; let i = index"
+      class="glass-card overflow-hidden group cursor-pointer animate__animated animate__fadeInUp"
+      [style.animation-delay]="(i * 0.05) + 's'"
+      (click)="viewProduct(product.id)"
+    >
+      <!-- Image Area -->
+      <div class="relative h-44 overflow-hidden bg-slate-700/30">
+        <div
+          *ngIf="!product.imageUrl"
+          class="w-full h-full flex items-center justify-center text-slate-600"
+        >
+          <lucide-icon name="package" [size]="48"></lucide-icon>
         </div>
-
-        <!-- Category Tabs -->
-        <div class="flex flex-wrap gap-2 mt-4" *ngIf="categories.length > 0">
-            <button (click)="selectCategory(null)"
-                class="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
-                [class.bg-primary]="selectedCategoryId === null" [class.text-white]="selectedCategoryId === null"
-                [class.border-primary]="selectedCategoryId === null"
-                [class.border-slate-700]="selectedCategoryId !== null"
-                [class.text-slate-400]="selectedCategoryId !== null">
-                Tümü
-            </button>
-            <button *ngFor="let cat of categories" (click)="selectCategory(cat.id)"
-                class="px-4 py-1.5 rounded-full text-sm font-medium transition-all border"
-                [class.bg-primary]="selectedCategoryId === cat.id" [class.text-white]="selectedCategoryId === cat.id"
-                [class.border-primary]="selectedCategoryId === cat.id"
-                [class.border-slate-700]="selectedCategoryId !== cat.id"
-                [class.text-slate-400]="selectedCategoryId !== cat.id">
-                {{ cat.name }}
-            </button>
+        <img
+          *ngIf="product.imageUrl"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="w-full h-full object-cover"
+        />
+        <!-- Hover Overlay -->
+        <div
+          class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+        >
+          <button
+            (click)="addToCart(product, $event)"
+            class="p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white transition-all"
+          >
+            <lucide-icon name="shopping-cart" [size]="18"></lucide-icon>
+          </button>
         </div>
+        <!-- Category Badge -->
+        <span
+          class="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-xs bg-slate-900/80 text-slate-300 backdrop-blur-sm"
+        >
+          {{ product.categoryName || 'Genel' }}
+        </span>
+        <!-- Low Stock Warning -->
+        <span
+          *ngIf="getStockDisplay(product) > 0 && getStockDisplay(product) < 10"
+          class="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30"
+        >
+          Son {{ getStockDisplay(product) }}
+        </span>
+        <!-- Out of Stock -->
+        <span
+          *ngIf="getStockDisplay(product) === 0"
+          class="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-xs bg-red-500/20 text-red-400 border border-red-500/30"
+        >
+          Stok Yok
+        </span>
+      </div>
+
+      <!-- Info -->
+      <div class="p-4">
+        <h3
+          class="font-medium text-slate-200 text-sm mb-1 truncate group-hover:text-white transition-colors"
+        >
+          {{ product.name }}
+        </h3>
+        <p class="text-xs text-slate-500 mb-3">SKU: {{ product.sku }}</p>
+        <!-- Price + Cart -->
+        <div class="flex items-center justify-between">
+          <span class="text-lg font-bold text-white"
+            >₺{{ product.unitPrice | number:'1.2-2' }}</span
+          >
+          <button
+            (click)="addToCart(product, $event)"
+            class="p-2 rounded-xl transition-all"
+            style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc"
+          >
+            <lucide-icon name="plus" [size]="16"></lucide-icon>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Loading Skeleton -->
-    <div *ngIf="loading" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="glass-card p-4 animate-pulse">
-            <div class="w-full h-40 bg-slate-700/50 rounded-xl mb-4"></div>
-            <div class="h-4 bg-slate-700/50 rounded mb-2 w-3/4"></div>
-            <div class="h-3 bg-slate-700/50 rounded w-1/2"></div>
-        </div>
+    <!-- Empty State -->
+    <div
+      *ngIf="pagedProducts.length === 0 && !loading"
+      class="col-span-4 glass-card p-12 text-center"
+    >
+      <lucide-icon
+        name="package"
+        [size]="48"
+        class="text-slate-600 mx-auto mb-4"
+      ></lucide-icon>
+      <p class="text-slate-400 text-lg font-medium mb-1">Ürün bulunamadı</p>
+      <p class="text-slate-600 text-sm">
+        Farklı bir arama veya kategori seçmeyi deneyin.
+      </p>
     </div>
+  </div>
 
-    <!-- Product Grid View -->
-    <div *ngIf="!loading && viewMode === 'grid'" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-
-        <!-- Product Card -->
-        <div *ngFor="let product of pagedProducts; let i = index"
-            class="glass-card overflow-hidden group cursor-pointer animate__animated animate__fadeInUp"
-            [style.animation-delay]="(i * 0.05) + 's'" (click)="viewProduct(product.id)">
-
-            <!-- Image Area -->
-            <div class="relative h-44 overflow-hidden bg-slate-700/30">
-                <div class="w-full h-full flex items-center justify-center text-slate-600">
-                    <lucide-icon name="package" [size]="48"></lucide-icon>
-                </div>
-                <!-- Hover Overlay -->
-                <div
-                    class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button (click)="addToCart(product, $event)"
-                        class="p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white transition-all">
-                        <lucide-icon name="shopping-cart" [size]="18"></lucide-icon>
-                    </button>
-                </div>
-                <!-- Category Badge -->
-                <span
-                    class="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-xs bg-slate-900/80 text-slate-300 backdrop-blur-sm">
-                    {{ product.categoryName || 'Genel' }}
-                </span>
-                <!-- Low Stock Warning -->
-                <span *ngIf="getStockDisplay(product) > 0 && getStockDisplay(product) < 10"
-                    class="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    Son {{ getStockDisplay(product) }}
-                </span>
-                <!-- Out of Stock -->
-                <span *ngIf="getStockDisplay(product) === 0"
-                    class="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-xs bg-red-500/20 text-red-400 border border-red-500/30">
-                    Stok Yok
-                </span>
-            </div>
-
-            <!-- Info -->
-            <div class="p-4">
-                <h3 class="font-medium text-slate-200 text-sm mb-1 truncate group-hover:text-white transition-colors">
-                    {{ product.name }}
-                </h3>
-                <p class="text-xs text-slate-500 mb-3">SKU: {{ product.sku }}</p>
-                <!-- Price + Cart -->
-                <div class="flex items-center justify-between">
-                    <span class="text-lg font-bold text-white">₺{{ product.unitPrice | number:'1.2-2' }}</span>
-                    <button (click)="addToCart(product, $event)" class="p-2 rounded-xl transition-all"
-                        style="background: rgba(99,102,241,0.15); color: #A5B4FC;">
-                        <lucide-icon name="plus" [size]="16"></lucide-icon>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Empty State -->
-        <div *ngIf="pagedProducts.length === 0 && !loading" class="col-span-4 glass-card p-12 text-center">
-            <lucide-icon name="package" [size]="48" class="text-slate-600 mx-auto mb-4"></lucide-icon>
-            <p class="text-slate-400 text-lg font-medium mb-1">Ürün bulunamadı</p>
-            <p class="text-slate-600 text-sm">Farklı bir arama veya kategori seçmeyi deneyin.</p>
-        </div>
-    </div>
-
-    <!-- Product List View -->
-    <div *ngIf="!loading && viewMode === 'list'" class="space-y-3">
-        <div *ngFor="let product of pagedProducts"
-            class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:border-primary/40 transition-all"
-            (click)="viewProduct(product.id)">
-            <div class="w-16 h-16 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0">
-                <lucide-icon name="package" [size]="24" class="text-slate-500"></lucide-icon>
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-slate-200 truncate">{{ product.name }}</h3>
-                <p class="text-xs text-slate-500">SKU: {{ product.sku }} &bull; {{ product.categoryName || 'Genel' }}
-                </p>
-            </div>
-            <div class="text-right shrink-0">
-                <p class="text-lg font-bold text-white">₺{{ product.unitPrice | number:'1.2-2' }}</p>
-                <p class="text-xs" [class.text-green-400]="getStockDisplay(product) > 10"
-                    [class.text-amber-400]="getStockDisplay(product) > 0 && getStockDisplay(product) <= 10"
-                    [class.text-red-400]="getStockDisplay(product) === 0">
-                    {{ getStockDisplay(product) > 0 ? 'Stok: ' + getStockDisplay(product) : 'Stok Yok' }}
-                </p>
-            </div>
-            <button (click)="addToCart(product, $event)" class="p-2 rounded-xl ml-2 transition-all"
-                style="background: rgba(99,102,241,0.15); color: #A5B4FC;">
-                <lucide-icon name="shopping-cart" [size]="16"></lucide-icon>
-            </button>
-        </div>
-
-        <!-- Empty State List -->
-        <div *ngIf="pagedProducts.length === 0" class="glass-card p-12 text-center">
-            <lucide-icon name="package" [size]="48" class="text-slate-600 mx-auto mb-4"></lucide-icon>
-            <p class="text-slate-400">Ürün bulunamadı</p>
-        </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="flex items-center justify-between mt-4" *ngIf="totalProducts > pageSize">
-        <p class="text-slate-400 text-sm">
-            {{ currentPage * pageSize + 1 }}–{{ (currentPage + 1) * pageSize > totalProducts ? totalProducts :
-            (currentPage + 1) * pageSize }} / {{ totalProducts }} ürün
+  <!-- Product List View -->
+  <div *ngIf="!loading && viewMode === 'list'" class="space-y-3">
+    <div
+      *ngFor="let product of pagedProducts"
+      class="glass-card p-4 flex items-center gap-4 cursor-pointer hover:border-primary/40 transition-all"
+      (click)="viewProduct(product.id)"
+    >
+      <div
+        class="w-16 h-16 rounded-xl bg-slate-700/50 flex items-center justify-center shrink-0 overflow-hidden"
+      >
+        <lucide-icon
+          *ngIf="!product.imageUrl"
+          name="package"
+          [size]="24"
+          class="text-slate-500"
+        ></lucide-icon>
+        <img
+          *ngIf="product.imageUrl"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-medium text-slate-200 truncate">{{ product.name }}</h3>
+        <p class="text-xs text-slate-500">
+          SKU: {{ product.sku }} &bull; {{ product.categoryName || 'Genel' }}
         </p>
-        <div class="flex gap-2">
-            <button (click)="prevPage()" [disabled]="currentPage === 0" class="px-4 py-2 rounded-xl text-sm bg-slate-800 border border-slate-700 text-slate-400
-                     hover:border-primary/60 hover:text-white disabled:opacity-40 transition-all">
-                ← Önceki
-            </button>
-            <span class="px-4 py-2 rounded-xl text-sm bg-primary/20 text-primary font-medium border border-primary/30">
-                {{ currentPage + 1 }}
-            </span>
-            <button (click)="nextPage()" [disabled]="isLastPage" class="px-4 py-2 rounded-xl text-sm bg-slate-800 border border-slate-700 text-slate-400
-                     hover:border-primary/60 hover:text-white disabled:opacity-40 transition-all">
-                Sonraki →
-            </button>
-        </div>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-lg font-bold text-white">
+          ₺{{ product.unitPrice | number:'1.2-2' }}
+        </p>
+        <p
+          class="text-xs"
+          [class.text-green-400]="getStockDisplay(product) > 10"
+          [class.text-amber-400]="getStockDisplay(product) > 0 && getStockDisplay(product) <= 10"
+          [class.text-red-400]="getStockDisplay(product) === 0"
+        >
+          {{ getStockDisplay(product) > 0 ? 'Stok: ' + getStockDisplay(product)
+          : 'Stok Yok' }}
+        </p>
+      </div>
+      <button
+        (click)="addToCart(product, $event)"
+        class="p-2 rounded-xl ml-2 transition-all"
+        style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc"
+      >
+        <lucide-icon name="shopping-cart" [size]="16"></lucide-icon>
+      </button>
     </div>
 
+    <!-- Empty State List -->
+    <div *ngIf="pagedProducts.length === 0" class="glass-card p-12 text-center">
+      <lucide-icon
+        name="package"
+        [size]="48"
+        class="text-slate-600 mx-auto mb-4"
+      ></lucide-icon>
+      <p class="text-slate-400">Ürün bulunamadı</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div
+    class="flex items-center justify-between mt-4"
+    *ngIf="totalProducts > pageSize"
+  >
+    <p class="text-slate-400 text-sm">
+      {{ currentPage * pageSize + 1 }}–{{ (currentPage + 1) * pageSize >
+      totalProducts ? totalProducts : (currentPage + 1) * pageSize }} / {{
+      totalProducts }} ürün
+    </p>
+    <div class="flex gap-2">
+      <button
+        (click)="prevPage()"
+        [disabled]="currentPage === 0"
+        class="px-4 py-2 rounded-xl text-sm bg-slate-800 border border-slate-700 text-slate-400 hover:border-primary/60 hover:text-white disabled:opacity-40 transition-all"
+      >
+        ← Önceki
+      </button>
+      <span
+        class="px-4 py-2 rounded-xl text-sm bg-primary/20 text-primary font-medium border border-primary/30"
+      >
+        {{ currentPage + 1 }}
+      </span>
+      <button
+        (click)="nextPage()"
+        [disabled]="isLastPage"
+        class="px-4 py-2 rounded-xl text-sm bg-slate-800 border border-slate-700 text-slate-400 hover:border-primary/60 hover:text-white disabled:opacity-40 transition-all"
+      >
+        Sonraki →
+      </button>
+    </div>
+  </div>
 </div>

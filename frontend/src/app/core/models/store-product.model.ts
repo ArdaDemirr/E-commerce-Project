@@ -5,6 +5,7 @@ export interface StoreProductsRequestDTO {
   stock: number;
   description: string;
   categoryId: number;
+  imageUrl?: string;
 }
 
 export interface StoreProductsResponseDTO {
@@ -17,4 +18,5 @@ export interface StoreProductsResponseDTO {
   isLowStock: boolean;
   description: string;
   categoryId: number;
+  imageUrl?: string;
 }

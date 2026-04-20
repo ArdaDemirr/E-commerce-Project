@@ -8,7 +8,6 @@ const CART_KEY = 'dp_cart';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-
   private _items$ = new BehaviorSubject<CartItem[]>(this.loadFromStorage());
 
   /** Observable list of cart items */
@@ -16,7 +15,7 @@ export class CartService {
 
   /** Observable item count for badge */
   count$: Observable<number> = this._items$.pipe(
-    map(items => items.reduce((s, i) => s + i.qty, 0))
+    map((items) => items.reduce((s, i) => s + i.qty, 0)),
   );
 
   get items(): CartItem[] {
@@ -26,11 +25,11 @@ export class CartService {
   /** Add a product to cart (or increment qty if already there) */
   addItem(product: Product): void {
     const current = this.items;
-    const existing = current.find(i => i.id === product.id);
+    const existing = current.find((i) => i.id === product.id);
     let updated: CartItem[];
     if (existing) {
-      updated = current.map(i =>
-        i.id === product.id ? { ...i, qty: i.qty + 1 } : i
+      updated = current.map((i) =>
+        i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
       );
     } else {
       const newItem: CartItem = {
@@ -40,6 +39,7 @@ export class CartService {
         unitPrice: product.unitPrice,
         qty: 1,
         storeId: product.store?.id || 0,
+        imageUrl: product.imageUrl,
       };
       updated = [...current, newItem];
     }
@@ -47,18 +47,20 @@ export class CartService {
   }
 
   increaseQty(id: number): void {
-    this.update(this.items.map(i => i.id === id ? { ...i, qty: i.qty + 1 } : i));
+    this.update(
+      this.items.map((i) => (i.id === id ? { ...i, qty: i.qty + 1 } : i)),
+    );
   }
 
   decreaseQty(id: number): void {
     const updated = this.items
-      .map(i => i.id === id ? { ...i, qty: i.qty - 1 } : i)
-      .filter(i => i.qty > 0);
+      .map((i) => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+      .filter((i) => i.qty > 0);
     this.update(updated);
   }
 
   removeItem(id: number): void {
-    this.update(this.items.filter(i => i.id !== id));
+    this.update(this.items.filter((i) => i.id !== id));
   }
 
   clearCart(): void {
