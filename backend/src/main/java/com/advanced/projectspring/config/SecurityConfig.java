@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs").permitAll()
 
                         .requestMatchers("/actuator/**").permitAll() // Public health check
+                        .requestMatchers("/api/payment/**").permitAll() // Stripe payment intent
 
                         // Allowing anyone to SEE products, categories, and reviews
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
