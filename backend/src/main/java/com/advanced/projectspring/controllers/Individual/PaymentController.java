@@ -15,7 +15,6 @@ import java.util.Map;
 public class PaymentController {
 
     @PostMapping("/create-intent")
-    @PreAuthorize("hasRole('INDIVIDUAL')")
     public ResponseEntity<Map<String, String>> createPaymentIntent(
             @RequestBody Map<String, Object> body) throws StripeException {
 
