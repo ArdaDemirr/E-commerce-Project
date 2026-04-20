@@ -5,7 +5,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.Map;
 
@@ -14,26 +14,26 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class PaymentController {
 
-    @PostMapping("/create-intent")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(
-            @RequestBody Map<String, Object> body) throws StripeException {
+        @PostMapping("/create-intent")
+        public ResponseEntity<Map<String, String>> createPaymentIntent(
+                        @RequestBody Map<String, Object> body) throws StripeException {
 
-        // amount kuruş/cent cinsindendir: 100 = 1 TL, 15000 = 150 TL
-        long amount = Long.parseLong(body.get("amount").toString());
+                // amount kuruş/cent cinsindendir: 100 = 1 TL, 15000 = 150 TL
+                long amount = Long.parseLong(body.get("amount").toString());
 
-        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(amount)
-                .setCurrency("try")
-                .setAutomaticPaymentMethods(
-                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                        .setEnabled(true)
-                        .setAllowRedirects(PaymentIntentCreateParams.AutomaticPaymentMethods.AllowRedirects.NEVER)
-                        .build()
-                )
-                .build();
+                PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                                .setAmount(amount)
+                                .setCurrency("try")
+                                .setAutomaticPaymentMethods(
+                                                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                                                .setEnabled(true)
+                                                                .setAllowRedirects(
+                                                                                PaymentIntentCreateParams.AutomaticPaymentMethods.AllowRedirects.NEVER)
+                                                                .build())
+                                .build();
 
-        PaymentIntent intent = PaymentIntent.create(params);
+                PaymentIntent intent = PaymentIntent.create(params);
 
-        return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
-    }
+                return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
+        }
 }
