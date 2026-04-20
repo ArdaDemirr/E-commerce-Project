@@ -22,6 +22,7 @@ public class StoreProductsResponseDTO {
     // Added for UPDATE operations (so Angular can pre-fill the edit form)
     private String description;
     private Long categoryId;
+    private String imageUrl;
 
     public Long getId() {
         return id;
@@ -93,5 +94,13 @@ public class StoreProductsResponseDTO {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

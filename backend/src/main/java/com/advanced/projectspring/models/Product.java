@@ -33,6 +33,9 @@ public class Product {
     private Integer stock;
     private String description;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     // Constructors
     public Product() {
     }
@@ -101,5 +104,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    // Generate your getter and setter for imageUrl
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

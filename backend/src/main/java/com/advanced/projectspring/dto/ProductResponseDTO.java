@@ -9,10 +9,11 @@ public class ProductResponseDTO {
     private String sku;
     private CategorySummaryDTO category;
     private StoreSummaryDTO store;
+    private String imageUrl;
 
     public ProductResponseDTO(Long id, String name, String description,
             Double unitPrice, Integer stock, String sku,
-            CategorySummaryDTO category, StoreSummaryDTO store) {
+            CategorySummaryDTO category, StoreSummaryDTO store, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -21,6 +22,7 @@ public class ProductResponseDTO {
         this.sku = sku;
         this.category = category;
         this.store = store;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
@@ -53,5 +55,9 @@ public class ProductResponseDTO {
 
     public StoreSummaryDTO getStore() {
         return store;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 }

@@ -22,6 +22,8 @@ public class StoreProductsRequestDTO {
     // object!
     private Long categoryId;
 
+    private String imageUrl;
+
     // Notice what is MISSING:
     // 1. We don't ask for storeId (we get that from their secure login token)
     // 2. We don't ask for productId (because it hasn't been created in the DB yet)
@@ -72,5 +74,13 @@ public class StoreProductsRequestDTO {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

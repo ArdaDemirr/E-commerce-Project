@@ -45,7 +45,8 @@ public class ProductService {
                 p.getStock(),
                 p.getSku(),
                 category,
-                store);
+                store,
+                p.getImageUrl());
     }
 
     public List<ProductResponseDTO> getAllProducts() {
