@@ -7,7 +7,7 @@ import { OrderService } from '../../../core/services/order.service';
 import { CartItem } from '../../../core/models/cart.model';
 import { ToastrService } from 'ngx-toastr';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 declare var Stripe: any;
 
