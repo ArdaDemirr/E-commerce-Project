@@ -7,6 +7,10 @@ import { OrderService } from '../../../core/services/order.service';
 import { CartItem } from '../../../core/models/cart.model';
 import { ToastrService } from 'ngx-toastr';
 
+import { environment } from '../../../environments/environment';
+
+declare var Stripe: any;
+
 @Component({
   standalone: false,
   selector: 'app-cart-page',
@@ -17,6 +21,11 @@ export class CartPageComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
   paymentMethod = 'CREDIT_CARD';
   isProcessing = false;
+
+  stripe: any;
+  cardElement: any;
+  clientSecret: string = '';
+  paymentStatus: string = '';
 
   private destroy$ = new Subject<void>();
 
@@ -34,12 +43,58 @@ export class CartPageComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (typeof Stripe !== 'undefined') {
+      this.stripe = Stripe(environment.stripePublishableKey);
+      const elements = this.stripe.elements();
+      this.cardElement = elements.create('card', {
+        style: {
+          base: {
+            iconColor: '#94a3b8',
+            color: '#f8fafc',
+            fontWeight: '500',
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '15px',
+            fontSmoothing: 'antialiased',
+            '::placeholder': { color: '#64748b' }
+          },
+          invalid: {
+            iconColor: '#f87171',
+            color: '#f87171'
+          }
+        }
+      });
+      setTimeout(() => {
+        if (document.getElementById('card-element')) {
+          this.cardElement.mount('#card-element');
+        }
+      }, 0);
+    }
+
     this.cartService.items$
       .pipe(takeUntil(this.destroy$))
       .subscribe(items => {
         this.cartItems = items;
         this.cdr.detectChanges();
+        this.updatePaymentIntent();
       });
+  }
+
+  private updatePaymentIntent() {
+    // Toplam tutar kuruştan hesaplanıyor (1 TL = 100 kuruş)
+    const amountInCents = Math.round(this.subtotal * 100);
+    
+    if (amountInCents > 0) {
+      this.api.post<any>('/payment/create-intent', { amount: amountInCents })
+        .subscribe({
+          next: (res) => {
+            this.clientSecret = res.clientSecret;
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error('Intent oluşturulamadı:', err)
+        });
+    } else {
+      this.clientSecret = '';
+    }
   }
 
   ngOnDestroy(): void {
@@ -60,9 +115,10 @@ export class CartPageComponent implements OnInit, OnDestroy {
     this.toastr.info(`"${item.name}" sepetten çıkarıldı.`, '', { timeOut: 1800 });
   }
 
-  checkout(): void {
+  async checkout(): Promise<void> {
     if (!this.cartItems.length) return;
     this.isProcessing = true;
+    this.paymentStatus = '';
 
     const storeId = this.cartItems[0]?.storeId;
 
@@ -70,6 +126,23 @@ export class CartPageComponent implements OnInit, OnDestroy {
       this.toastr.error('Bu ürün için mağaza bilgisi eksik. Lütfen sepeti temizleyip ürünü yeniden ekleyin.', 'Sipariş Hatası', { timeOut: 3000 });
       this.isProcessing = false;
       return;
+    }
+
+    if (this.paymentMethod === 'CREDIT_CARD') {
+      const result = await this.stripe.confirmCardPayment(this.clientSecret, {
+        payment_method: {
+          card: this.cardElement
+        }
+      });
+
+      if (result.error) {
+        this.paymentStatus = 'Hata: ' + result.error.message;
+        this.isProcessing = false;
+        this.cdr.detectChanges();
+        return; // Ödeme hatası, işlemi durdur
+      } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+        this.paymentStatus = '✅ Ödeme başarılı! Sipariş oluşturuluyor...';
+      }
     }
 
     const payload = {

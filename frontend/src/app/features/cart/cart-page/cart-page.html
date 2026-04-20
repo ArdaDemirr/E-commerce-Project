@@ -115,15 +115,25 @@
           [(ngModel)]="paymentMethod"
           class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-primary/60"
         >
-          <option value="CREDIT_CARD">Kredi Kartı</option>
+          <option value="CREDIT_CARD">Stripe (Kredi Kartı)</option>
           <option value="DEBIT_CARD">Banka Kartı</option>
           <option value="BANK_TRANSFER">Havale/EFT</option>
         </select>
       </div>
 
+      <!-- Stripe Card Element -->
+      <div class="mb-6" [class.hidden]="cartItems.length === 0 || paymentMethod !== 'CREDIT_CARD'">
+        <label class="block text-sm text-slate-400 mb-2">Kart Bilgileri</label>
+        <!-- Stripe objesi buraya yüklenecek -->
+        <div id="card-element" class="bg-slate-800 border border-slate-700 rounded-xl p-3 shadow-inner"></div>
+        <p *ngIf="paymentStatus" class="text-xs mt-2" [ngClass]="paymentStatus.includes('Hata') ? 'text-red-400' : 'text-emerald-400'">
+          {{ paymentStatus }}
+        </p>
+      </div>
+
       <button
         (click)="checkout()"
-        [disabled]="cartItems.length === 0 || isProcessing"
+        [disabled]="cartItems.length === 0 || isProcessing || (paymentMethod === 'CREDIT_CARD' && !clientSecret)"
         class="btn-primary w-full flex items-center justify-center gap-2"
       >
         <div
@@ -135,7 +145,7 @@
           name="credit-card"
           [size]="16"
         ></lucide-icon>
-        {{ isProcessing ? 'İşleniyor...' : 'Siparişi Tamamla' }}
+        {{ isProcessing ? 'İşleniyor...' : 'Ödemeyi Tamamla' }}
       </button>
     </div>
   </div>
