@@ -3,12 +3,19 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CartItem } from '../models/cart.model';
 import { Product } from '../models/product.model';
-
-const CART_KEY = 'dp_cart';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private _items$ = new BehaviorSubject<CartItem[]>(this.loadFromStorage());
+  private currentCartKey = 'dp_cart_guest';
+  private _items$ = new BehaviorSubject<CartItem[]>([]);
+
+  constructor(private authService: AuthService) {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentCartKey = user && user.id ? `dp_cart_${user.id}` : 'dp_cart_guest';
+      this._items$.next(this.loadFromStorage());
+    });
+  }
 
   /** Observable list of cart items */
   items$: Observable<CartItem[]> = this._items$.asObservable();
@@ -73,12 +80,12 @@ export class CartService {
 
   private update(items: CartItem[]): void {
     this._items$.next(items);
-    localStorage.setItem(CART_KEY, JSON.stringify(items));
+    localStorage.setItem(this.currentCartKey, JSON.stringify(items));
   }
 
   private loadFromStorage(): CartItem[] {
     try {
-      const raw = localStorage.getItem(CART_KEY);
+      const raw = localStorage.getItem(this.currentCartKey);
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];

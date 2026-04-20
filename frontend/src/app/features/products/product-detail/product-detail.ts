@@ -7,6 +7,7 @@ import { Product } from '../../../core/models/product.model';
 import { ReviewService } from '../../../core/services/review.service';
 import { ProductReviewDTO } from '../../../core/models/review.model';
 import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -39,6 +40,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
+    public authService: AuthService,
   ) {}
 
   ngOnInit(): void {

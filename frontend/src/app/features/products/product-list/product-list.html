@@ -134,6 +134,7 @@
         />
         <!-- Hover Overlay -->
         <div
+          *ngIf="authService.hasRole('INDIVIDUAL')"
           class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
         >
           <button
@@ -179,6 +180,7 @@
             >₺{{ product.unitPrice | number:'1.2-2' }}</span
           >
           <button
+            *ngIf="authService.hasRole('INDIVIDUAL')"
             (click)="addToCart(product, $event)"
             class="p-2 rounded-xl transition-all"
             style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc"
@@ -250,6 +252,7 @@
         </p>
       </div>
       <button
+        *ngIf="authService.hasRole('INDIVIDUAL')"
         (click)="addToCart(product, $event)"
         class="p-2 rounded-xl ml-2 transition-all"
         style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc"

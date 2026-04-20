@@ -4,6 +4,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { ProductService } from '../../../core/services/product.service';
 import { Product, Category } from '../../../core/models/product.model';
 import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -44,6 +45,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private cartService: CartService,
     private toastr: ToastrService,
+    public authService: AuthService,
   ) {}
 
   ngOnInit(): void {
