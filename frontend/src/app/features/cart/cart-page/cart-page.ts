@@ -23,9 +23,12 @@ export class CartPageComponent implements OnInit, OnDestroy {
   isProcessing = false;
 
   stripe: any;
-  cardElement: any;
+  cardNumber: any;
+  cardExpiry: any;
+  cardCvc: any;
   clientSecret: string = '';
   paymentStatus: string = '';
+  isCardComplete: boolean = false;
 
   private destroy$ = new Subject<void>();
 
@@ -46,26 +49,44 @@ export class CartPageComponent implements OnInit, OnDestroy {
     if (typeof Stripe !== 'undefined') {
       this.stripe = Stripe(environment.stripePublishableKey);
       const elements = this.stripe.elements();
-      this.cardElement = elements.create('card', {
-        style: {
-          base: {
-            iconColor: '#94a3b8',
-            color: '#f8fafc',
-            fontWeight: '500',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '15px',
-            fontSmoothing: 'antialiased',
-            '::placeholder': { color: '#64748b' }
-          },
-          invalid: {
-            iconColor: '#f87171',
-            color: '#f87171'
-          }
+      
+      const style = {
+        base: {
+          iconColor: '#94a3b8',
+          color: '#f8fafc',
+          fontWeight: '500',
+          fontFamily: 'Inter, sans-serif',
+          fontSize: '15px',
+          fontSmoothing: 'antialiased',
+          '::placeholder': { color: '#64748b' }
+        },
+        invalid: {
+          iconColor: '#f87171',
+          color: '#f87171'
         }
-      });
+      };
+
+      this.cardNumber = elements.create('cardNumber', { style, showIcon: true });
+      this.cardExpiry = elements.create('cardExpiry', { style });
+      this.cardCvc = elements.create('cardCvc', { style });
+
       setTimeout(() => {
-        if (document.getElementById('card-element')) {
-          this.cardElement.mount('#card-element');
+        if (document.getElementById('card-number')) {
+          this.cardNumber.mount('#card-number');
+          this.cardExpiry.mount('#card-expiry');
+          this.cardCvc.mount('#card-cvc');
+
+          // Add listeners to check if all inputs are complete
+          const checkStatus = () => {
+            // Stripe doesn't give a single "isComplete" for all split elements,
+            // we could track them individually, but for simplicity we rely on Stripe's
+            // own validation during confirmCardPayment.
+            this.cdr.detectChanges();
+          };
+          
+          this.cardNumber.on('change', checkStatus);
+          this.cardExpiry.on('change', checkStatus);
+          this.cardCvc.on('change', checkStatus);
         }
       }, 0);
     }
@@ -131,7 +152,7 @@ export class CartPageComponent implements OnInit, OnDestroy {
     if (this.paymentMethod === 'CREDIT_CARD') {
       const result = await this.stripe.confirmCardPayment(this.clientSecret, {
         payment_method: {
-          card: this.cardElement
+          card: this.cardNumber
         }
       });
 

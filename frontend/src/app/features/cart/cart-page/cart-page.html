@@ -85,6 +85,68 @@
           <lucide-icon name="trash-2" [size]="16"></lucide-icon>
         </button>
       </div>
+
+      <!-- Payment Section (Left Column) -->
+      <div 
+        *ngIf="cartItems.length > 0" 
+        class="glass-card p-6 border border-slate-700/50 mt-6 animate__animated animate__fadeIn"
+      >
+        <h3 class="text-lg font-semibold text-white mb-4 border-b border-slate-700 pb-2">Ödeme Bilgileri</h3>
+        
+        <div class="mb-4">
+          <label class="block text-sm text-slate-400 mb-2">Ödeme Yöntemi</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="cursor-pointer">
+              <input type="radio" class="peer sr-only" name="paymentOption" value="CREDIT_CARD" [(ngModel)]="paymentMethod">
+              <div class="rounded-xl border border-slate-700 bg-slate-800 p-3 text-center hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
+                <lucide-icon name="credit-card" [size]="20" class="mx-auto mb-1 text-slate-300 peer-checked:text-primary"></lucide-icon>
+                <span class="text-sm text-slate-300 font-medium">Stripe (Kart)</span>
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" class="peer sr-only" name="paymentOption" value="DEBIT_CARD" [(ngModel)]="paymentMethod">
+              <div class="rounded-xl border border-slate-700 bg-slate-800 p-3 text-center hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
+                <lucide-icon name="wallet" [size]="20" class="mx-auto mb-1 text-slate-300 peer-checked:text-primary"></lucide-icon>
+                <span class="text-sm text-slate-300 font-medium">Banka Kartı</span>
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" class="peer sr-only" name="paymentOption" value="BANK_TRANSFER" [(ngModel)]="paymentMethod">
+              <div class="rounded-xl border border-slate-700 bg-slate-800 p-3 text-center hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
+                <lucide-icon name="landmark" [size]="20" class="mx-auto mb-1 text-slate-300 peer-checked:text-primary"></lucide-icon>
+                <span class="text-sm text-slate-300 font-medium">Havale / EFT</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Stripe Elements Split -->
+        <div [class.hidden]="paymentMethod !== 'CREDIT_CARD'" class="space-y-4 bg-slate-800/50 p-5 rounded-xl border border-slate-700/60 mt-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">Kart Numarası</label>
+            <div id="card-number" class="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-inner"></div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Son Kullanma (AA/YY)</label>
+              <div id="card-expiry" class="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-inner"></div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">CVC (Güvenlik Kodu)</label>
+              <div id="card-cvc" class="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-inner"></div>
+            </div>
+          </div>
+
+          <p *ngIf="paymentStatus" class="text-sm mt-3 font-medium text-center" [ngClass]="paymentStatus.includes('Hata') ? 'text-red-400' : 'text-emerald-400'">
+            {{ paymentStatus }}
+          </p>
+        </div>
+
+        <div *ngIf="paymentMethod !== 'CREDIT_CARD'" class="p-4 bg-slate-800 rounded-xl border border-slate-700 text-center text-slate-400 text-sm mt-4">
+          Bu ödeme yöntemi ile siparişi tamamladıktan sonra gerekli ibana gönderim yapmanız gerekecektir.
+        </div>
+      </div>
     </div>
 
     <!-- Order Summary -->
@@ -108,28 +170,7 @@
         </div>
       </div>
 
-      <!-- Payment Method -->
-      <div class="mb-4">
-        <label class="block text-sm text-slate-400 mb-2">Ödeme Yöntemi</label>
-        <select
-          [(ngModel)]="paymentMethod"
-          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-primary/60"
-        >
-          <option value="CREDIT_CARD">Stripe (Kredi Kartı)</option>
-          <option value="DEBIT_CARD">Banka Kartı</option>
-          <option value="BANK_TRANSFER">Havale/EFT</option>
-        </select>
-      </div>
-
-      <!-- Stripe Card Element -->
-      <div class="mb-6" [class.hidden]="cartItems.length === 0 || paymentMethod !== 'CREDIT_CARD'">
-        <label class="block text-sm text-slate-400 mb-2">Kart Bilgileri</label>
-        <!-- Stripe objesi buraya yüklenecek -->
-        <div id="card-element" class="bg-slate-800 border border-slate-700 rounded-xl p-3 shadow-inner"></div>
-        <p *ngIf="paymentStatus" class="text-xs mt-2" [ngClass]="paymentStatus.includes('Hata') ? 'text-red-400' : 'text-emerald-400'">
-          {{ paymentStatus }}
-        </p>
-      </div>
+      <!-- We removed the redundant payment method dropdown and stripe single card element from here -->
 
       <button
         (click)="checkout()"
