@@ -28,6 +28,10 @@ import {
     Download,
     Plus,
     Bot,
+    CreditCard,
+    Wallet,
+    Landmark,
+    Trash2
 } from 'lucide-angular';
 
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
@@ -63,6 +67,10 @@ import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
             Download,
             Plus,
             Bot,
+            CreditCard,
+            Wallet,
+            Landmark,
+            Trash2
         }),
     ],
     exports: [CommonModule, RouterModule, KpiCardComponent, LucideAngularModule],
