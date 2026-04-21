@@ -8,12 +8,7 @@ export interface AdminOrderDTO {
   grandTotal: number;
   paymentMethod: string;
   status: string;
-  customer?: {
-    id: number;
-    name: string;
-    surname: string;
-    email: string;
-  };
+  customer?: { id: number; name: string; surname: string; email: string; };
   items?: any[];
 }
 
@@ -25,12 +20,7 @@ export interface AdminShipmentDTO {
   mode: string;
   warehouse: string;
   productImportance: string;
-  customer?: {
-    id: number;
-    name: string;
-    surname: string;
-    email: string;
-  };
+  customer?: { id: number; name: string; surname: string; email: string; };
 }
 
 export interface AdminReviewDTO {
@@ -42,6 +32,31 @@ export interface AdminReviewDTO {
   comment: string;
   sentiment: string;
   createdAt: string;
+}
+
+export interface StoreRankingDTO {
+  storeId: number;
+  storeName: string;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export interface CustomerRankingDTO {
+  userId: number;
+  name: string;
+  surname: string;
+  email: string;
+  totalSpent: number;
+  orderCount: number;
+}
+
+export interface AdminAnalyticsDTO {
+  topStores: StoreRankingDTO[];
+  topCustomers: CustomerRankingDTO[];
+  totalRevenue: number;
+  totalOrders: number;
+  totalReviews: number;
+  totalShipments: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -58,5 +73,9 @@ export class AdminTrafficService {
 
   getAllReviews(): Observable<AdminReviewDTO[]> {
     return this.api.get<AdminReviewDTO[]>('/admin/traffic/reviews');
+  }
+
+  getAnalytics(): Observable<AdminAnalyticsDTO> {
+    return this.api.get<AdminAnalyticsDTO>('/admin/traffic/analytics');
   }
 }

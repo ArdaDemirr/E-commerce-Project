@@ -70,10 +70,11 @@ export class SidebarComponent implements OnInit {
       ];
       this.showManagement = true;
     } else if (role === 'ADMIN') {
-      this.mainMenuItems.unshift({ path: '/dashboard', label: 'Dashboard', icon: 'layout-dashboard' });
-      this.mainMenuItems.push(
-        { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' }
-      );
+      this.mainMenuItems = [
+        { path: '/analytics', label: 'Analizler', icon: 'bar-chart-2' },
+        { path: '/products', label: 'Ürünler', icon: 'package' },
+        { path: '/chat', label: 'Asistan (AI)', icon: 'bot' }
+      ];
       this.managementItems = [
         { path: '/admin/user-management', label: 'Kullanıcılar', icon: 'users' },
         { path: '/admin/category-management', label: 'Kategoriler', icon: 'tags' },
