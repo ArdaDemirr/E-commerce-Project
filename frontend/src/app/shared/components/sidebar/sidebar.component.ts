@@ -1,7 +1,24 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LucideAngularModule } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Zap,
+  LayoutDashboard,
+  Package,
+  Bot,
+  ShoppingCart,
+  ShoppingBag,
+  Truck,
+  Star,
+  BarChart2,
+  Settings,
+  Users,
+  Tags,
+  Store,
+  Moon,
+  Activity
+} from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { Observable } from 'rxjs';
@@ -16,7 +33,27 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, LucideAngularModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LucideAngularModule.pick({
+      Zap,
+      LayoutDashboard,
+      Package,
+      Bot,
+      ShoppingCart,
+      ShoppingBag,
+      Truck,
+      Star,
+      BarChart2,
+      Settings,
+      Users,
+      Tags,
+      Store,
+      Moon,
+      Activity
+    })
+  ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
@@ -77,7 +114,8 @@ export class SidebarComponent implements OnInit {
       this.managementItems = [
         { path: '/admin/user-management', label: 'Kullanıcılar', icon: 'users' },
         { path: '/admin/category-management', label: 'Kategoriler', icon: 'tags' },
-        { path: '/admin/stores', label: 'Mağazalar', icon: 'store' }
+        { path: '/admin/stores', label: 'Mağazalar', icon: 'store' },
+        { path: '/admin/traffic', label: 'Site Akışı', icon: 'activity' }
       ];
       this.showManagement = true;
     }

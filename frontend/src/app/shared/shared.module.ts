@@ -34,7 +34,13 @@ import {
     Trash2,
     AlertTriangle,
     PackageMinus,
-    CheckCircle
+    CheckCircle,
+    Activity,
+    ListOrdered,
+    MessageSquare,
+    Clock,
+    MapPin,
+    Eye
 } from 'lucide-angular';
 
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
@@ -76,7 +82,13 @@ import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
             Trash2,
             AlertTriangle,
             PackageMinus,
-            CheckCircle
+            CheckCircle,
+            Activity,
+            ListOrdered,
+            MessageSquare,
+            Clock,
+            MapPin,
+            Eye
         }),
     ],
     exports: [CommonModule, RouterModule, KpiCardComponent, LucideAngularModule],
