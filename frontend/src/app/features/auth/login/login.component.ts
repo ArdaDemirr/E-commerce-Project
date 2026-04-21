@@ -38,6 +38,8 @@ export class LoginComponent {
         const role = this.authService.userRole;
         if (role === 'INDIVIDUAL') {
           this.router.navigate(['/products']);
+        } else if (role === 'ADMIN') {
+          this.router.navigate(['/analytics']);
         } else {
           this.router.navigate(['/dashboard']);
         }
