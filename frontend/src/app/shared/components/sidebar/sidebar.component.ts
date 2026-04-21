@@ -1,24 +1,7 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import {
-  LucideAngularModule,
-  Zap,
-  LayoutDashboard,
-  Package,
-  Bot,
-  ShoppingCart,
-  ShoppingBag,
-  Truck,
-  Star,
-  BarChart2,
-  Settings,
-  Users,
-  Tags,
-  Store,
-  Moon,
-  Activity
-} from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { Observable } from 'rxjs';
@@ -33,27 +16,7 @@ interface MenuItem {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    LucideAngularModule.pick({
-      Zap,
-      LayoutDashboard,
-      Package,
-      Bot,
-      ShoppingCart,
-      ShoppingBag,
-      Truck,
-      Star,
-      BarChart2,
-      Settings,
-      Users,
-      Tags,
-      Store,
-      Moon,
-      Activity
-    })
-  ],
+  imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })

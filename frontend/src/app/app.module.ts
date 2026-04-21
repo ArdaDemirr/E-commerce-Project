@@ -3,7 +3,24 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
-import { LucideAngularModule } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Zap,
+  LayoutDashboard,
+  Package,
+  Bot,
+  ShoppingCart,
+  ShoppingBag,
+  Truck,
+  Star,
+  BarChart2,
+  Settings,
+  Users,
+  Tags,
+  Store,
+  Moon,
+  Activity
+} from 'lucide-angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
@@ -37,7 +54,24 @@ import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
       preventDuplicates: true,
     }),
     RouterModule,
-    SharedModule
+    SharedModule,
+    LucideAngularModule.pick({
+      Zap,
+      LayoutDashboard,
+      Package,
+      Bot,
+      ShoppingCart,
+      ShoppingBag,
+      Truck,
+      Star,
+      BarChart2,
+      Settings,
+      Users,
+      Tags,
+      Store,
+      Moon,
+      Activity
+    })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
