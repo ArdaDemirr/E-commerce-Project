@@ -6,6 +6,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 import { StoreProductService } from '../../../core/services/store-product.service';
+import { CorporateAnalyticsService } from '../../../core/services/corporate-analytics.service';
 import { User } from '../../../core/models/user.model';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card.component';
 
@@ -57,17 +58,26 @@ export class CorporateDashboardComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private storeProductService: StoreProductService,
+    private corporateAnalyticsService: CorporateAnalyticsService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.user = this.authService.currentUser;
     this.kpis = [
-      { label: 'Toplam Gelir', value: '₺24,500', change: 12.5, icon: 'pie-chart', iconColor: '#6366F1', iconBg: '99, 102, 241' },
-      { label: 'Siparişler', value: '1,248', change: 8.2, icon: 'shopping-bag', iconColor: '#8B5CF6', iconBg: '139, 92, 246' },
-      { label: 'Aktif Müşteriler', value: '842', change: -2.4, icon: 'users', iconColor: '#F43F5E', iconBg: '244, 63, 94' },
-      { label: 'Dönüşüm Oranı', value: '3.6%', change: 1.1, icon: 'zap', iconColor: '#10B981', iconBg: '16, 185, 129' },
+      { label: 'Toplam Kazanç/Satış', value: '...', change: 0, icon: 'pie-chart', iconColor: '#6366F1', iconBg: '99, 102, 241' },
+      { label: 'Toplam Sipariş', value: '...', change: 0, icon: 'shopping-bag', iconColor: '#8B5CF6', iconBg: '139, 92, 246' },
+      { label: 'Toplam Ürün', value: '...', change: 0, icon: 'package', iconColor: '#F43F5E', iconBg: '244, 63, 94' }
     ];
+
+    this.corporateAnalyticsService.getDashboardAnalytics().subscribe(data => {
+      this.kpis = [
+        { label: 'Toplam Kazanç/Satış', value: `₺${data.totalEarnings.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}`, change: 0, icon: 'pie-chart', iconColor: '#6366F1', iconBg: '99, 102, 241' },
+        { label: 'Toplam Sipariş', value: data.totalOrders.toString(), change: 0, icon: 'shopping-bag', iconColor: '#8B5CF6', iconBg: '139, 92, 246' },
+        { label: 'Toplam Ürün', value: data.totalProducts.toString(), change: 0, icon: 'package', iconColor: '#F43F5E', iconBg: '244, 63, 94' }
+      ];
+      this.cdr.detectChanges();
+    });
 
     // En Çok Yorumlanan Ürünler Grafiği (Bar Chart - Fiyat Karşılaştırmalı)
     this.storeProductService.getMyTopReviewedProducts(0, 5).subscribe(products => {
