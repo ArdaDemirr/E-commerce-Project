@@ -14,8 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.advanced.projectspring.dto.admin.AdminAnalyticsDTO;
+import com.advanced.projectspring.dto.admin.StoreRankingDTO;
+import com.advanced.projectspring.dto.admin.CustomerRankingDTO;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -170,5 +175,61 @@ public class OrderService {
         return orderRepository.findAll().stream()
                 .map(this::mapToCorporateOrderResponseDTO)
                 .toList();
+    }
+
+    // ADMIN ANALYTICS
+    public AdminAnalyticsDTO getAdminAnalytics(
+            long totalReviews,
+            long totalShipments) {
+
+        List<Order> allOrders = orderRepository.findAll();
+        long totalOrders = allOrders.size();
+        double totalRevenue = allOrders.stream()
+                .mapToDouble(o -> o.getGrandTotal() != null ? o.getGrandTotal() : 0.0)
+                .sum();
+
+        // Top 5 stores by revenue
+        Map<Long, List<Order>> byStore = allOrders.stream()
+                .filter(o -> o.getStore() != null)
+                .collect(Collectors.groupingBy(o -> o.getStore().getId()));
+
+        List<StoreRankingDTO> topStores = byStore.entrySet().stream()
+                .map(e -> {
+                    Order sample = e.getValue().get(0);
+                    double rev = e.getValue().stream()
+                            .mapToDouble(o -> o.getGrandTotal() != null ? o.getGrandTotal() : 0.0).sum();
+                    return new StoreRankingDTO(
+                            e.getKey(),
+                            sample.getStore().getName(),
+                            rev,
+                            (long) e.getValue().size());
+                })
+                .sorted((a, b) -> Double.compare(b.getTotalRevenue(), a.getTotalRevenue()))
+                .limit(5)
+                .collect(Collectors.toList());
+
+        // Top 5 customers by spending
+        Map<Long, List<Order>> byUser = allOrders.stream()
+                .filter(o -> o.getUser() != null)
+                .collect(Collectors.groupingBy(o -> o.getUser().getId()));
+
+        List<CustomerRankingDTO> topCustomers = byUser.entrySet().stream()
+                .map(e -> {
+                    Order sample = e.getValue().get(0);
+                    double spent = e.getValue().stream()
+                            .mapToDouble(o -> o.getGrandTotal() != null ? o.getGrandTotal() : 0.0).sum();
+                    return new CustomerRankingDTO(
+                            e.getKey(),
+                            sample.getUser().getName(),
+                            sample.getUser().getSurname(),
+                            sample.getUser().getEmail(),
+                            spent,
+                            (long) e.getValue().size());
+                })
+                .sorted((a, b) -> Double.compare(b.getTotalSpent(), a.getTotalSpent()))
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return new AdminAnalyticsDTO(topStores, topCustomers, totalRevenue, totalOrders, totalReviews, totalShipments);
     }
 }

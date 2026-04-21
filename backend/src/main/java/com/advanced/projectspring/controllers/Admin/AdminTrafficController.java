@@ -1,5 +1,6 @@
 package com.advanced.projectspring.controllers.Admin;
 
+import com.advanced.projectspring.dto.admin.AdminAnalyticsDTO;
 import com.advanced.projectspring.dto.corporate.CorporateOrderResponseDTO;
 import com.advanced.projectspring.dto.corporate.CorporateShipmentResponseDTO;
 import com.advanced.projectspring.dto.individual.Review.ReviewResponseDTO;
@@ -44,5 +45,13 @@ public class AdminTrafficController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReviewResponseDTO>> getAllReviews() {
         return ResponseEntity.ok(reviewService.getAllReviews());
+    }
+
+    @GetMapping("/analytics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AdminAnalyticsDTO> getAdminAnalytics() {
+        long totalReviews = reviewService.getAllReviews().size();
+        long totalShipments = shipmentService.getAllShipments().size();
+        return ResponseEntity.ok(orderService.getAdminAnalytics(totalReviews, totalShipments));
     }
 }
