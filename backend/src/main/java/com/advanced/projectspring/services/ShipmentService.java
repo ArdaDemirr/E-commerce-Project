@@ -129,6 +129,7 @@ public class ShipmentService {
                     shipment.getOrder().getUser().getName(),
                     shipment.getOrder().getUser().getSurname(),
                     shipment.getOrder().getUser().getEmail()));
+        }
         return dto;
     }
 
