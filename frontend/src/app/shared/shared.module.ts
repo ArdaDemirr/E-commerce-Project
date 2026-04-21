@@ -31,7 +31,10 @@ import {
     CreditCard,
     Wallet,
     Landmark,
-    Trash2
+    Trash2,
+    AlertTriangle,
+    PackageMinus,
+    CheckCircle
 } from 'lucide-angular';
 
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
@@ -70,7 +73,10 @@ import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
             CreditCard,
             Wallet,
             Landmark,
-            Trash2
+            Trash2,
+            AlertTriangle,
+            PackageMinus,
+            CheckCircle
         }),
     ],
     exports: [CommonModule, RouterModule, KpiCardComponent, LucideAngularModule],

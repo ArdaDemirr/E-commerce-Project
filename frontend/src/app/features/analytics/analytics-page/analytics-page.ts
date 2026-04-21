@@ -11,8 +11,11 @@ import { StoreProductsResponseDTO } from '../../../core/models/store-product.mod
 export class AnalyticsPage implements OnInit {
   mostReviewedProducts: StoreProductsResponseDTO[] = [];
   highestRatedProducts: StoreProductsResponseDTO[] = [];
+  lowStockProducts: StoreProductsResponseDTO[] = [];
+  
   loadingMostReviewed = true;
   loadingHighestRated = true;
+  loadingLowStock = true;
 
   constructor(
     private storeProductService: StoreProductService,
@@ -40,6 +43,20 @@ export class AnalyticsPage implements OnInit {
       },
       error: () => {
         this.loadingHighestRated = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.storeProductService.getAllProducts().subscribe({
+      next: (products) => {
+        this.lowStockProducts = (products || [])
+          .filter(p => p.stock <= 10)
+          .sort((a, b) => a.stock - b.stock); // Ascending stock (lowest first)
+        this.loadingLowStock = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingLowStock = false;
         this.cdr.detectChanges();
       }
     });
