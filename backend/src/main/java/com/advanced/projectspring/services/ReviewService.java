@@ -139,6 +139,12 @@ public class ReviewService {
         return convertToResponseDTO(updatedReview);
     }
 
+    public List<ReviewResponseDTO> getAllReviews() {
+        return reviewRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     // ==========================================
     // HELPER METHODS
     // ==========================================
@@ -166,6 +172,14 @@ public class ReviewService {
         if (review.getProduct() != null) {
             response.setProductId(review.getProduct().getId());
             response.setProductName(review.getProduct().getName());
+        }
+
+        if (review.getUser() != null) {
+            String fullName = review.getUser().getName();
+            if (review.getUser().getSurname() != null) {
+                fullName += " " + review.getUser().getSurname();
+            }
+            response.setReviewerName(fullName);
         }
 
         response.setRating(review.getStarRating());

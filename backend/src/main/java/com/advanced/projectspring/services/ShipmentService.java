@@ -129,7 +129,12 @@ public class ShipmentService {
                     shipment.getOrder().getUser().getName(),
                     shipment.getOrder().getUser().getSurname(),
                     shipment.getOrder().getUser().getEmail()));
-        }
         return dto;
+    }
+
+    public List<CorporateShipmentResponseDTO> getAllShipments() {
+        return shipmentRepository.findAll().stream()
+                .map(this::convertToCorporateResponseDTO)
+                .collect(Collectors.toList());
     }
 }

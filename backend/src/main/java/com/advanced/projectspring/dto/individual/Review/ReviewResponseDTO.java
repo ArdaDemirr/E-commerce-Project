@@ -6,6 +6,7 @@ public class ReviewResponseDTO {
     private Long id;
     private Long productId;
     private String productName;
+    private String reviewerName;
     private Integer rating;
     private String comment;
     private String sentiment;
@@ -34,6 +35,14 @@ public class ReviewResponseDTO {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getReviewerName() {
+        return reviewerName;
+    }
+
+    public void setReviewerName(String reviewerName) {
+        this.reviewerName = reviewerName;
     }
 
     public Integer getRating() {

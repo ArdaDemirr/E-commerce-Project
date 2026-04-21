@@ -164,4 +164,11 @@ public class OrderService {
                 .map(this::mapToCorporateOrderResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found or access denied"));
     }
+
+    // ADMIN ORDERS
+    public List<CorporateOrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToCorporateOrderResponseDTO)
+                .toList();
+    }
 }
