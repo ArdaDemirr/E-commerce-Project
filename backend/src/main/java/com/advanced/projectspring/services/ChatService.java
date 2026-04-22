@@ -86,10 +86,16 @@ public class ChatService {
                     new org.springframework.core.ParameterizedTypeReference<Map<String, Object>>() {
                     });
 
-            // Extract the "reply" from the Python JSON response
+            // Extract the fields from the Python JSON response
             String aiReply = (String) response.getBody().get("reply");
+            Boolean hasChart = (Boolean) response.getBody().get("hasChart");
+            Object chartData = response.getBody().get("chartData");
 
-            return new ChatResponse(aiReply, false);
+            return new ChatResponse(
+                    aiReply != null ? aiReply : "",
+                    false,
+                    hasChart != null ? hasChart : false,
+                    chartData);
 
         } catch (Exception e) {
             e.printStackTrace();
