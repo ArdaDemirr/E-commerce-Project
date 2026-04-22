@@ -4,16 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Bot, Send } from 'lucide-angular';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatboxComponent } from './chatbox/chatbox.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 @NgModule({
-  declarations: [
-    ChatboxComponent
-  ],
+  declarations: [ChatboxComponent],
   imports: [
     CommonModule,
     ChatRoutingModule,
     FormsModule,
-    LucideAngularModule.pick({ Bot, Send })
-  ]
+    NgApexchartsModule,
+    LucideAngularModule.pick({ Bot, Send }),
+  ],
 })
-export class ChatModule { }
+export class ChatModule {}

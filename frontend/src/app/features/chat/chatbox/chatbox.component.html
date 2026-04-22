@@ -111,7 +111,49 @@
           <div
             class="bg-white px-5 py-4 rounded-2xl rounded-tl-sm shadow-md border border-slate-100 text-slate-800 text-[15px] leading-relaxed whitespace-pre-wrap"
           >
-            {{ msg.content }}
+            <div>{{ msg.content }}</div>
+
+            <!-- ApexCharts Integration -->
+            <div
+              *ngIf="msg.chartType"
+              class="chart-wrapper mt-4 bg-white border border-slate-100 rounded-xl p-3 shadow-inner overflow-hidden"
+              style="width: 100%; min-width: 320px; max-width: 450px"
+            >
+              <apx-chart
+                *ngIf="msg.chartType === 'pie' || msg.chartType === 'donut'"
+                [series]="msg.chartSeries!"
+                [chart]="{
+                  type: msg.chartType,
+                  height: 300,
+                  animations: { enabled: true },
+                }"
+                [labels]="msg.chartLabels!"
+                [legend]="{ position: 'bottom', labels: { colors: '#64748b' } }"
+                [stroke]="{ show: false }"
+                [dataLabels]="{ enabled: true, dropShadow: { enabled: false } }"
+              >
+              </apx-chart>
+
+              <apx-chart
+                *ngIf="msg.chartType === 'bar' || msg.chartType === 'line'"
+                [series]="msg.chartSeries!"
+                [chart]="{
+                  type: msg.chartType,
+                  height: 300,
+                  toolbar: { show: false },
+                  animations: { enabled: true },
+                }"
+                [xaxis]="{
+                  categories: msg.chartLabels,
+                  labels: { style: { colors: '#64748b' } },
+                }"
+                [yaxis]="{ labels: { style: { colors: '#64748b' } } }"
+                [grid]="{ borderColor: '#f1f5f9' }"
+                [dataLabels]="{ enabled: false }"
+                [colors]="['#6366f1']"
+              >
+              </apx-chart>
+            </div>
           </div>
         </div>
 

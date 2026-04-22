@@ -7,6 +7,9 @@ import { AuthService } from './auth.service';
 export interface ChatMessage {
   role: 'user' | 'ai';
   content: string;
+  chartType?: 'bar' | 'donut' | 'pie' | 'line' | null;
+  chartSeries?: any[];
+  chartLabels?: string[];
 }
 
 export interface ChatSession {
@@ -23,6 +26,8 @@ export interface ChatRequest {
 export interface ChatResponse {
   reply: string;
   blocked: boolean;
+  hasChart?: boolean;
+  chartData?: any;
 }
 
 @Injectable({

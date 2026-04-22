@@ -19,11 +19,12 @@ import {
   Tags,
   Store,
   Moon,
-  Activity
+  Activity,
 } from 'lucide-angular';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,9 +35,7 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -55,6 +54,7 @@ import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
     }),
     RouterModule,
     SharedModule,
+    NgApexchartsModule,
     LucideAngularModule.pick({
       Zap,
       LayoutDashboard,
@@ -70,12 +70,12 @@ import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
       Tags,
       Store,
       Moon,
-      Activity
-    })
+      Activity,
+    }),
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
