@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ReviewService } from '../../../core/services/review.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { MyReviewDTO, ReviewRequest } from '../../../core/models/review.model';
 import { ToastrService } from 'ngx-toastr';
 
@@ -25,9 +26,14 @@ export class ReviewListComponent implements OnInit {
 
   constructor(
     private reviewService: ReviewService,
+    private authService: AuthService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get isCorporate(): boolean {
+    return this.authService.userRole === 'CORPORATE';
+  }
 
   ngOnInit(): void {
     this.loadReviews();
@@ -72,6 +78,7 @@ export class ReviewListComponent implements OnInit {
   }
 
   openEditModal(review: MyReviewDTO): void {
+    if (this.isCorporate) return;
     this.editingReviewId = review.id;
     this.editFormData = {
       productId: review.productId, // Required by ReviewRequest DTO
@@ -87,6 +94,8 @@ export class ReviewListComponent implements OnInit {
   }
 
   saveReview(): void {
+    if (this.isCorporate) return;
+    
     if (!this.editFormData.rating || !this.editFormData.comment) {
       this.toastr.warning('Lütfen geçerli bir puan ve yorum girin.');
       return;
@@ -105,6 +114,8 @@ export class ReviewListComponent implements OnInit {
   }
 
   deleteReview(id: number): void {
+    if (this.isCorporate) return;
+    
     if (confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
       this.reviewService.deleteReview(id).subscribe({
         next: () => {

@@ -87,7 +87,7 @@
               <lucide-icon name="thumbs-up" [size]="12"></lucide-icon>
               <span>{{ review.helpfulVotes }} kişi faydalı buldu</span>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" *ngIf="!isCorporate">
               <button (click)="openEditModal(review)" class="text-xs flex items-center gap-1 text-slate-400 hover:text-white transition-colors duration-200">
                 <lucide-icon name="edit" [size]="14"></lucide-icon>
                 <span>Düzenle</span>
