@@ -8,6 +8,7 @@ public class ShipmentResponseDTO {
     private String warehouse;
     private String productImportance;
     private Long orderId;
+    private String productImageUrl;
 
     // Getters and Setters
     public Long getId() {
@@ -64,5 +65,13 @@ public class ShipmentResponseDTO {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
     }
 }

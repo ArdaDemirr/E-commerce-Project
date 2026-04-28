@@ -25,6 +25,9 @@ public class ShipmentService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private com.advanced.projectspring.repositories.OrderItemRepository orderItemRepository;
+
     public ShipmentResponseDTO getShipmentByOrderId(Long orderId, Long userId, String role) {
         return shipmentRepository.findByOrderId(orderId)
                 .filter(shipment -> canAccessShipment(shipment, userId, role))
@@ -109,6 +112,11 @@ public class ShipmentService {
 
         if (shipment.getOrder() != null) {
             dto.setOrderId(shipment.getOrder().getId());
+            java.util.List<com.advanced.projectspring.models.OrderItem> items = orderItemRepository
+                    .findByOrderId(shipment.getOrder().getId());
+            if (items != null && !items.isEmpty()) {
+                dto.setProductImageUrl(items.get(0).getProduct().getImageUrl());
+            }
         }
         return dto;
     }
@@ -129,6 +137,11 @@ public class ShipmentService {
                     shipment.getOrder().getUser().getName(),
                     shipment.getOrder().getUser().getSurname(),
                     shipment.getOrder().getUser().getEmail()));
+            java.util.List<com.advanced.projectspring.models.OrderItem> items = orderItemRepository
+                    .findByOrderId(shipment.getOrder().getId());
+            if (items != null && !items.isEmpty()) {
+                dto.setProductImageUrl(items.get(0).getProduct().getImageUrl());
+            }
         }
         return dto;
     }

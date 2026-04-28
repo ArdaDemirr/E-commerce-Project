@@ -70,6 +70,7 @@ public class ReviewService {
             dto.setCreatedAt(review.getCreatedAt());
             dto.setHelpfulVotes(review.getHelpfulVotes());
             dto.setSentiment(review.getSentiment());
+            dto.setProductImageUrl(review.getProduct().getImageUrl());
             return dto;
         }).collect(Collectors.toList());
     }

@@ -11,6 +11,7 @@ public class CorporateShipmentResponseDTO {
     private String productImportance;
     private Long orderId;
     private CustomerSummaryDTO customer; // Explicit recipient info for logistics
+    private String productImageUrl;
 
     public Long getId() {
         return id;
@@ -74,5 +75,13 @@ public class CorporateShipmentResponseDTO {
 
     public void setCustomer(CustomerSummaryDTO customer) {
         this.customer = customer;
+    }
+
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
     }
 }

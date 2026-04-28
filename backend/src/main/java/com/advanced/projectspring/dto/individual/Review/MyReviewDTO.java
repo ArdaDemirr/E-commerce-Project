@@ -11,6 +11,7 @@ public class MyReviewDTO {
     private LocalDateTime createdAt;
     private Integer helpfulVotes;
     private String sentiment;
+    private String productImageUrl;
 
     // Getters and Setters
     public Long getId() {
@@ -75,5 +76,13 @@ public class MyReviewDTO {
 
     public void setSentiment(String sentiment) {
         this.sentiment = sentiment;
+    }
+
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
     }
 }

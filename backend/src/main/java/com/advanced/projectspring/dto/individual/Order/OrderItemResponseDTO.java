@@ -6,6 +6,7 @@ public class OrderItemResponseDTO {
     private Integer quantity;
     private Double unitPrice;
     private Double totalPrice;
+    private String productImageUrl;
 
     // Getters and Setters
     public Long getProductId() {
@@ -46,5 +47,13 @@ public class OrderItemResponseDTO {
 
     public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
+
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
     }
 }
