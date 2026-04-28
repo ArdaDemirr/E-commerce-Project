@@ -225,12 +225,29 @@
 
       <div>
         <label class="block text-slate-400 mb-1.5 font-medium">Resim URL</label>
-        <input
-          [(ngModel)]="formData.imageUrl"
-          type="text"
-          placeholder="https://..."
-          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
-        />
+        <div class="flex gap-3">
+          <input
+            [(ngModel)]="formData.imageUrl"
+            type="text"
+            placeholder="https://..."
+            class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+          <div
+            class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 overflow-hidden"
+          >
+            <img
+              *ngIf="formData.imageUrl"
+              [src]="formData.imageUrl"
+              class="w-full h-full object-cover"
+            />
+            <lucide-icon
+              *ngIf="!formData.imageUrl"
+              name="image"
+              [size]="16"
+              class="text-slate-600"
+            ></lucide-icon>
+          </div>
+        </div>
       </div>
 
       <div>
