@@ -10,20 +10,20 @@ import { User } from '../../../core/models/user.model';
   standalone: true,
   imports: [CommonModule, RouterModule, LucideAngularModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
   @Input() sidebarCollapsed = false;
   @Output() toggleSidebar = new EventEmitter<void>();
 
   currentUser: User | null = null;
-  currentPageTitle = 'Dashboard';
+  currentPageTitle = '';
   showUserMenu = false;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
     });
   }
