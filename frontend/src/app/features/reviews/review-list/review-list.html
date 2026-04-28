@@ -3,7 +3,9 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-2xl font-bold text-white">Yorumlar</h1>
-      <p class="text-slate-400 text-sm mt-1">Ürün yorumlarınız veya mağazanıza gelen geri dönüşler burada listelenir.</p>
+      <p class="text-slate-400 text-sm mt-1">
+        Ürün yorumlarınız veya mağazanıza gelen geri dönüşler burada listelenir.
+      </p>
     </div>
     <div class="flex items-center gap-2 text-slate-400 text-sm">
       <lucide-icon name="message-square" [size]="18"></lucide-icon>
@@ -27,17 +29,35 @@
 
   <!-- Error -->
   <div *ngIf="!loading && error" class="glass-card p-12 text-center">
-    <lucide-icon name="alert-circle" [size]="48" class="text-red-400 mx-auto mb-4"></lucide-icon>
+    <lucide-icon
+      name="alert-circle"
+      [size]="48"
+      class="text-red-400 mx-auto mb-4"
+    ></lucide-icon>
     <h3 class="text-lg font-semibold text-white mb-2">Yorumlar yüklenemedi</h3>
     <p class="text-slate-400 text-sm">Lütfen daha sonra tekrar deneyin.</p>
   </div>
 
   <!-- Empty State -->
-  <div *ngIf="!loading && !error && reviews.length === 0" class="glass-card p-16 text-center">
-    <lucide-icon name="message-square" [size]="56" class="text-slate-600 mx-auto mb-4"></lucide-icon>
-    <h3 class="text-xl font-semibold text-white mb-2">Henüz yorum yazmadınız</h3>
-    <p class="text-slate-400 mb-6 text-sm">Satın aldığınız ürünlere yorum yazabilirsiniz.</p>
-    <a routerLink="/products" class="btn-primary inline-flex items-center gap-2">
+  <div
+    *ngIf="!loading && !error && reviews.length === 0"
+    class="glass-card p-16 text-center"
+  >
+    <lucide-icon
+      name="message-square"
+      [size]="56"
+      class="text-slate-600 mx-auto mb-4"
+    ></lucide-icon>
+    <h3 class="text-xl font-semibold text-white mb-2">
+      Henüz yorum yazmadınız
+    </h3>
+    <p class="text-slate-400 mb-6 text-sm">
+      Satın aldığınız ürünlere yorum yazabilirsiniz.
+    </p>
+    <a
+      routerLink="/products"
+      class="btn-primary inline-flex items-center gap-2"
+    >
       <lucide-icon name="package" [size]="16"></lucide-icon>
       Ürünleri Keşfet
     </a>
@@ -45,24 +65,49 @@
 
   <!-- Review Cards -->
   <div *ngIf="!loading && !error && reviews.length > 0" class="space-y-4">
-    <div *ngFor="let review of reviews"
-         class="glass-card p-5 animate__animated animate__fadeIn hover:border-primary/30 transition-colors border border-slate-700/30">
-
+    <div
+      *ngFor="let review of reviews"
+      class="glass-card p-5 animate__animated animate__fadeIn hover:border-primary/30 transition-colors border border-slate-700/30"
+    >
       <div class="flex items-start gap-4">
-        <!-- Product Icon -->
-        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-          <lucide-icon name="package" [size]="20" class="text-primary"></lucide-icon>
+        <!-- Product Image -->
+        <div
+          class="w-10 h-10 rounded-xl shrink-0 border border-slate-700/50 overflow-hidden bg-slate-800"
+        >
+          <img
+            *ngIf="review.productImageUrl"
+            [src]="review.productImageUrl"
+            [alt]="review.productName"
+            class="w-full h-full object-cover"
+          />
+          <div
+            *ngIf="!review.productImageUrl"
+            class="w-full h-full flex items-center justify-center bg-primary/10"
+          >
+            <lucide-icon
+              name="package"
+              [size]="20"
+              class="text-primary"
+            ></lucide-icon>
+          </div>
         </div>
 
         <div class="flex-1 min-w-0">
           <!-- Product Name & Date -->
           <div class="flex items-start justify-between gap-2 flex-wrap">
             <div>
-              <h3 class="font-semibold text-white text-sm">{{ review.productName }}</h3>
-              <p class="text-slate-500 text-xs mt-0.5">{{ review.createdAt | date:'d MMM y' }}</p>
+              <h3 class="font-semibold text-white text-sm">
+                {{ review.productName }}
+              </h3>
+              <p class="text-slate-500 text-xs mt-0.5">
+                {{ review.createdAt | date:'d MMM y' }}
+              </p>
             </div>
             <!-- Sentiment Badge -->
-            <span class="text-xs px-2 py-1 rounded-lg font-medium" [ngClass]="getSentimentClass(review.sentiment)">
+            <span
+              class="text-xs px-2 py-1 rounded-lg font-medium"
+              [ngClass]="getSentimentClass(review.sentiment)"
+            >
               {{ getSentimentLabel(review.sentiment) }}
             </span>
           </div>
@@ -70,16 +115,22 @@
           <!-- Star Rating -->
           <div class="flex items-center gap-0.5 mt-2">
             <ng-container *ngFor="let star of getStars(5)">
-              <lucide-icon name="star"
+              <lucide-icon
+                name="star"
                 [size]="14"
-                [class]="star <= review.rating ? 'text-amber-400' : 'text-slate-600'">
+                [class]="star <= review.rating ? 'text-amber-400' : 'text-slate-600'"
+              >
               </lucide-icon>
             </ng-container>
-            <span class="text-slate-400 text-xs ml-2">{{ review.rating }}/5</span>
+            <span class="text-slate-400 text-xs ml-2"
+              >{{ review.rating }}/5</span
+            >
           </div>
 
           <!-- Comment -->
-          <p class="text-slate-300 text-sm mt-2 leading-relaxed">{{ review.comment }}</p>
+          <p class="text-slate-300 text-sm mt-2 leading-relaxed">
+            {{ review.comment }}
+          </p>
 
           <!-- Helpful Votes Footer & Action Buttons -->
           <div class="flex items-center justify-between mt-3">
@@ -88,11 +139,17 @@
               <span>{{ review.helpfulVotes }} kişi faydalı buldu</span>
             </div>
             <div class="flex items-center gap-2" *ngIf="!isCorporate">
-              <button (click)="openEditModal(review)" class="text-xs flex items-center gap-1 text-slate-400 hover:text-white transition-colors duration-200">
+              <button
+                (click)="openEditModal(review)"
+                class="text-xs flex items-center gap-1 text-slate-400 hover:text-white transition-colors duration-200"
+              >
                 <lucide-icon name="edit" [size]="14"></lucide-icon>
                 <span>Düzenle</span>
               </button>
-              <button (click)="deleteReview(review.id)" class="text-xs flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors duration-200 ml-2">
+              <button
+                (click)="deleteReview(review.id)"
+                class="text-xs flex items-center gap-1 text-slate-400 hover:text-red-400 transition-colors duration-200 ml-2"
+              >
                 <lucide-icon name="trash-2" [size]="14"></lucide-icon>
                 <span>Sil</span>
               </button>
@@ -104,13 +161,24 @@
   </div>
 
   <!-- Edit Review Modal -->
-  <div *ngIf="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeEditModal()"></div>
+  <div
+    *ngIf="showEditModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+  >
+    <div
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      (click)="closeEditModal()"
+    ></div>
 
-    <div class="relative w-full max-w-lg glass-card p-6 animate__animated animate__fadeInUp animate__faster border border-slate-700">
+    <div
+      class="relative w-full max-w-lg glass-card p-6 animate__animated animate__fadeInUp animate__faster border border-slate-700"
+    >
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-bold text-white">Yorumu Düzenle</h3>
-        <button (click)="closeEditModal()" class="text-slate-400 hover:text-white transition-colors">
+        <button
+          (click)="closeEditModal()"
+          class="text-slate-400 hover:text-white transition-colors"
+        >
           <lucide-icon name="x" [size]="24"></lucide-icon>
         </button>
       </div>
@@ -118,8 +186,13 @@
       <div class="space-y-4">
         <!-- Rating Select -->
         <div class="form-group">
-          <label class="block text-sm font-medium text-slate-300 mb-1.5">Puan</label>
-          <select [(ngModel)]="editFormData.rating" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+          <label class="block text-sm font-medium text-slate-300 mb-1.5"
+            >Puan</label
+          >
+          <select
+            [(ngModel)]="editFormData.rating"
+            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+          >
             <option [ngValue]="5">5 Yıldız</option>
             <option [ngValue]="4">4 Yıldız</option>
             <option [ngValue]="3">3 Yıldız</option>
@@ -130,19 +203,26 @@
 
         <!-- Comment -->
         <div class="form-group">
-          <label class="block text-sm font-medium text-slate-300 mb-1.5">Yorumunuz</label>
-          <textarea [(ngModel)]="editFormData.comment" rows="4" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"></textarea>
+          <label class="block text-sm font-medium text-slate-300 mb-1.5"
+            >Yorumunuz</label
+          >
+          <textarea
+            [(ngModel)]="editFormData.comment"
+            rows="4"
+            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"
+          ></textarea>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="mt-6 flex justify-end gap-3">
-        <button (click)="closeEditModal()" class="px-5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+        <button
+          (click)="closeEditModal()"
+          class="px-5 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+        >
           İptal
         </button>
-        <button (click)="saveReview()" class="btn-primary">
-          Kaydet
-        </button>
+        <button (click)="saveReview()" class="btn-primary">Kaydet</button>
       </div>
     </div>
   </div>

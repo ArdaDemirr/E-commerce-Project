@@ -1,7 +1,7 @@
 export interface ShipmentResponseDTO {
   id: number;
   trackingId: string;
-  mode: string;        // carrier: Flight, Ship, Road, etc.
+  mode: string; // carrier: Flight, Ship, Road, etc.
   status: string;
   warehouse: string;
   productImportance: string;
@@ -12,4 +12,5 @@ export interface ShipmentResponseDTO {
     surname: string;
     email: string;
   };
+  productImageUrl?: string;
 }

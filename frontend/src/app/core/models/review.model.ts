@@ -7,6 +7,7 @@ export interface MyReviewDTO {
   createdAt: string;
   helpfulVotes: number;
   sentiment: 'positive' | 'neutral' | 'negative';
+  productImageUrl?: string;
 }
 
 export interface ProductReviewDTO {
