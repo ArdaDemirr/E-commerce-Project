@@ -44,6 +44,7 @@ public class StoreProductService {
         dto.setUnitPrice(product.getUnitPrice());
         dto.setStock(product.getStock());
         dto.setDescription(product.getDescription());
+        dto.setImageUrl(product.getImageUrl());
 
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
@@ -90,6 +91,7 @@ public class StoreProductService {
         product.setUnitPrice(request.getUnitPrice());
         product.setStock(request.getStock());
         product.setDescription(request.getDescription());
+        product.setImageUrl(request.getImageUrl());
 
         Product savedProduct = productRepository.save(product);
         return mapToResponseDTO(savedProduct);
@@ -119,6 +121,7 @@ public class StoreProductService {
         product.setUnitPrice(request.getUnitPrice());
         product.setStock(request.getStock());
         product.setDescription(request.getDescription());
+        product.setImageUrl(request.getImageUrl());
 
         Product updatedProduct = productRepository.save(product);
         return mapToResponseDTO(updatedProduct);
