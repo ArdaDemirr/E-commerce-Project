@@ -36,6 +36,7 @@ export class ChatboxComponent
   private sub!: Subscription;
 
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+  @ViewChild('scrollAnchor') private scrollAnchor!: ElementRef;
 
   constructor(
     private chatService: ChatService,
@@ -118,8 +119,14 @@ export class ChatboxComponent
 
   scrollToBottom(): void {
     try {
-      this.myScrollContainer.nativeElement.scrollTop =
-        this.myScrollContainer.nativeElement.scrollHeight;
+      setTimeout(() => {
+        if (this.scrollAnchor) {
+          this.scrollAnchor.nativeElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+          });
+        }
+      }, 50);
     } catch (err) {}
   }
 
