@@ -45,7 +45,7 @@ export class ChatboxComponent
   ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle('DataPulse | Support Chat');
+    this.titleService.setTitle('ARCA Shop | Support Chat');
 
     // Command the service to grab data from
     this.chatService.loadInitialHistory();
