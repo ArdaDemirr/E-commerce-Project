@@ -1,0 +1,276 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Mağaza Ürünleri</h1>
+      <p class="text-slate-400 text-sm mt-1">
+        Mağazanıza ait ürünleri buradan yönetebilirsiniz.
+      </p>
+    </div>
+    <button
+      (click)="openAddModal()"
+      class="btn-primary flex items-center gap-2"
+    >
+      <lucide-icon name="plus" [size]="18"></lucide-icon>
+      Yeni Ürün Ekle
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="glass-card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead
+          class="text-xs uppercase bg-slate-800/50 text-slate-400 border-b border-slate-700/50"
+        >
+          <tr>
+            <th class="px-6 py-4 font-medium">SKU / Ürün Adı</th>
+            <th class="px-6 py-4 font-medium">Kategori</th>
+            <th class="px-6 py-4 font-medium">Fiyat</th>
+            <th class="px-6 py-4 font-medium">Stok</th>
+            <th class="px-6 py-4 font-medium text-right">İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading State -->
+          <tr *ngIf="loading">
+            <td colspan="5" class="px-6 py-8 text-center text-slate-500">
+              <div class="animate-pulse space-y-4">
+                <div class="h-4 bg-slate-700 rounded w-3/4 mx-auto"></div>
+                <div class="h-4 bg-slate-700 rounded w-1/2 mx-auto"></div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="!loading && products.length === 0">
+            <td colspan="5" class="px-6 py-12 text-center">
+              <lucide-icon
+                name="package-open"
+                [size]="48"
+                class="text-slate-600 mx-auto mb-4"
+              ></lucide-icon>
+              <p class="text-slate-400">Henüz ürününüz bulunmuyor.</p>
+            </td>
+          </tr>
+
+          <!-- Product Rows -->
+          <tr
+            *ngFor="let product of products"
+            class="border-b border-slate-700/30 hover:bg-slate-800/20 transition-colors"
+          >
+            <td class="px-6 py-4 flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center shrink-0 overflow-hidden"
+              >
+                <lucide-icon
+                  *ngIf="!product.imageUrl"
+                  name="package"
+                  [size]="16"
+                  class="text-slate-500"
+                ></lucide-icon>
+                <img
+                  *ngIf="product.imageUrl"
+                  [src]="product.imageUrl"
+                  [alt]="product.name"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <div class="font-medium text-slate-200">{{ product.name }}</div>
+                <div class="text-xs text-slate-500 mt-0.5">
+                  {{ product.sku }}
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span
+                class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700"
+              >
+                {{ product.categoryName }}
+              </span>
+            </td>
+            <td class="px-6 py-4 font-medium text-primary">
+              ₺{{ product.unitPrice | number:'1.2-2' }}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span
+                  [class.text-amber-400]="product.isLowStock"
+                  [class.text-red-400]="product.stock === 0"
+                >
+                  {{ product.stock }} adet
+                </span>
+                <span
+                  *ngIf="product.isLowStock && product.stock > 0"
+                  class="flex h-2 w-2 relative"
+                >
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"
+                  ></span>
+                  <span
+                    class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"
+                  ></span>
+                </span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button
+                (click)="openEditModal(product)"
+                class="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors mr-2"
+              >
+                <lucide-icon name="edit-3" [size]="16"></lucide-icon>
+              </button>
+              <button
+                (click)="deleteProduct(product.id)"
+                class="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+              >
+                <lucide-icon name="trash-2" [size]="16"></lucide-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div
+  *ngIf="showModal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate__animated animate__fadeIn"
+>
+  <div
+    class="glass-card w-full max-w-2xl bg-slate-900 border border-slate-700 shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]"
+  >
+    <!-- Modal Header -->
+    <div
+      class="px-6 py-4 border-b border-slate-700/50 flex justify-between items-center shrink-0"
+    >
+      <h3 class="text-lg font-bold text-white">
+        {{ isEditMode ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle' }}
+      </h3>
+      <button
+        (click)="closeModal()"
+        class="text-slate-400 hover:text-white transition-colors"
+      >
+        <lucide-icon name="x" [size]="20"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Modal Body (Scrollable) -->
+    <div class="p-6 overflow-y-auto space-y-4 text-sm">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-slate-400 mb-1.5 font-medium"
+            >Ürün Adı *</label
+          >
+          <input
+            [(ngModel)]="formData.name"
+            type="text"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1.5 font-medium"
+            >STOK KODU (SKU) *</label
+          >
+          <input
+            [(ngModel)]="formData.sku"
+            type="text"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-slate-400 mb-1.5 font-medium"
+            >Fiyat (₺) *</label
+          >
+          <input
+            [(ngModel)]="formData.unitPrice"
+            type="number"
+            min="0"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1.5 font-medium"
+            >Stok Miktarı *</label
+          >
+          <input
+            [(ngModel)]="formData.stock"
+            type="number"
+            min="0"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-slate-400 mb-1.5 font-medium"
+          >Kategori *</label
+        >
+        <select
+          [(ngModel)]="formData.categoryId"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+        >
+          <option [ngValue]="0" disabled>Kategori Seçin</option>
+          <option *ngFor="let cat of categories" [ngValue]="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-slate-400 mb-1.5 font-medium">Resim URL</label>
+        <div class="flex gap-3">
+          <input
+            [(ngModel)]="formData.imageUrl"
+            type="text"
+            placeholder="https://..."
+            class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+          />
+          <div
+            class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 overflow-hidden"
+          >
+            <img
+              *ngIf="formData.imageUrl"
+              [src]="formData.imageUrl"
+              class="w-full h-full object-cover"
+            />
+            <lucide-icon
+              *ngIf="!formData.imageUrl"
+              name="image"
+              [size]="16"
+              class="text-slate-600"
+            ></lucide-icon>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-slate-400 mb-1.5 font-medium">Açıklama</label>
+        <textarea
+          [(ngModel)]="formData.description"
+          rows="4"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:border-primary/60 focus:outline-none"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div
+      class="px-6 py-4 border-t border-slate-700/50 flex justify-end gap-3 shrink-0"
+    >
+      <button
+        (click)="closeModal()"
+        class="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition-colors"
+      >
+        İptal
+      </button>
+      <button (click)="saveProduct()" class="btn-primary">Kaydet</button>
+    </div>
+  </div>
+</div>

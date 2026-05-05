@@ -1,0 +1,207 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-white">Siparişler</h1>
+      <p class="text-slate-400 text-sm mt-1">
+        Geçmiş tüm siparişlerinizi veya mağaza siparişlerini buradan
+        görebilirsiniz.
+      </p>
+    </div>
+    <div class="flex items-center gap-2 text-slate-400 text-sm">
+      <lucide-icon name="package" [size]="18"></lucide-icon>
+      <span>{{ orders.length }} sipariş</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="space-y-4">
+    <div *ngFor="let i of [1,2,3]" class="glass-card p-5 animate-pulse">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 bg-slate-700 rounded-xl"></div>
+        <div class="flex-1 space-y-2">
+          <div class="h-4 bg-slate-700 rounded w-1/3"></div>
+          <div class="h-3 bg-slate-700 rounded w-1/4"></div>
+        </div>
+        <div class="h-6 bg-slate-700 rounded-lg w-20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="glass-card p-12 text-center">
+    <lucide-icon
+      name="alert-circle"
+      [size]="48"
+      class="text-red-400 mx-auto mb-4"
+    ></lucide-icon>
+    <h3 class="text-lg font-semibold text-white mb-2">
+      Siparişler yüklenemedi
+    </h3>
+    <p class="text-slate-400 text-sm">Lütfen daha sonra tekrar deneyin.</p>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!loading && !error && orders.length === 0"
+    class="glass-card p-16 text-center"
+  >
+    <lucide-icon
+      name="shopping-bag"
+      [size]="56"
+      class="text-slate-600 mx-auto mb-4"
+    ></lucide-icon>
+    <h3 class="text-xl font-semibold text-white mb-2">Henüz siparişiniz yok</h3>
+    <p class="text-slate-400 mb-6 text-sm">
+      Ürünleri keşfetmeye başlayın ve ilk siparişinizi verin.
+    </p>
+    <a
+      routerLink="/products"
+      class="btn-primary inline-flex items-center gap-2"
+    >
+      <lucide-icon name="shopping-cart" [size]="16"></lucide-icon>
+      Alışverişe Başla
+    </a>
+  </div>
+
+  <!-- Order Cards -->
+  <div *ngIf="!loading && !error && orders.length > 0" class="space-y-4">
+    <div
+      *ngFor="let order of orders"
+      class="glass-card overflow-hidden transition-all duration-300"
+    >
+      <!-- Order Header (clickable) -->
+      <div
+        class="p-5 flex items-center gap-4 cursor-pointer hover:bg-slate-800/30 transition-colors"
+        (click)="toggleOrder(order.id)"
+      >
+        <!-- Status Icon -->
+        <div
+          class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+          [ngClass]="{
+               'bg-amber-500/15 text-amber-400': order.status?.toLowerCase() === 'pending',
+               'bg-blue-500/15 text-blue-400':   order.status?.toLowerCase() === 'shipped',
+               'bg-green-500/15 text-green-400': order.status?.toLowerCase() === 'completed',
+               'bg-red-500/15 text-red-400':     order.status?.toLowerCase() === 'cancelled'
+             }"
+        >
+          <lucide-icon
+            [name]="getStatusIcon(order.status)"
+            [size]="20"
+          ></lucide-icon>
+        </div>
+
+        <!-- Order Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-white text-sm"
+              >#{{ order.id }}</span
+            >
+            <span class="text-slate-600 text-xs">•</span>
+            <span class="text-slate-400 text-xs"
+              >{{ order.createdAt | date:'d MMM y, HH:mm' }}</span
+            >
+          </div>
+          <div class="flex items-center gap-3 mt-1 flex-wrap">
+            <!-- <span class="text-slate-300 text-sm">{{ order.store?.name || 'Mağaza' }}</span>
+            <span class="text-slate-600 text-xs">•</span> -->
+            <span class="text-slate-400 text-xs"
+              >{{ order.paymentMethod || '—' }}</span
+            >
+          </div>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="text-right shrink-0">
+          <div class="text-white font-bold text-lg gradient-text">
+            ₺{{ order.grandTotal | number:'1.2-2' }}
+          </div>
+          <span
+            class="text-xs px-2 py-0.5 rounded-lg font-medium"
+            [ngClass]="{
+                  'bg-amber-500/15 text-amber-400': order.status?.toLowerCase() === 'pending',
+                  'bg-blue-500/15 text-blue-400':   order.status?.toLowerCase() === 'shipped',
+                  'bg-green-500/15 text-green-400': order.status?.toLowerCase() === 'completed',
+                  'bg-red-500/15 text-red-400':     order.status?.toLowerCase() === 'cancelled'
+                }"
+          >
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+
+        <!-- Chevron -->
+        <lucide-icon
+          [name]="expandedOrderId === order.id ? 'chevron-up' : 'chevron-down'"
+          [size]="18"
+          class="text-slate-500 shrink-0 transition-transform"
+        >
+        </lucide-icon>
+      </div>
+
+      <!-- Expanded Order Items -->
+      <div
+        *ngIf="expandedOrderId === order.id"
+        class="border-t border-slate-700/50 bg-slate-800/30 px-5 py-4 animate__animated animate__fadeIn"
+      >
+        <h4
+          class="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2"
+        >
+          <lucide-icon name="list" [size]="14"></lucide-icon>
+          Sipariş Detayı
+        </h4>
+
+        <div
+          *ngIf="order.items && order.items.length > 0; else noItems"
+          class="space-y-2"
+        >
+          <div
+            *ngFor="let item of order.items"
+            class="flex items-center justify-between text-sm py-2 border-b border-slate-700/30 last:border-0"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden"
+              >
+                <img
+                  *ngIf="item.productImageUrl"
+                  [src]="item.productImageUrl"
+                  [alt]="item.productName || 'Ürün'"
+                  class="w-full h-full object-cover"
+                />
+                <lucide-icon
+                  *ngIf="!item.productImageUrl"
+                  name="box"
+                  [size]="14"
+                  class="text-slate-400"
+                ></lucide-icon>
+              </div>
+              <div>
+                <p class="text-slate-200 font-medium">
+                  {{ item.product?.name || item.productName || 'Ürün' }}
+                </p>
+                <p class="text-slate-500 text-xs">x{{ item.quantity }}</p>
+              </div>
+            </div>
+            <span class="text-primary font-semibold"
+              >₺{{ (item.price * item.quantity) | number:'1.2-2' }}</span
+            >
+          </div>
+        </div>
+
+        <ng-template #noItems>
+          <p class="text-slate-500 text-sm italic">Ürün detayı bulunamadı.</p>
+        </ng-template>
+
+        <!-- Summary Row -->
+        <div
+          class="flex justify-between items-center mt-4 pt-3 border-t border-slate-700/50"
+        >
+          <span class="text-slate-400 text-sm">Toplam</span>
+          <span class="text-white font-bold text-lg"
+            >₺{{ order.grandTotal | number:'1.2-2' }}</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

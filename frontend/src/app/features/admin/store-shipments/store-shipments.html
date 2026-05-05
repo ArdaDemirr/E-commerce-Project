@@ -1,0 +1,168 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold flex items-center gap-2 text-white">
+        <lucide-icon
+          name="truck"
+          [size]="28"
+          class="text-primary"
+        ></lucide-icon>
+        Mağaza Gönderileri
+      </h1>
+      <p class="text-slate-400 text-sm mt-1">
+        Müşteri siparişlerine ait gönderilerinizi buradan yönetin.
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div
+    *ngIf="loading"
+    class="glass-card flex justify-center items-center h-64 border border-slate-700/50"
+  >
+    <div
+      class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"
+    ></div>
+  </div>
+
+  <!-- Content -->
+  <div
+    *ngIf="!loading && shipments.length === 0"
+    class="glass-card p-12 text-center text-slate-400 border border-slate-700/50"
+  >
+    <lucide-icon
+      name="package"
+      [size]="48"
+      class="mx-auto mb-4 opacity-50"
+    ></lucide-icon>
+    <p>Henüz mağazanıza ait bir gönderi kaydı bulunamadı.</p>
+  </div>
+
+  <div
+    *ngIf="!loading && shipments.length > 0"
+    class="glass-card shadow-xl border border-slate-700/50 rounded-xl overflow-hidden"
+  >
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr
+            class="bg-slate-800/80 text-slate-300 text-sm border-b border-slate-700/50"
+          >
+            <th class="p-4 font-semibold whitespace-nowrap">Takip ID</th>
+            <th class="p-4 font-semibold whitespace-nowrap">Sipariş No</th>
+            <th class="p-4 font-semibold whitespace-nowrap">Müşteri</th>
+            <th class="p-4 font-semibold whitespace-nowrap">Tip / Öncelik</th>
+            <th class="p-4 font-semibold whitespace-nowrap">Depo</th>
+            <th class="p-4 font-semibold whitespace-nowrap">Durum</th>
+            <th class="p-4 font-semibold whitespace-nowrap text-right">
+              Durum Güncelle
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700/50 text-slate-200">
+          <tr
+            *ngFor="let s of shipments"
+            class="hover:bg-slate-800/40 transition-colors"
+          >
+            <!-- Tracking ID -->
+            <td class="p-4 font-medium text-white flex items-center gap-3">
+              <div
+                class="w-9 h-9 rounded shrink-0 overflow-hidden bg-slate-700/50 flex items-center justify-center border border-slate-600/30"
+              >
+                <img
+                  *ngIf="s.productImageUrl"
+                  [src]="s.productImageUrl"
+                  alt="Product"
+                  class="w-full h-full object-cover"
+                />
+                <lucide-icon
+                  *ngIf="!s.productImageUrl"
+                  name="package"
+                  [size]="14"
+                  class="text-slate-400"
+                ></lucide-icon>
+              </div>
+              <span class="flex items-center gap-1.5">
+                <lucide-icon
+                  name="hash"
+                  [size]="12"
+                  class="text-slate-500"
+                ></lucide-icon>
+                {{ s.trackingId }}
+              </span>
+            </td>
+            <!-- Order ID -->
+            <td class="p-4">#{{ s.orderId }}</td>
+            <!-- Customer -->
+            <td class="p-4">
+              <div class="flex flex-col" *ngIf="s.customer">
+                <span class="text-sm font-medium"
+                  >{{ s.customer.name }} {{ s.customer.surname }}</span
+                >
+                <span class="text-xs text-slate-400"
+                  >{{ s.customer.email }}</span
+                >
+              </div>
+              <span *ngIf="!s.customer" class="text-xs text-slate-500">-</span>
+            </td>
+            <!-- Details -->
+            <td class="p-4">
+              <div class="flex flex-col">
+                <span class="text-sm font-medium">{{ s.mode }}</span>
+                <span class="text-xs text-slate-400"
+                  >{{ s.productImportance }}</span
+                >
+              </div>
+            </td>
+            <!-- Warehouse -->
+            <td class="p-4 text-sm">{{ s.warehouse }}</td>
+            <!-- Status Badge -->
+            <td class="p-4">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+                  'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20': s.status === 'PREPARING' || s.status === 'SHIPPED',
+                  'bg-green-500/10 text-green-400 border border-green-500/20': s.status === 'DELIVERED',
+                  'bg-slate-500/10 text-slate-400 border border-slate-500/20': s.status === 'CANCELLED'
+                }"
+              >
+                <div
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="{
+                    'bg-yellow-400': s.status === 'PREPARING' || s.status === 'SHIPPED',
+                    'bg-green-400': s.status === 'DELIVERED',
+                    'bg-slate-400': s.status === 'CANCELLED'
+                  }"
+                ></div>
+                {{ s.status }}
+              </span>
+            </td>
+            <!-- Actions -->
+            <td class="p-4 text-right">
+              <select
+                #statusSelect
+                (change)="updateStatus(s.id, statusSelect.value)"
+                class="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary inline-block w-40"
+              >
+                <option value="">İşlem Seç...</option>
+                <option value="PREPARING" [disabled]="s.status === 'PREPARING'">
+                  Hazırlanıyor
+                </option>
+                <option value="SHIPPED" [disabled]="s.status === 'SHIPPED'">
+                  Kargoya Verildi
+                </option>
+                <option value="DELIVERED" [disabled]="s.status === 'DELIVERED'">
+                  Teslim Edildi
+                </option>
+                <option value="CANCELLED" [disabled]="s.status === 'CANCELLED'">
+                  İptal Edildi
+                </option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

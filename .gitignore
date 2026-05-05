@@ -1,2 +1,6 @@
+
+backend/target/
+target/
+backend/src/main/resources/application.properties
 frontend/.angular
 frontend/node_modules

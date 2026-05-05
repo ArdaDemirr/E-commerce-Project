@@ -1,0 +1,394 @@
+<div class="space-y-6">
+  <!-- Top Navigation -->
+  <div class="flex items-center">
+    <button
+      (click)="goBack()"
+      class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+    >
+      <lucide-icon name="arrow-left" [size]="20"></lucide-icon>
+      <span class="text-sm font-medium">Ürünlere Dön</span>
+    </button>
+  </div>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div
+      class="glass-card h-96 animate-pulse rounded-2xl bg-slate-700/50"
+    ></div>
+    <div class="space-y-4">
+      <div class="h-8 bg-slate-700/50 rounded-lg w-3/4 animate-pulse"></div>
+      <div class="h-4 bg-slate-700/50 rounded w-1/4 animate-pulse"></div>
+      <div
+        class="h-10 bg-slate-700/50 rounded-lg w-1/3 animate-pulse mt-8"
+      ></div>
+      <div
+        class="h-32 bg-slate-700/50 rounded-xl w-full animate-pulse mt-8"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div
+    *ngIf="!loading && error"
+    class="glass-card p-12 text-center max-w-xl mx-auto"
+  >
+    <lucide-icon
+      name="package"
+      [size]="64"
+      class="text-slate-600 mx-auto mb-4"
+    ></lucide-icon>
+    <h2 class="text-2xl font-bold text-white mb-2">Ürün Bulunamadı</h2>
+    <p class="text-slate-400 mb-6">
+      Aradığınız ürün mevcut değil veya yayından kaldırılmış olabilir.
+    </p>
+    <button
+      (click)="goBack()"
+      class="btn-primary px-6 py-2.5 rounded-xl font-medium"
+    >
+      Ürünlere Dön
+    </button>
+  </div>
+
+  <!-- Product View -->
+  <div
+    *ngIf="!loading && product && !error"
+    class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 animate__animated animate__fadeIn"
+  >
+    <!-- Left: Image Box -->
+    <div class="col-span-1">
+      <div
+        class="glass-card p-8 h-96 lg:h-[30rem] flex flex-col items-center justify-center relative overflow-hidden group"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50"
+        ></div>
+
+        <lucide-icon
+          *ngIf="!product.imageUrl"
+          name="package"
+          [size]="120"
+          class="text-slate-600 transition-transform duration-500 group-hover:scale-110 relative z-10"
+        ></lucide-icon>
+        <img
+          *ngIf="product.imageUrl"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10"
+          style="object-fit: contain"
+        />
+
+        <!-- Badges -->
+        <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
+          <span
+            class="px-3 py-1 rounded-lg text-sm font-medium bg-slate-900/80 text-slate-300 backdrop-blur-md border border-slate-700/50 shadow-lg"
+          >
+            {{ product.categoryName || 'Genel' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Product Details -->
+    <div class="col-span-1 flex flex-col">
+      <!-- Header Info -->
+      <div class="mb-6">
+        <h1
+          class="text-3xl md:text-4xl font-bold text-white mb-2 leading-tight"
+        >
+          {{ product.name }}
+        </h1>
+        <div class="flex items-center gap-4 text-sm text-slate-400">
+          <span class="font-mono">SKU: {{ product.sku }}</span>
+          <span>&bull;</span>
+          <!-- Avg Rating from loaded reviews -->
+          <span
+            *ngIf="reviews.length > 0"
+            class="flex items-center gap-1 text-amber-400"
+          >
+            <lucide-icon name="star" [size]="14"></lucide-icon>
+            {{ avgRating | number:'1.1-1' }} ({{ reviews.length }})
+          </span>
+          <span
+            *ngIf="!reviews.length"
+            class="flex items-center gap-1 text-amber-400"
+          >
+            <lucide-icon name="check" [size]="14"></lucide-icon>
+            Orijinal Ürün
+          </span>
+        </div>
+      </div>
+
+      <!-- Price & Stock -->
+      <div
+        class="glass-card p-6 mb-8 border border-slate-700/50 bg-slate-800/30"
+      >
+        <div class="flex items-end justify-between mb-4">
+          <div>
+            <p class="text-sm text-slate-500 mb-1">Satış Fiyatı</p>
+            <div class="text-4xl font-bold text-white tracking-tight">
+              ₺{{ product.unitPrice | number:'1.2-2' }}
+            </div>
+          </div>
+
+          <!-- Stock Status -->
+          <div class="text-right">
+            <div
+              *ngIf="getStockDisplay(product) > 10"
+              class="flex items-center gap-2 text-green-400 bg-green-400/10 px-3 py-1.5 rounded-lg border border-green-400/20"
+            >
+              <lucide-icon name="check" [size]="16"></lucide-icon>
+              <span class="text-sm font-medium">Stokta Var</span>
+            </div>
+            <div
+              *ngIf="getStockDisplay(product) > 0 && getStockDisplay(product) <= 10"
+              class="flex items-center gap-2 text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-lg border border-amber-400/20"
+            >
+              <lucide-icon name="shield" [size]="16"></lucide-icon>
+              <span class="text-sm font-medium"
+                >Son {{ getStockDisplay(product) }} Ürün</span
+              >
+            </div>
+            <div
+              *ngIf="getStockDisplay(product) === 0"
+              class="flex items-center gap-2 text-red-400 bg-red-400/10 px-3 py-1.5 rounded-lg border border-red-400/20"
+            >
+              <span class="text-sm font-medium">Stok Tükendi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button
+          *ngIf="authService.hasRole('INDIVIDUAL')"
+          (click)="addToCart(product)"
+          [disabled]="getStockDisplay(product) === 0"
+          class="w-full py-4 rounded-xl flex items-center justify-center gap-3 font-semibold text-lg transition-all duration-300"
+          [ngClass]="getStockDisplay(product) > 0
+                          ? 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1'
+                          : 'bg-slate-700 text-slate-500 cursor-not-allowed'"
+        >
+          <lucide-icon name="shopping-cart" [size]="20"></lucide-icon>
+          Sepete Ekle
+        </button>
+      </div>
+
+      <!-- Features / Description -->
+      <div class="space-y-6 flex-1 text-slate-300">
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-3">Ürün Açıklaması</h3>
+          <p class="text-slate-400 leading-relaxed text-sm md:text-base">
+            {{ product.description || 'Bu ürün için detaylı bir açıklama
+            bulunmamaktadır.' }}
+          </p>
+        </div>
+
+        <!-- Dummy Features -->
+        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-700/50">
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-slate-800 text-primary">
+              <lucide-icon name="truck" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-white">Hızlı Kargo</h4>
+              <p class="text-xs text-slate-400 mt-0.5">24 saatte kargoda</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-slate-800 text-green-400">
+              <lucide-icon name="shield" [size]="20"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="text-sm font-medium text-white">Güvenli Ödeme</h4>
+              <p class="text-xs text-slate-400 mt-0.5">256-bit SSL koruması</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== REVIEWS SECTION =================== -->
+  <div *ngIf="!loading && product && !error" class="space-y-6 mt-4">
+    <div class="border-t border-slate-700/50 pt-8">
+      <!-- Reviews Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <lucide-icon
+              name="message-square"
+              [size]="20"
+              class="text-primary"
+            ></lucide-icon>
+            Müşteri Yorumları
+          </h2>
+          <p class="text-slate-400 text-sm mt-1">
+            {{ reviews.length }} yorum
+            <span *ngIf="reviews.length > 0">
+              &bull; Ortalama
+              <span class="text-amber-400 font-semibold"
+                >{{ avgRating | number:'1.1-1' }} ⭐</span
+              >
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Existing Reviews List (left, wider) -->
+        <div class="lg:col-span-2 space-y-4">
+          <!-- Loading -->
+          <div *ngIf="reviewsLoading" class="space-y-3">
+            <div *ngFor="let i of [1,2]" class="glass-card p-4 animate-pulse">
+              <div class="flex gap-3">
+                <div class="w-9 h-9 bg-slate-700 rounded-full"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-3 bg-slate-700 rounded w-1/4"></div>
+                  <div class="h-3 bg-slate-700 rounded w-1/5"></div>
+                  <div class="h-8 bg-slate-700 rounded mt-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Reviews -->
+          <div
+            *ngIf="!reviewsLoading && reviews.length === 0"
+            class="glass-card p-10 text-center"
+          >
+            <lucide-icon
+              name="message-square"
+              [size]="40"
+              class="text-slate-600 mx-auto mb-3"
+            ></lucide-icon>
+            <p class="text-slate-400 text-sm">
+              Bu ürün için henüz yorum yapılmamış.
+            </p>
+            <p class="text-slate-500 text-xs mt-1">İlk yorumu siz yazın!</p>
+          </div>
+
+          <!-- Review Cards -->
+          <div
+            *ngFor="let review of reviews"
+            class="glass-card p-5 border border-slate-700/30 hover:border-primary/20 transition-colors animate__animated animate__fadeIn"
+          >
+            <div class="flex items-start gap-3">
+              <!-- Avatar -->
+              <div
+                class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center shrink-0 text-primary font-bold text-sm"
+              >
+                {{ review.reviewerName?.charAt(0)?.toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <!-- Name & Sentiment -->
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                  <div>
+                    <span class="font-medium text-white text-sm"
+                      >{{ review.reviewerName }}</span
+                    >
+                    <span class="text-slate-500 text-xs ml-3"
+                      >{{ review.createdAt | date:'d MMM y' }}</span
+                    >
+                  </div>
+                  <span
+                    class="text-xs px-2 py-0.5 rounded-lg font-medium"
+                    [ngClass]="getSentimentClass(review.sentiment)"
+                  >
+                    {{ getSentimentLabel(review.sentiment) }}
+                  </span>
+                </div>
+                <!-- Stars -->
+                <div class="flex items-center gap-0.5 mt-1.5">
+                  <ng-container *ngFor="let star of getStars(5)">
+                    <lucide-icon
+                      name="star"
+                      [size]="13"
+                      [class]="star <= review.rating ? 'text-amber-400' : 'text-slate-600'"
+                    >
+                    </lucide-icon>
+                  </ng-container>
+                </div>
+                <!-- Comment -->
+                <p class="text-slate-300 text-sm mt-2 leading-relaxed">
+                  {{ review.comment }}
+                </p>
+                <!-- Helpful -->
+                <div
+                  class="flex items-center gap-1 mt-2 text-slate-500 text-xs"
+                >
+                  <lucide-icon name="thumbs-up" [size]="11"></lucide-icon>
+                  {{ review.helpfulVotes }} kişi faydalı buldu
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Review Form (right, sticky) -->
+        <div class="lg:col-span-1" *ngIf="authService.hasRole('INDIVIDUAL')">
+          <div class="glass-card p-6 border border-slate-700/50 sticky top-6">
+            <h3 class="font-semibold text-white mb-4 flex items-center gap-2">
+              <lucide-icon
+                name="edit-3"
+                [size]="16"
+                class="text-primary"
+              ></lucide-icon>
+              Yorum Yaz
+            </h3>
+
+            <!-- Star Input -->
+            <div class="mb-4">
+              <label class="block text-sm text-slate-400 mb-2">Puanınız</label>
+              <div class="flex items-center gap-1" (mouseleave)="clearHover()">
+                <lucide-icon
+                  *ngFor="let star of getStars(5)"
+                  name="star"
+                  [size]="28"
+                  [class]="activeStarClass(star) + ' cursor-pointer transition-colors duration-150'"
+                  (mouseenter)="setHover(star)"
+                  (click)="setRating(star)"
+                >
+                </lucide-icon>
+              </div>
+              <p class="text-slate-500 text-xs mt-1">
+                Seçilen: {{ newRating }}/5
+              </p>
+            </div>
+
+            <!-- Comment Textarea -->
+            <div class="mb-4">
+              <label class="block text-sm text-slate-400 mb-2">Yorumunuz</label>
+              <textarea
+                [(ngModel)]="newComment"
+                rows="4"
+                placeholder="Bu ürün hakkında ne düşünüyorsunuz?"
+                class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-primary/60 resize-none transition-colors"
+              >
+              </textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              (click)="submitReview()"
+              [disabled]="submittingReview || !newComment.trim()"
+              class="w-full py-3 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2"
+              [ngClass]="!submittingReview && newComment.trim()
+                ? 'bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20'
+                : 'bg-slate-700 text-slate-500 cursor-not-allowed'"
+            >
+              <div
+                *ngIf="submittingReview"
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></div>
+              <lucide-icon
+                *ngIf="!submittingReview"
+                name="send"
+                [size]="16"
+              ></lucide-icon>
+              {{ submittingReview ? 'Gönderiliyor...' : 'Yorumu Gönder' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

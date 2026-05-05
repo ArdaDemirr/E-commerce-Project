@@ -1,0 +1,59 @@
+<aside
+    class="fixed left-0 top-0 h-full z-40 transition-all duration-300 flex flex-col border-r border-slate-700/50 shadow-2xl"
+    [class.w-0]="isCollapsed" [class.md:w-16]="isCollapsed" [class.w-64]="!isCollapsed"
+    [ngClass]="{'hidden md:flex': isCollapsed}" style="background: rgba(15,23,42,0.98); backdrop-filter: blur(20px);">
+
+    <!-- Logo -->
+    <div class="h-16 flex items-center px-4 border-b border-slate-700/50 gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+            style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
+            <lucide-icon name="zap" [size]="16" class="text-white"></lucide-icon>
+        </div>
+        <span *ngIf="!isCollapsed" class="font-bold text-white text-lg gradient-text animate__animated animate__fadeIn">
+            ARCA Shop
+        </span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 py-4 overflow-y-auto">
+
+        <!-- MAIN MENU -->
+        <div class="px-3 mb-2">
+            <p *ngIf="!isCollapsed" class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 mb-2">
+                Ana Menü
+            </p>
+
+            <a *ngFor="let item of mainMenuItems" [routerLink]="item.path" routerLinkActive="active"
+                class="sidebar-item mb-1" [title]="isCollapsed ? item.label : ''">
+                <lucide-icon [name]="item.icon" [size]="20" class="shrink-0"></lucide-icon>
+                <span *ngIf="!isCollapsed" class="animate__animated animate__fadeIn">{{ item.label }}</span>
+                <!-- Cart badge -->
+                <ng-container *ngIf="!isCollapsed && item.path === '/cart' && (cartCount$ | async) as count">
+                  <span *ngIf="count > 0"
+                    class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-primary text-white">
+                    {{ count }}
+                  </span>
+                </ng-container>
+                <!-- Other badges -->
+                <span *ngIf="!isCollapsed && item.badge && item.path !== '/cart'"
+                    class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold"
+                    style="background: linear-gradient(135deg, #6366F1, #8B5CF6); color: white">
+                    {{ item.badge }}
+                </span>
+            </a>
+        </div>
+
+        <!-- MANAGEMENT (Corporate + Admin) -->
+        <div *ngIf="showManagement" class="px-3 mt-4">
+            <p *ngIf="!isCollapsed" class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 mb-2">
+                Yönetim
+            </p>
+            <a *ngFor="let item of managementItems" [routerLink]="item.path" routerLinkActive="active"
+                class="sidebar-item mb-1">
+                <lucide-icon [name]="item.icon" [size]="20" class="shrink-0"></lucide-icon>
+                <span *ngIf="!isCollapsed">{{ item.label }}</span>
+            </a>
+        </div>
+    </nav>
+
+</aside>

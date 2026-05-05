@@ -1,0 +1,271 @@
+<div
+  class="min-h-screen flex items-center justify-center p-4"
+  style="background: radial-gradient(ellipse at top, #1e1b4b 0%, #0f172a 50%)"
+>
+  <!-- Animated Background Orbs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 animate-pulse-slow"
+      style="background: radial-gradient(circle, #6366f1, transparent)"
+    ></div>
+    <div
+      class="absolute -bottom-40 -left-40 w-96 h-96 rounded-full opacity-20 animate-pulse-slow"
+      style="background: radial-gradient(circle, #8b5cf6, transparent)"
+    ></div>
+  </div>
+
+  <!-- Card — genişletildi max-w-lg -->
+  <div
+    class="w-full max-w-lg glass-card p-8 animate__animated animate__slideInUp"
+  >
+    <!-- Logo -->
+    <div class="text-center mb-6">
+      <div
+        class="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+        style="background: linear-gradient(135deg, #6366f1, #8b5cf6)"
+      >
+        <lucide-icon name="zap" [size]="28" class="text-white"></lucide-icon>
+      </div>
+      <h1 class="text-2xl font-bold gradient-text">Kayıt Ol</h1>
+      <p class="text-slate-400 text-sm mt-1">ARCA Shop hesabı oluştur</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <!-- Role Selection -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >Hesap Türü</label
+        >
+        <div class="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            (click)="selectRole('INDIVIDUAL')"
+            class="px-4 py-2 rounded-xl border text-sm font-medium transition-all"
+            [class.border-primary]="selectedRole === 'INDIVIDUAL'"
+            [class.text-primary]="selectedRole === 'INDIVIDUAL'"
+            [class.bg-primary]="selectedRole === 'INDIVIDUAL'"
+            [class.text-white]="selectedRole === 'INDIVIDUAL'"
+            [class.border-slate-700]="selectedRole !== 'INDIVIDUAL'"
+            [class.text-slate-400]="selectedRole !== 'INDIVIDUAL'"
+          >
+            👤 Bireysel
+          </button>
+          <button
+            type="button"
+            (click)="selectRole('CORPORATE')"
+            class="px-4 py-2 rounded-xl border text-sm font-medium transition-all"
+            [class.border-primary]="selectedRole === 'CORPORATE'"
+            [class.text-white]="selectedRole === 'CORPORATE'"
+            [class.bg-primary]="selectedRole === 'CORPORATE'"
+            [class.border-slate-700]="selectedRole !== 'CORPORATE'"
+            [class.text-slate-400]="selectedRole !== 'CORPORATE'"
+          >
+            🏢 Kurumsal
+          </button>
+        </div>
+      </div>
+
+      <!-- Ad + Soyad -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2"
+            >Ad</label
+          >
+          <input
+            formControlName="name"
+            type="text"
+            placeholder="Adınız"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2"
+            >Soyad</label
+          >
+          <input
+            formControlName="surname"
+            type="text"
+            placeholder="Soyadınız"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          />
+        </div>
+      </div>
+
+      <!-- Mağaza Adı (Yalnızca KURUMSAL ise gösterilecek) -->
+      <div class="mb-4" *ngIf="selectedRole === 'CORPORATE'">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >Mağaza Adı</label
+        >
+        <div class="relative">
+          <input
+            formControlName="storeName"
+            type="text"
+            placeholder="Mağazanızın Adı"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          />
+          <lucide-icon
+            name="store"
+            [size]="18"
+            class="absolute left-3.5 top-3.5 text-slate-500"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Cinsiyet -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >Cinsiyet</label
+        >
+        <div class="relative">
+          <select
+            formControlName="gender"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11 text-slate-200 appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          >
+            <option value="" disabled selected>Seçiniz</option>
+            <option value="Male">Erkek</option>
+            <option value="Female">Kadın</option>
+            <option value="Other">Diğer</option>
+          </select>
+          <lucide-icon
+            name="users"
+            [size]="18"
+            class="absolute left-3.5 top-3.5 text-slate-500"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- E-posta -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >E-posta</label
+        >
+        <div class="relative">
+          <input
+            formControlName="email"
+            type="email"
+            placeholder="ornek@mail.com"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          />
+          <lucide-icon
+            name="mail"
+            [size]="18"
+            class="absolute left-3.5 top-3.5 text-slate-500"
+          ></lucide-icon>
+        </div>
+      </div>
+
+      <!-- Şifre -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >Şifre</label
+        >
+        <div class="relative">
+          <input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="En az 8 karakter"
+            class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 pl-11 pr-11 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
+          />
+          <lucide-icon
+            name="lock"
+            [size]="18"
+            class="absolute left-3.5 top-3.5 text-slate-500"
+          ></lucide-icon>
+          <button
+            type="button"
+            (click)="showPassword = !showPassword"
+            class="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <lucide-icon
+              [name]="showPassword ? 'eye-off' : 'eye'"
+              [size]="18"
+            ></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Şifre Tekrar -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-slate-300 mb-2"
+          >Şifre Tekrar</label
+        >
+        <div class="relative">
+          <input
+            formControlName="confirmPassword"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            placeholder="Şifrenizi tekrar girin"
+            class="w-full bg-slate-800/80 border rounded-xl px-4 py-3 pl-11 pr-11 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 transition-all"
+            [class.border-red-500]="confirmPasswordError"
+            [class.focus:border-red-500]="confirmPasswordError"
+            [class.focus:ring-red-500]="confirmPasswordError"
+            [class.border-slate-700]="!confirmPasswordError"
+            [class.focus:border-primary]="!confirmPasswordError"
+            [class.focus:ring-primary]="!confirmPasswordError"
+          />
+          <lucide-icon
+            name="shield-check"
+            [size]="18"
+            class="absolute left-3.5 top-3.5 transition-colors"
+            [class.text-red-500]="confirmPasswordError"
+            [class.text-slate-500]="!confirmPasswordError"
+          ></lucide-icon>
+          <button
+            type="button"
+            (click)="showConfirmPassword = !showConfirmPassword"
+            class="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <lucide-icon
+              [name]="showConfirmPassword ? 'eye-off' : 'eye'"
+              [size]="18"
+            ></lucide-icon>
+          </button>
+        </div>
+        <!-- Eşleşmeme uyarısı -->
+        <p
+          *ngIf="confirmPasswordError"
+          class="mt-1.5 text-xs text-red-400 flex items-center gap-1"
+        >
+          <lucide-icon name="alert-circle" [size]="12"></lucide-icon>
+          Şifreler eşleşmiyor
+        </p>
+      </div>
+
+      <!-- Error Alert -->
+      <div
+        *ngIf="errorMessage"
+        class="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm animate__animated animate__shakeX"
+      >
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit -->
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading"
+        class="btn-primary w-full flex items-center justify-center gap-2"
+      >
+        <div
+          *ngIf="isLoading"
+          class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"
+        ></div>
+        <lucide-icon
+          *ngIf="!isLoading"
+          name="user-plus"
+          [size]="18"
+        ></lucide-icon>
+        {{ isLoading ? "Kayıt yapılıyor..." : "Kayıt Ol" }}
+      </button>
+    </form>
+
+    <p class="text-center mt-6 text-slate-400 text-sm">
+      Zaten hesabın var mı?
+      <a
+        routerLink="/auth/login"
+        class="text-primary hover:text-violet-400 font-medium ml-1 transition-colors"
+      >
+        Giriş Yap
+      </a>
+    </p>
+  </div>
+</div>
