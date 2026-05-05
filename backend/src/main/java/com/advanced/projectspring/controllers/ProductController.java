@@ -1,0 +1,71 @@
+package com.advanced.projectspring.controllers;
+
+import com.advanced.projectspring.dto.ProductResponseDTO;
+import com.advanced.projectspring.services.ProductService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/products")
+@CrossOrigin(origins = "http://localhost:4200")
+public class ProductController {
+
+    @Autowired
+    private ProductService productService; // inject service
+
+    // GET ALL PRODUCTS
+    @GetMapping
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+    // returns a list of ProductResponseDTO to hide sensitive data from public
+    // exposure
+
+    // GET SINGLE PRODUCT WITH ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+        // GET /api/products/1 → returns product or 404
+    }
+
+    // SEARCH PRODUCTS BY NAME
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponseDTO>> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(productService.searchProducts(name));
+        // GET /api/products/search?name=phone → returns matching products
+    }
+
+    // GET PRODUCTS BY CATEGORY
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductResponseDTO>> getByCategory(@PathVariable Long categoryId) {
+        return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
+        // GET /api/products/category/3 → returns products in that category
+    }
+
+    // GET MOST REVIEWED PRODUCTS
+    @GetMapping("/most-reviewed")
+    public ResponseEntity<List<ProductResponseDTO>> getMostReviewedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(productService.getMostReviewedProducts(pageable));
+    }
+
+    // GET HIGHEST RATED PRODUCTS
+    @GetMapping("/highest-rated")
+    public ResponseEntity<List<ProductResponseDTO>> getHighestRatedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(productService.getHighestRatedProducts(pageable));
+    }
+}
